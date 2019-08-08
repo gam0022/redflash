@@ -392,7 +392,7 @@ float3 calcNormalBasic(float3 p)
 
 RT_PROGRAM void intersect(int primIdx)
 {
-    const float EPS = 1e-2;
+    const float EPS = 1e-4;
     float t = 0.0, d = 1e100;
     float3 p = ray.origin;
 
