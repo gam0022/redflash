@@ -1,0 +1,4 @@
+# CMake generation dependency list for this directory.
+C:/Users/gam0022/Dropbox/redflash/primeSimplePP/CMakeLists.txt
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/primeSimplePP/CMakeFiles/primeSimplePP.dir/__/primeSimple/primeSimplePP_generated_primeKernels.cu.obj.depend

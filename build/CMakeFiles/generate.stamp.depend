@@ -1,0 +1,38 @@
+# CMake generation dependency list for this directory.
+C:/Users/gam0022/Dropbox/redflash/CMakeLists.txt
+C:/Users/gam0022/Dropbox/redflash/build/CMakeFiles/3.8.2/CMakeSystem.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/CMakeSystemSpecificInitialize.cmake
+C:/Users/gam0022/Dropbox/redflash/build/CMakeFiles/3.8.2/CMakeCCompiler.cmake
+C:/Users/gam0022/Dropbox/redflash/build/CMakeFiles/3.8.2/CMakeCXXCompiler.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/CMakeSystemSpecificInformation.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/CMakeGenericSystem.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/Platform/Windows.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/Platform/WindowsPaths.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/CMakeCInformation.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/CMakeLanguageInformation.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/Platform/Windows-MSVC-C.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/Platform/Windows-MSVC.cmake
+C:/Users/gam0022/Dropbox/redflash/build/CMakeFiles/3.8.2/CMakeRCCompiler.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/CMakeRCInformation.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/CMakeCommonLanguageInclude.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/CMakeCXXInformation.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/CMakeLanguageInformation.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/Compiler/MSVC-CXX.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/Platform/Windows-MSVC-CXX.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/Platform/Windows-MSVC.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/CMakeCommonLanguageInclude.cmake
+C:/Users/gam0022/Dropbox/redflash/CMake/Macros.cmake
+C:/Users/gam0022/Dropbox/redflash/CMake/CompilerInfo.cmake
+C:/Users/gam0022/Dropbox/redflash/CMake/ConfigCompilerFlags.cmake
+C:/Users/gam0022/Dropbox/redflash/CMake/sse_support.h.in
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/FindPackageMessage.cmake
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/select_compute_arch.cmake
+C:/Users/gam0022/Dropbox/redflash/CMake/FindOptiX.cmake
+C:/Users/gam0022/Dropbox/redflash/sampleConfig.h.in
+C:/Users/gam0022/Dropbox/redflash/CMake/FindSUtilGLUT.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/FindOpenGL.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/FindPackageMessage.cmake
+C:/Users/gam0022/Dropbox/redflash/CMake/FindMDLWrapper.cmake

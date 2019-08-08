@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\optixRaycasting\OptiXRaycastingContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\optixRaycasting\optixRaycasting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\optixRaycasting\Common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\optixRaycasting\OptiXRaycastingContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\optixRaycasting\optixRaycastingKernels.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\optixRaycasting\optixRaycastingKernels.cu">
+      <Filter>CUDA Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\optixRaycasting\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixRaycasting\OptiXRaycastingContext.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="C:\Users\gam0022\Dropbox\redflash\build\lib\ptx\$(Configuration)\optixRaycasting_generated_optixRaycastingKernels.cu.obj">
+      <Filter>Object Files</Filter>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{3514BB90-08DD-359A-8F7F-1995E5FAA240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{1ED9082F-20F6-3C9C-AD4B-66C340868CD3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object Files">
+      <UniqueIdentifier>{76572AFC-3C7F-3918-8F07-9E44BDD1ADDA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CUDA Files">
+      <UniqueIdentifier>{502337A2-9EA0-3AB0-9B75-2E30386D6D6E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

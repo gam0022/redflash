@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\optixTutorial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\tutorial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\random.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\tutorial0.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\tutorial1.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\tutorial2.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\tutorial3.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\tutorial4.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\tutorial5.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\tutorial6.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\tutorial7.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\tutorial8.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\tutorial9.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\tutorial10.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\tutorial11.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\box.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixTutorial\parallelogram.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{3514BB90-08DD-359A-8F7F-1995E5FAA240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{1ED9082F-20F6-3C9C-AD4B-66C340868CD3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CUDA Files">
+      <UniqueIdentifier>{502337A2-9EA0-3AB0-9B75-2E30386D6D6E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

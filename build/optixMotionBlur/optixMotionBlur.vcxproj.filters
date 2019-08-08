@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\optixMotionBlur\optixMotionBlur.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\optixMotionBlur\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\optixMotionBlur\helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\optixMotionBlur\intersection_refinement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\optixMotionBlur\random.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\optixMotionBlur\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixMotionBlur\normal_shader_with_shadows.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixMotionBlur\accum_camera_mblur.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixMotionBlur\constantbg.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixMotionBlur\normal_shader.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixMotionBlur\parallelogram.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixMotionBlur\pinhole_camera.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\optixMotionBlur\triangle_mesh_mblur.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{3514BB90-08DD-359A-8F7F-1995E5FAA240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{1ED9082F-20F6-3C9C-AD4B-66C340868CD3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CUDA Files">
+      <UniqueIdentifier>{502337A2-9EA0-3AB0-9B75-2E30386D6D6E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

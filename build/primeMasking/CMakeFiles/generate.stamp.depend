@@ -1,0 +1,4 @@
+# CMake generation dependency list for this directory.
+C:/Users/gam0022/Dropbox/redflash/primeMasking/CMakeLists.txt
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/primeMasking/CMakeFiles/primeMasking.dir/__/primeSimple/primeMasking_generated_primeKernels.cu.obj.depend

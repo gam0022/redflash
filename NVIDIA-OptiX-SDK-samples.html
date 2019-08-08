@@ -1,0 +1,1051 @@
+
+<html xmlns:comem3="xalan://com.em3" xmlns:em3="http://www.em3.com/2002/widget">
+
+  <!-- 
+  ******************
+  Borrowed from the CUDA sdk's ReleaseNotes.html
+  ******************  
+  -->
+
+<head>
+	<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>NVIDIA OptiX SDK Code Samples</title>
+	<link type="image/x-icon" href="releaseNotesData/NVSphere.ico" rel="shortcut icon">
+	<script type="text/javascript">
+	<!--
+	function openScreenshot(url)
+	{
+	  var dlgWidth = 556;
+ 	  var dlgHeight = 634;
+	  var dlgLeft = (screen.width - dlgWidth) / 2;
+	  var dlgTop = (screen.height - dlgHeight) / 2;
+
+ 	  var specs = 'toolbar=no,scrollbars=no,location=no,status=no,menubar=no,resizable=no,width=550,height=610,left=' + dlgLeft + ',top=' + dlgTop;
+
+	  newwin = window.open(url, 'ScreenshotWindow', specs);
+	  newwin.focus();
+	}
+	function pageSelectorGoTo()
+	{
+	  window.location = document.forms[1].pageSelector.value
+	}
+	-->
+	</script>
+<style type="text/css">
+body {
+margin-left:0px;
+margin-top:0px;
+font-family:Verdana, Geneva, Arial, Helvetica, Sans Serif;
+font-size: 11px;
+}
+
+td, div { 
+font-family:Verdana, Geneva, Arial, Helvetica, Sans Serif;
+font-size: 11px;
+}
+
+#devTable {
+position:absolute;
+top:0px;
+}
+
+.devGradient {
+vertical-align:top;
+padding:10px;
+
+}
+
+A { 
+text-decoration:none;
+/* color: #008000; */
+/* green color: #76b900; */
+/*font-weight:bold; */
+color: #5B8C00;
+}
+
+A:hover { 
+text-decoration:underline;
+color: #000000;
+}
+
+A:visited { 
+color: #5B8C00;
+}
+
+.bucketText { 
+font-size: 10px;
+}
+A.bucketHeader { 
+font-weight:bold;
+color: #009900;
+text-decoration:none;
+}
+A.bucketHeader:hover { 
+text-decoration:underline;
+}
+A.bucketHeader:visited { 
+color: #005000;
+}
+H1 { 
+font-size:15px;
+color: #000000;
+font-weight:bold;
+}
+H2 { 
+font-size:14px;
+color: #000000;
+font-weight:bold;
+}
+H3 { 
+font-size:14px;
+color: #000080;
+font-weight:bold;
+}
+H4 { 
+font-size:12px;
+color: #000000;
+font-weight:bold;
+}
+H5 { 
+font-size:12px;
+color: #000080;
+font-weight:bold;
+}
+H6 { 
+font-size:10px;
+color: #000000;
+font-weight:bold;
+}
+H6 { 
+font-size:10px;
+color: #000080;
+font-weight:bold;
+}
+
+.search {
+font-size:7pt; 
+color: #FFFFFF;
+} 
+.searchResultsHeader { 
+font-size:10pt;
+font-weight:bold;
+color: #000080;
+}
+.smallText { 
+font-size: 11px;
+}
+.legal{
+font-size:7pt; 
+color: #000000;
+} 
+A.legal{
+text-decoration:none
+color: #000000;
+} 
+A.legal:hover{
+text-decoration:underline
+color: #000000;
+} 
+A.legal:visited{
+color: #000000;
+} 
+
+#mytable 
+{
+BORDER-COLLAPSE: collapse;
+borderColor: #dfdfe7;
+cellSpacing: 0;
+cellPadding: 6;
+borderColorLight: #e9eaed;
+border: 1;
+}
+
+#mytable td {
+FONT-SIZE: 10px; 
+FONT-FAMILY: Verdana, Geneva, Arial, Helvetica, 'Sans Serif';
+borderColor: #dfdfe7;
+background-color: #F4F4F7;
+border-right: 1px solid #dfdfe7;
+border-bottom: 1px solid #dfdfe7;
+padding: 6px 6px 6px 12px; 
+}
+
+#mytable th {
+padding: 6px 6px 6px 12px; 
+FONT-FAMILY: Verdana, Geneva, Arial, Helvetica, 'Sans Serif';
+FONT-WEIGHT: 400; 
+FONT-SIZE: 10px;
+borderColor: #c0c0c0;
+bgColor: #dfdfe7
+}
+.itemName
+{
+    float: left;
+    font-size: 12px;
+    font-weight: bold;
+}
+td.verticalBder
+{
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    border-right: 1px solid #aca899
+}
+.anchorImage
+{
+    border: none;
+}
+.itemMinspec
+{
+    border: none;   
+}
+td.itemMinspec
+{
+    padding-top: 0px;
+    padding-left: 5px;
+    padding-bottom: 1px;
+    vertical-align: middle;
+}
+td.screenshot
+{
+    width: 134px;
+    height: 134px;
+    padding-top: 0px;
+    padding-bottom: 3px;
+    padding-left: 0px;
+}
+td.colInfo
+{
+    padding-top: 1px;
+    padding-left: 5px;
+}
+.featuredMonth
+{
+    padding-bottom: 5px;
+    padding-top: 5px;    
+    padding-left: 5px;    
+    background-color: #dfdfe7;
+    color: black;
+    border: solid 1px #d3dae4;
+    font-weight: bold;
+    font-size: 14px;
+}
+.itemGroup
+{
+    font-weight: bold;
+}
+.itemImage
+{
+    border: 2px solid #008000;
+}
+.itemImageNoLink
+{
+    border: 2px solid white;
+}
+.description
+{
+    font-size: 10px;
+}
+.links
+{	
+    font-size: 10px;
+}
+.changeNotification
+{
+    font-size: 9px;
+}
+</style>
+</head>
+
+
+<body>
+<table style="background-color:#ffffff;border-color:#cccccc;border-style:solid;border-top-width:1px;border-left-width:1px;border-right-width:1px;border-bottom-width:1px;" cellspacing="0" cellpadding="0" border="0" width="591" align="center">
+<tr>
+<td valign="top">
+<div style="position:relative;left:13px;top:8px;padding-bottom:20px;width:565px;">
+
+		<!-- 
+		******************
+		      MAIN 
+		******************  
+		-->
+		
+		<h2>NVIDIA OptiX SDK Code Samples</h2>
+
+
+    <p>The NVIDIA OptiX SDK provides a set of sample codes demonstrating a variety of use cases for the OptiX library.
+       Also, provided is a utility library, <b>sutil</b>, which can be used for rapid development of simple OptiX
+       applications.  This sample code is released under a BSD license:
+       <pre>
+# Copyright (c) 2018, NVIDIA CORPORATION. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#  * Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#  * Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#  * Neither the name of NVIDIA CORPORATION nor the names of its
+#    contributors may be used to endorse or promote products derived
+#    from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
+# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+# PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+# OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+       </pre>
+
+    <p>An implementation of the OptiX library is required to run and compile code samples. Please obtain the
+       NVIDIA OptiX library <a href="https://developer.nvidia.com/optix">here</a>.</p>
+
+    <p>The <a href="http://www.cmake.org/">CMake</a> cross-platform build system is used to configure and build
+       the SDK.  CMake 2.6.3 or higher must be installed.  See platfrom specific build instructions for more details:
+       <ul>
+         <li><a href="INSTALL-LINUX.txt">Linux Install Notes</a></li>
+         <li><a href="INSTALL-MAC.txt">Mac OS X Install Notes</a></li>
+         <li><a href="INSTALL-WIN.txt">Windows Install Notes</a></li>
+       </ul>
+    </p>
+
+    <h3> Getting Started</h3>
+    <p>
+    The samples below are in alphabetical order.  If you're new to OptiX, try starting with the <a href="#optixTutorial">optixTutorial</a> and <a href="#optixHello">optixHello</a> samples, or
+    for the Prime API, start with <a href="#primeSimple">primeSimple</a>.
+    </p>
+              
+		<table width="575" border="0">
+
+
+      <!-- optixBuffersOfBuffers **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixBuffersOfBuffers"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixBuffersOfBuffers&nbsp;<a href="#optixBuffersOfBuffers"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Example usage of runtime resized Buffer-of-Buffers. 
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixBuffersOfBuffers.png" name="optixBuffersOfBuffers image" target="_blank"><img src="data/doc/optixBuffersOfBuffers_thumb.png" class="itemMinspec" alt="optixBuffersOfBuffers image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixBuffersOfBuffers/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      <!-- optixCallablePrograms **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixCallablePrograms"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixCallablePrograms&nbsp;<a href="#optixCallablePrograms"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Renders sphere with a normal shader using callable program.
+          </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixCallablePrograms.png" name="optixCallablePrograms image" target="_blank"><img src="data/doc/optixCallablePrograms_thumb.png" class="itemMinspec" alt="optixCallablePrograms image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixCallablePrograms/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      <!-- optixCompressedTexture **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixCompressedTexture"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixCompressedTexture&nbsp;<a href="#optixCompressedTexture"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Loads and displays a compressed texture in BC6H format.
+          </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixCompressedTexture.png" name="optixCompressedTexture image" target="_blank"><img src="data/doc/optixCompressedTexture_thumb.png" class="itemMinspec" alt="optixCompressedTexture image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixCompressedTexture/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      <!-- optixConsole **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixConsole"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixConsole&nbsp;<a href="#optixConsole"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+          Rendered image appears on the console as ASCII art with no GL or third party libraries.
+        </span></td>
+        <td rowspan ="1" width="5" align="left" valign="top"
+        class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valigh="top" class="itemMinspec">
+          <p><span class="links">
+            <br />
+            <a href="optixConsole/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      <!-- optixDenoiser *********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixDenoiser"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixDenoiser&nbsp;<a href="#optixDenoiser"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Demonstrates how to apply denoising to a rendered image.
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixDenoiser.png" name="optixDenoiser image" target="_blank"><img src="data/doc/optixDenoiser_thumb.png" class="itemMinspec" alt="optixDenoiser image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixDenoiser/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+	  
+	  
+      <!-- optixDeviceQuery **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixDeviceQuery"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixDeviceQuery&nbsp;<a href="#optixDeviceQuery"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">Command line program that demonstrates the device
+          query functions.
+        </span></td>
+        <td rowspan ="1" width="5" align="left" valign="top"
+        class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valigh="top" class="itemMinspec">
+          <p><span class="links">
+            <br />
+            <a href="optixDeviceQuery/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+
+      <!-- optixDynamicGeometry **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixDynamicGeometry"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixDynamicGeometry&nbsp;<a href="#optixDynamicGeometry"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Compares accel structures for a dynamic scene.
+            A multi level BVH allows faster updates at the cost of slower ray
+            intersections vs. a single level BVH.
+          </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixDynamicGeometry.png" name="optixDynamicGeometry image" target="_blank"><img src="data/doc/optixDynamicGeometry_thumb.png" class="itemMinspec" alt="optixDynamicGeometry image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixDynamicGeometry/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+
+      <!-- optixGeometryTriangles ***********************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixGeometryTriangles"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixGeometryTriangles&nbsp;<a href="#optixGeometryTriangles"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            This sample demonstrates basic usage of the GeometryTriangles API, which
+            provides access to the built-in traversal and intersection for triangle geometry.
+          </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixGeometryTriangles.png" name="optixGeometryTriangles image" target="_blank"><img src="data/doc/optixGeometryTriangles_thumb.png" class="itemMinspec" alt="optixGeometryTriangles image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixGeometryTriangles/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+
+      <!-- optixHello **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixHello"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixHello&nbsp;<a href="#optixHello"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">This sample demonstrates a minimal OptiX API example. A solid green buffer
+            is drawn.  Basic features demonstrated include:
+            <ul>
+              <li>Usage of key RT objects; RTbuffer, RTcontext, and RTprogram.</li>
+              <li>Creation, setting and consumption of RTvariables.</li>
+              <li>Simple ray generation program.</li>
+            </ul>
+        </span></td>
+        <td rowspan ="1" width="5" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixHello.png" name="optixHello image" target="_blank"><img src="data/doc/optixHello_thumb.png" class="itemMinspec" alt="optixHello image" /></a>
+          <p><span class="links">
+            <br />
+
+            <a href="optixHello/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      <!-- optixInstancing **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixInstancing"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixInstancing&nbsp;<a href="#optixInstancing"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Demonstrates various features related to geometry transformation and instancing.  Features:
+            <ul>
+              <li>Multiple transforms referencing the same geometry group.</li>
+              <li>Sharing of acceleration structures between multiple groups.</li>
+            </ul>
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixInstancing.png" name="optixInstancing image" target="_blank"><img src="data/doc/optixInstancing_thumb.png" class="itemMinspec" alt="optixInstancing image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixInstancing/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      <!-- optixMDLDisplacement ****************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixMDLDisplacement"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixMDLDisplacement&nbsp;<a href="#optixMDLDisplacement"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Demonstrates how to use MDL materials with vertex displacement.<br>
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixMDLDisplacement.png" name="optixMDLDisplacement image" target="_blank"><img src="data/doc/optixMDLDisplacement_thumb.png" class="itemMinspec" alt="optixMDLDisplacement image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixMDLDisplacement/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      <!-- optixMDLExpressions *****************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixMDLExpressions"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixMDLExpressions&nbsp;<a href="#optixMDLExpressions"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Demonstrates how to use single expressions of MDL materials with OptiX. Features:
+            <ul>
+              <li>Using tint and normal expressions of different materials.</li>
+              <li>Using an MDL function as an environment.</li>
+            </ul>
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixMDLExpressions.png" name="optixMDLExpressions image" target="_blank"><img src="data/doc/optixMDLExpressions_thumb.png" class="itemMinspec" alt="optixMDLExpressions image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixMDLExpressions/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      <!-- optixMDLSphere **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixMDLSphere"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixMDLSphere&nbsp;<a href="#optixMDLSphere"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Demonstrates how to use MDL materials with OptiX. Features:
+            <ul>
+              <li>Using compiled BSDFs.</li>
+              <li>Using an image-based environment light.</li>
+            </ul>
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixMDLSphere.jpg" name="optixMDLSphere image" target="_blank"><img src="data/doc/optixMDLSphere_thumb.png" class="itemMinspec" alt="optixMDLSphere image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixMDLSphere/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      <!-- optixMeshViewer *********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixMeshViewer"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixMeshViewer&nbsp;<a href="#optixMeshViewer"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Simple interactive mesh viewer.
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixMeshViewer.png" name="optixMeshViewer image" target="_blank"><img src="data/doc/optixMeshViewer_thumb.png" class="itemMinspec" alt="optixMeshViewer image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixMeshViewer/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+    <!-- optixMotionBlur *********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixMotionBlur"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixMotionBlur&nbsp;<a href="#optixMotionBlur"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            A simple example demonstration of the motion blur API.
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixMotionBlur.png" name="optixMotionBlur image" target="_blank"><img src="data/doc/optixMotionBlur_thumb.png" class="itemMinspec" alt="optixMotionBlur image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixMotionBlur/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+	  <!-- optixParticles *********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixParticles"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixParticles&nbsp;<a href="#optixParticles"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            A simple example on how to deal with particles, with optional motion blur.
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixParticles.png" name="optixParticles image" target="_blank"><img src="data/doc/optixParticles_thumb.png" class="itemMinspec" alt="optixParticles image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixParticles/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+	  
+      <!-- optixPathTracer *********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixPathTracer"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixPathTracer&nbsp;<a href="#optixPathTracer"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Implements Kajiya-style path tracing.  It progressively refines the image and
+            allows for interactive camera movement.
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixPathTracer.png" name="optixPathTracer image" target="_blank"><img src="data/doc/optixPathTracer_thumb.png" class="itemMinspec" alt="optixPathTracer image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixPathTracer/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      <!-- optixPrimitiveIndexOffsets *********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixPrimitiveIndexOffsets"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixPrimitiveIndexOffsets&nbsp;<a href="#optixPrimitiveIndexOffsets"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Demonstrates primitive index offsets for sharing buffers across different Geometry objects.
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixPrimitiveIndexOffsets.png" name="optixPrimitiveIndexOffsets image" target="_blank"><img src="data/doc/optixPrimitiveIndexOffsets_thumb.png" class="itemMinspec" alt="optixPrimitiveIndexOffsets image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixPrimitiveIndexOffsets/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      <!-- optixProgressiveVCA **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixProgressiveVCA"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixProgressiveVCA&nbsp;<a href="#optixProgressiveVCA"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+          Basic usage of progressive launch API and remote query of VCA.
+        </span></td>
+        <td rowspan ="1" width="5" align="left" valign="top"
+        class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valigh="top" class="itemMinspec">
+          <p><span class="links">
+            <br />
+            <a href="optixProgressiveVCA/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      <!-- optixRaycasting **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixRaycasting"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixRaycasting&nbsp;<a href="#optixRaycasting"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            This sample uses OptiX as a replacement for Prime, to compute hits only.  Compare to primeSimplePP.
+            Shading and ray generation are done with separate CUDA kernels and interop.
+            Also supports an optional mask texture for geometry transparency (the hole in the default fish model).
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixRaycasting.png" name="optixRaycasting image" target="_blank"><img src="data/doc/optixRaycasting_thumb.png" class="itemMinspec" alt="optixRaycasting image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixRaycasting/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+
+      <!-- optixSelector **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixSelector"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixSelector&nbsp;<a href="#optixSelector"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Demonstrates use of selector nodes.
+          </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixSelector.png" name="optixSelector image" target="_blank"><img src="data/doc/optixSelector_thumb.png" class="itemMinspec" alt="optixSelector image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixSelector/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+
+      <!-- optixSphere **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixSphere"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixSphere and optixSpherePP&nbsp;<a href="#optixSphere"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">Introduces the C++ wrapper for the rtapi.  Equivalent programs
+            are given using both the C api (optixSphere.cpp) and the C++ wrapper api (optixSpherePP.cpp). Features:
+            <ul>
+              <li>Usage of the C++ wrapper API.</li>
+            </ul>
+        </span></td>
+        <td rowspan ="1" width="5" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixSphere.png" name="optixSphere image" target="_blank"><img src="data/doc/optixSphere_thumb.png" class="itemMinspec" alt="optixSphere image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixSphere/" name="path">Browse optixSphere files </a><br/>
+            <a href="optixSpherePP/" name="path">Browse optixSpherePP files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+
+      <!-- optixSSIMPredictor **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixSSIMPredictor"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixSSIMPredictor&nbsp;<a href="#optixSSIMPredictor"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">Example of using SSIM prediction post processing stage. Features:
+              <ul>
+                  <li>Usage of SSIM prediction.</li>
+              </ul>
+          </span></td>
+        <td rowspan ="1" width="5" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixSSIMPredictor.png" name="optixSSIMPredictor image" target="_blank"><img src="data/doc/optixSSIMPredictor_thumb.png" class="itemMinspec" alt="optixSSIMPredictor image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixSSIMPredictor/" name="path">Browse files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+
+      <!-- optixTextureSampler **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixTextureSampler"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixTextureSampler&nbsp;<a href="#optixTextureSampler"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">Similar to optixHello but uses a varying texture to drive the image color.  Features:
+            <ul>
+              <li>Texture samplers.</li>
+            </ul>
+        </span></td>
+        <td rowspan ="1" width="5" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixTextureSampler.png" name="optixTextureSampler image" target="_blank"><img src="data/doc/optixTextureSampler_thumb.png" class="itemMinspec" alt="optixTextureSampler image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixTextureSampler/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      
+      <!-- optixTutorial **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixTutorial"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixTutorial&nbsp;<a href="#optixTutorial"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Demonstrates several basic ray tracing effects, from trivially simple to moderately complex.  The
+            sample consists of eleven stages, each stage adding a new effect.  For details
+            please refer to the Quickstart Guide in the
+            <a href="../doc/" name="Doc Directory">Doc Directory</a>.
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixTutorial.png" name="optixTutorial image" target="_blank"><img src="data/doc/optixTutorial_thumb.png" class="itemMinspec" alt="optixTutorial image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="../doc/" name="Doc Directory">Doc Directory</a><br />
+            <a href="optixTutorial/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      
+      <!-- optixWhitted **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="optixWhitted"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">optixWhitted&nbsp;<a href="#optixWhitted"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Re-creation of Turner Whitted's classic ray-traced scene.
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/optixWhitted.png" name="optixWhitted image" target="_blank"><img src="data/doc/optixWhitted_thumb.png" class="itemMinspec" alt="optixWhitted image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="optixWhitted/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+
+      <!-- primeInstancing **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="primeInstancing"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">primeInstancing&nbsp;<a href="#primeInstancing"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            OptiX Prime instancing demonstration.
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/primeInstancing.png" name="primeInstancing image" target="_blank"><img src="data/doc/primeInstancing_thumb.png" class="itemMinspec" alt="primeInstancing image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="primeInstancing/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      <!-- primeMasking **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="primeMasking"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">primeMasking&nbsp;<a href="#primeMasking"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            OptiX Prime masking demonstration: how to control visibility at triangle granularity.
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/primeMasking.png" name="primeMasking image" target="_blank"><img src="data/doc/primeMasking_thumb.png" class="itemMinspec" alt="primeMasking image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="primeMasking/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+      <!-- primeMultiBuffering **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="primeMultiBuffering"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">primeMultiBuffering&nbsp;<a href="#primeMultiBuffering"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/> <span class="description"> Minimal demonstration of using multi-buffering with Optix Prime. Multi-buffering
+            serves two purposes:
+            <ol>
+               <li> Overlap CPU computation with operations on the GPU </li>
+               <li> Conserve page-locked host memory. Larger computations can be staged
+                  through a smaller amount page-locked memory </lit>
+            </ol>
+
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/primeMultiBuffering.png" name="primeMultiBuffering image" target="_blank"><img src="data/doc/primeMultiBuffering_thumb.png" class="itemMinspec" alt="primeMultiBuffering image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="primeMultiBuffering/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+
+      <!-- primeMultiGpu **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="primeMultiGpu"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">primeMultiGpu&nbsp;<a href="#primeMultiGpu"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Minimal demonstration of handling multiple GPUs by allocating an
+            OptiX Prime context for each.
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/primeMultiGpu.png" name="primeMultiGpu image" target="_blank"><img src="data/doc/primeMultiGpu_thumb.png" class="itemMinspec" alt="primeMultiGpu image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="primeMultiGpu/" name="path">Browse Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+
+      <!-- primeSimple **********************************************************-->
+      <tr>
+        <td colspan="3" class="separator"><a id="primeSimple"><hr /></a></td>
+      </tr>
+      <tr>
+        <td width="74%" rowspan ="1" align="left" valign="top" class="title">
+          <span class="itemName" name="path">primeSimple and primeSimplePP&nbsp;<a href="#primeSimple"><img src="data/doc/link.jpg" alt="For a direct link to this sample, right-click and copy the URL (shortcut) of this link icon." class="anchorImage" /></a></span><br/>
+          <br/>
+          <span class="description">
+            Minimal OptiX Prime demonstration using the C api (primeSimple.cpp) and C++ wrapper api (primeSimplePP.cpp).
+        </span></td>
+        <td rowspan ="1" width="6" align="left" valign="top" class="verticalBder">&nbsp;</td>
+        <td rowspan ="1" align="right" valign="top" class="itemMinspec"><a href="data/doc/primeSimple.png" name="primeSimple image" target="_blank"><img src="data/doc/primeSimple_thumb.png" class="itemMinspec" alt="primeSimple image" /></a>
+          <p><span class="links">
+            <br />
+            <a href="primeSimple/" name="path">Browse primeSimple Files </a><br />
+            <a href="primeSimplePP/" name="path">Browse primeSimplePP Files </a>
+          </span>
+          </p>
+        </td>
+      </tr>
+
+
+      <tr>
+        <td colspan="3" class="separator"><a id="dct8x8"><hr /></a></td>
+      </tr>
+
+    </table>
+  </div>
+  <div align="right" style=" color:#999999;">Last Update: 11/04/2018</div>
+</td>
+</tr>
+</table>
+</body>
+</html>

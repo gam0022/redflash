@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{76D4A8E9-35B5-3798-8EA2-B04462C28DAC}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/gam0022/Dropbox/redflash/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/gam0022/Dropbox/redflash -BC:/Users/gam0022/Dropbox/redflash/build --check-stamp-file C:/Users/gam0022/Dropbox/redflash/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/gam0022/Dropbox/redflash/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeSystemSpecificInitialize.cmake;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeCCompiler.cmake;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC.cmake;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCommonLanguageInclude.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\Macros.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\CompilerInfo.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\ConfigCompilerFlags.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\sse_support.h.in;C:\Users\gam0022\Dropbox\redflash\CMake\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageMessage.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\FindCUDA\select_compute_arch.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\FindOptiX.cmake;C:\Users\gam0022\Dropbox\redflash\sampleConfig.h.in;C:\Users\gam0022\Dropbox\redflash\CMake\FindSUtilGLUT.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageMessage.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\FindMDLWrapper.cmake;C:\Users\gam0022\Dropbox\redflash\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/gam0022/Dropbox/redflash/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/gam0022/Dropbox/redflash -BC:/Users/gam0022/Dropbox/redflash/build --check-stamp-file C:/Users/gam0022/Dropbox/redflash/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/gam0022/Dropbox/redflash/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeSystemSpecificInitialize.cmake;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeCCompiler.cmake;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC.cmake;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCommonLanguageInclude.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\Macros.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\CompilerInfo.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\ConfigCompilerFlags.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\sse_support.h.in;C:\Users\gam0022\Dropbox\redflash\CMake\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageMessage.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\FindCUDA\select_compute_arch.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\FindOptiX.cmake;C:\Users\gam0022\Dropbox\redflash\sampleConfig.h.in;C:\Users\gam0022\Dropbox\redflash\CMake\FindSUtilGLUT.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageMessage.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\FindMDLWrapper.cmake;C:\Users\gam0022\Dropbox\redflash\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/gam0022/Dropbox/redflash/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/gam0022/Dropbox/redflash -BC:/Users/gam0022/Dropbox/redflash/build --check-stamp-file C:/Users/gam0022/Dropbox/redflash/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/gam0022/Dropbox/redflash/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeSystemSpecificInitialize.cmake;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeCCompiler.cmake;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC.cmake;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCommonLanguageInclude.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\Macros.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\CompilerInfo.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\ConfigCompilerFlags.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\sse_support.h.in;C:\Users\gam0022\Dropbox\redflash\CMake\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageMessage.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\FindCUDA\select_compute_arch.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\FindOptiX.cmake;C:\Users\gam0022\Dropbox\redflash\sampleConfig.h.in;C:\Users\gam0022\Dropbox\redflash\CMake\FindSUtilGLUT.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageMessage.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\FindMDLWrapper.cmake;C:\Users\gam0022\Dropbox\redflash\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/gam0022/Dropbox/redflash/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/gam0022/Dropbox/redflash -BC:/Users/gam0022/Dropbox/redflash/build --check-stamp-file C:/Users/gam0022/Dropbox/redflash/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/gam0022/Dropbox/redflash/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeSystemSpecificInitialize.cmake;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeCCompiler.cmake;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC.cmake;C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\3.8.2\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\CMakeCommonLanguageInclude.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\Macros.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\CompilerInfo.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\ConfigCompilerFlags.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\sse_support.h.in;C:\Users\gam0022\Dropbox\redflash\CMake\FindCUDA.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageMessage.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\FindCUDA\select_compute_arch.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\FindOptiX.cmake;C:\Users\gam0022\Dropbox\redflash\sampleConfig.h.in;C:\Users\gam0022\Dropbox\redflash\CMake\FindSUtilGLUT.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindOpenGL.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.8\Modules\FindPackageMessage.cmake;C:\Users\gam0022\Dropbox\redflash\CMake\FindMDLWrapper.cmake;C:\Users\gam0022\Dropbox\redflash\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\gam0022\Dropbox\redflash\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\ZERO_CHECK.vcxproj">
+      <Project>{55DE6A30-0C48-30F8-BF3E-8219D2DACB86}</Project>
+      <Name>ZERO_CHECK</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixBuffersOfBuffers\optixBuffersOfBuffers.vcxproj">
+      <Project>{B7FAB9E6-846A-387B-98B6-B43E2546D98B}</Project>
+      <Name>optixBuffersOfBuffers</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixCallablePrograms\optixCallablePrograms.vcxproj">
+      <Project>{A2CAEE44-92E0-3434-B24F-1CF817CFB3EA}</Project>
+      <Name>optixCallablePrograms</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixCompressedTexture\optixCompressedTexture.vcxproj">
+      <Project>{AE1CB039-8B4B-33AC-9315-0B8B75F29737}</Project>
+      <Name>optixCompressedTexture</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixConsole\optixConsole.vcxproj">
+      <Project>{B09D3A33-C31E-31E8-A15F-E6BC377C4D21}</Project>
+      <Name>optixConsole</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixDenoiser\optixDenoiser.vcxproj">
+      <Project>{8C32B110-397C-38EA-8AF3-2E0AE925FC03}</Project>
+      <Name>optixDenoiser</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixDeviceQuery\optixDeviceQuery.vcxproj">
+      <Project>{8D82A4E4-B750-3489-91ED-FBBE135E9BF1}</Project>
+      <Name>optixDeviceQuery</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixDynamicGeometry\optixDynamicGeometry.vcxproj">
+      <Project>{F2AD0C0E-7C4C-3B60-B85C-B5DAA5950898}</Project>
+      <Name>optixDynamicGeometry</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixGeometryTriangles\optixGeometryTriangles.vcxproj">
+      <Project>{7D91FBD6-8A42-3935-9370-41A0310C5FC7}</Project>
+      <Name>optixGeometryTriangles</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixHello\optixHello.vcxproj">
+      <Project>{2918A049-3E6D-30C2-90C5-66D5D3C07122}</Project>
+      <Name>optixHello</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixInstancing\optixInstancing.vcxproj">
+      <Project>{1F20A552-8D33-3F4F-B697-9D3026016307}</Project>
+      <Name>optixInstancing</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixMDLDisplacement\optixMDLDisplacement.vcxproj">
+      <Project>{2E0886AE-DFCE-3440-A0D4-82CA40272EC1}</Project>
+      <Name>optixMDLDisplacement</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixMDLExpressions\optixMDLExpressions.vcxproj">
+      <Project>{F66535A1-6EA8-348B-AC81-DC67798C5E9C}</Project>
+      <Name>optixMDLExpressions</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixMDLSphere\optixMDLSphere.vcxproj">
+      <Project>{9E7C7299-C145-3DF6-BB77-ADFA6DDAEDBA}</Project>
+      <Name>optixMDLSphere</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixMeshViewer\optixMeshViewer.vcxproj">
+      <Project>{8BC83569-EBA0-3D99-8870-853270E9FAF3}</Project>
+      <Name>optixMeshViewer</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixMotionBlur\optixMotionBlur.vcxproj">
+      <Project>{C3270B8D-2068-327A-9820-CC3D96B46EE8}</Project>
+      <Name>optixMotionBlur</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixParticles\optixParticles.vcxproj">
+      <Project>{BE13042B-3837-340F-BBCF-9CFD1E24BF41}</Project>
+      <Name>optixParticles</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixPathTracer\optixPathTracer.vcxproj">
+      <Project>{F4B9C77B-E448-36A2-ADF3-F98D34451922}</Project>
+      <Name>optixPathTracer</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixPrimitiveIndexOffsets\optixPrimitiveIndexOffsets.vcxproj">
+      <Project>{7A03A2AE-51DF-382B-9862-5E62455609F7}</Project>
+      <Name>optixPrimitiveIndexOffsets</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixRaycasting\optixRaycasting.vcxproj">
+      <Project>{996B2FBA-8F9C-38D5-8F25-8D96C8605DDB}</Project>
+      <Name>optixRaycasting</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixRaymarching\optixRaymarching.vcxproj">
+      <Project>{2F1A6698-F4A4-3577-8A9D-EC0ED5A084A4}</Project>
+      <Name>optixRaymarching</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\optixSSIMPredictor.vcxproj">
+      <Project>{EDCFB3D0-8330-3361-B5B1-795810F1AD6C}</Project>
+      <Name>optixSSIMPredictor</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixSelector\optixSelector.vcxproj">
+      <Project>{06BCB13E-BA9A-3ECF-8145-C140E3FA1EF2}</Project>
+      <Name>optixSelector</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixSphere\optixSphere.vcxproj">
+      <Project>{E2E164C9-43D5-31B7-A7E3-E2DA38BD866A}</Project>
+      <Name>optixSphere</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixSpherePP\optixSpherePP.vcxproj">
+      <Project>{FB0042B6-AFAF-3433-889D-53061E0624E2}</Project>
+      <Name>optixSpherePP</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixTextureSampler\optixTextureSampler.vcxproj">
+      <Project>{3A7BB1BB-9F5C-38E3-97D7-A54B6791D462}</Project>
+      <Name>optixTextureSampler</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixTutorial\optixTutorial.vcxproj">
+      <Project>{A23199A7-345C-3ED3-8BF4-749CCC2BB31B}</Project>
+      <Name>optixTutorial</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixWhitted\optixWhitted.vcxproj">
+      <Project>{1AFB739E-F864-32C9-813C-468DAE391F54}</Project>
+      <Name>optixWhitted</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\primeInstancing\primeInstancing.vcxproj">
+      <Project>{A5F49124-A741-3166-9C32-B9A8C500BFBE}</Project>
+      <Name>primeInstancing</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\primeMasking\primeMasking.vcxproj">
+      <Project>{CEB015EF-8B34-3FEA-B36E-B669192AD3AF}</Project>
+      <Name>primeMasking</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\primeMultiBuffering\primeMultiBuffering.vcxproj">
+      <Project>{00B54133-F30E-3229-BDFC-DA01D0F24141}</Project>
+      <Name>primeMultiBuffering</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\primeMultiGpu\primeMultiGpu.vcxproj">
+      <Project>{82664266-AD6B-303A-9435-CB30A78576ED}</Project>
+      <Name>primeMultiGpu</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\primeSimple\primeSimple.vcxproj">
+      <Project>{5B2C101B-DA73-3EAE-9388-7D9C08072D95}</Project>
+      <Name>primeSimple</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\primeSimplePP\primeSimplePP.vcxproj">
+      <Project>{0B02A415-C49E-326A-B3B2-5264AAB9D40B}</Project>
+      <Name>primeSimplePP</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\sutil\sutil_sdk.vcxproj">
+      <Project>{AAEE7076-7F0B-350D-AB74-AC1DC193B705}</Project>
+      <Name>sutil_sdk</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
