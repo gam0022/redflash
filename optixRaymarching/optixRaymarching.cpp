@@ -364,7 +364,7 @@ void loadGeometry()
     // Raymarcing
     gis.push_back(createRaymrachingObject(
         make_float3(278.0f, 103.333f, 278.0f),
-        make_float3(100.0f, 100.0f, 100.0f)));
+        make_float3(103.333f, 103.333f, 103.333f)));
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
     // Create shadow group (no light)

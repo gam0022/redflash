@@ -396,7 +396,7 @@ RT_PROGRAM void intersect(int primIdx)
     float t = 0.0, d = 1e100;
     float3 p = ray.origin;
 
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < 100; i++)
     {
         d = map(p);
         t += d;
@@ -407,7 +407,7 @@ RT_PROGRAM void intersect(int primIdx)
         }
     }
 
-    if (abs(d) < EPS && rtPotentialIntersection(t))
+    if (abs(d) < EPS && rtPotentialIntersection(t - 10.0 * EPS))
     {
         shading_normal = geometric_normal = calcNormal(p, map);
         texcoord = make_float3(p.x, p.y, 0);
