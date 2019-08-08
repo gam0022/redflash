@@ -234,7 +234,7 @@ void createContext()
 
     const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
     texture_path = std::string(sutil::samplesDir()) + "/data";
-    const std::string texpath = texture_path + "/" + std::string("CedarCity.hdr");
+    const std::string texpath = texture_path + "/" + std::string("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
     context["envmap"]->setTextureSampler(sutil::loadTexture(context, texpath, default_color));
 }
 
