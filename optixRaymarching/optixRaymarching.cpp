@@ -92,6 +92,9 @@ sutil::Arcball arcball;
 int2           mouse_prev_pos;
 int            mouse_button;
 
+// assets
+std::string  texture_path;
+
 
 //------------------------------------------------------------------------------
 //
@@ -223,11 +226,16 @@ void createContext()
     const char *ptx = sutil::getPtxString( SAMPLE_NAME, "optixRaymarching.cu" );
     context->setRayGenerationProgram( 0, context->createProgramFromPTXString( ptx, "pathtrace_camera" ) );
     context->setExceptionProgram( 0, context->createProgramFromPTXString( ptx, "exception" ) );
-    context->setMissProgram( 0, context->createProgramFromPTXString( ptx, "miss" ) );
+    context->setMissProgram( 0, context->createProgramFromPTXString( ptx, "envmap_miss" ) );
 
     context[ "sqrt_num_samples" ]->setUint( sqrt_num_samples );
     context[ "bad_color"        ]->setFloat( 1000000.0f, 0.0f, 1000000.0f ); // Super magenta to make sure it doesn't get averaged out in the progressive rendering.
     context[ "bg_color"         ]->setFloat( make_float3(0.0f) );
+
+    const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
+    texture_path = std::string(sutil::samplesDir()) + "/data";
+    const std::string texpath = texture_path + "/" + std::string("CedarCity.hdr");
+    context["envmap"]->setTextureSampler(sutil::loadTexture(context, texpath, default_color));
 }
 
 
@@ -286,7 +294,7 @@ void loadGeometry()
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
     // Ceiling
-    gis.push_back( createParallelogram( make_float3( 0.0f, 548.8f, 0.0f ),
+    /*gis.push_back( createParallelogram( make_float3( 0.0f, 548.8f, 0.0f ),
                                         make_float3( 556.0f, 0.0f, 0.0f ),
                                         make_float3( 0.0f, 0.0f, 559.2f ) ) );
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
@@ -307,7 +315,7 @@ void loadGeometry()
     gis.push_back( createParallelogram( make_float3( 556.0f, 0.0f, 0.0f ),
                                         make_float3( 0.0f, 0.0f, 559.2f ),
                                         make_float3( 0.0f, 548.8f, 0.0f ) ) );
-    setMaterial(gis.back(), diffuse, "diffuse_color", red);
+    setMaterial(gis.back(), diffuse, "diffuse_color", red);*/
 
     // Short block
     /*gis.push_back( createParallelogram( make_float3( 130.0f, 165.0f, 65.0f),
@@ -365,10 +373,10 @@ void loadGeometry()
     context["top_shadower"]->set( shadow_group );
 
     // Light
-    gis.push_back( createParallelogram( make_float3( 343.0f, 548.6f, 227.0f),
+    /*gis.push_back( createParallelogram( make_float3( 343.0f, 548.6f, 227.0f),
                                         make_float3( -130.0f, 0.0f, 0.0f),
                                         make_float3( 0.0f, 0.0f, 105.0f) ) );
-    setMaterial(gis.back(), diffuse_light, "emission_color", light_em);
+    setMaterial(gis.back(), diffuse_light, "emission_color", light_em);*/
 
     // Create geometry group
     GeometryGroup geometry_group = context->createGeometryGroup(gis.begin(), gis.end());
