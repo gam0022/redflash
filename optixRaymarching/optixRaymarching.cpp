@@ -387,8 +387,8 @@ void loadGeometry()
   
 void setupCamera()
 {
-    camera_eye    = make_float3( 278.0f, 273.0f, -900.0f );
-    camera_lookat = make_float3( 278.0f, 273.0f,    0.0f );
+    camera_eye    = make_float3( 278.0f, 273.0f, -400.0f );
+    camera_lookat = make_float3( 278.0f, 103.333f, 278.0f );
     camera_up     = make_float3(   0.0f,   1.0f,    0.0f );
 
     camera_rotate  = Matrix4x4::identity();
