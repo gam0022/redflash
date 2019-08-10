@@ -88,6 +88,9 @@ Matrix4x4      camera_rotate;
 bool           camera_changed = true;
 sutil::Arcball arcball;
 
+Matrix4x4 frame;
+Matrix4x4 frame_inv;
+
 // Mouse state
 int2           mouse_prev_pos;
 int            mouse_button;
@@ -318,7 +321,7 @@ void loadGeometry()
     setMaterial(gis.back(), diffuse, "diffuse_color", red);*/
 
     // Short block
-    /*gis.push_back( createParallelogram( make_float3( 130.0f, 165.0f, 65.0f),
+    gis.push_back( createParallelogram( make_float3( 130.0f, 165.0f, 65.0f),
                                         make_float3( -48.0f, 0.0f, 160.0f),
                                         make_float3( 160.0f, 0.0f, 49.0f) ) );
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
@@ -359,13 +362,13 @@ void loadGeometry()
     gis.push_back( createParallelogram( make_float3( 265.0f, 0.0f, 296.0f),
                                         make_float3( 0.0f, 330.0f, 0.0f),
                                         make_float3( 158.0f, 0.0f, -49.0f) ) );
-    setMaterial(gis.back(), diffuse, "diffuse_color", white);*/
+    setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
     // Raymarcing
-    gis.push_back(createRaymrachingObject(
+    /*gis.push_back(createRaymrachingObject(
         make_float3(278.0f, 103.333f, 278.0f),
         make_float3(103.333f, 103.333f, 103.333f)));
-    setMaterial(gis.back(), diffuse, "diffuse_color", white);
+    setMaterial(gis.back(), diffuse, "diffuse_color", white);*/
 
     // Create shadow group (no light)
     GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
@@ -405,18 +408,18 @@ void updateCamera()
             camera_eye, camera_lookat, camera_up, fov, aspect_ratio,
             camera_u, camera_v, camera_w, /*fov_is_vertical*/ true );
 
-    const Matrix4x4 frame = Matrix4x4::fromBasis( 
+    frame = Matrix4x4::fromBasis(
             normalize( camera_u ),
             normalize( camera_v ),
             normalize( -camera_w ),
             camera_lookat);
-    const Matrix4x4 frame_inv = frame.inverse();
+    frame_inv = frame.inverse();
     // Apply camera rotation twice to match old SDK behavior
     const Matrix4x4 trans     = frame*camera_rotate*camera_rotate*frame_inv; 
 
     camera_eye    = make_float3( trans*make_float4( camera_eye,    1.0f ) );
     camera_lookat = make_float3( trans*make_float4( camera_lookat, 1.0f ) );
-    camera_up     = make_float3( trans*make_float4( camera_up,     0.0f ) );
+    // camera_up     = make_float3( trans*make_float4( camera_up,     0.0f ) );
 
     sutil::calculateCameraVariables(
             camera_eye, camera_lookat, camera_up, fov, aspect_ratio,
@@ -559,6 +562,20 @@ void glutMouseMotion( int x, int y)
         const float2 b = { to.x   / width, to.y   / height };
 
         camera_rotate = arcball.rotate( b, a );
+        camera_changed = true;
+    }
+    else if (mouse_button == GLUT_MIDDLE_BUTTON)
+    {
+        const float dx = static_cast<float>(x - mouse_prev_pos.x) /
+            static_cast<float>(width);
+        const float dy = static_cast<float>(y - mouse_prev_pos.y) /
+            static_cast<float>(height);
+        float4 offset = { -dx, dy, 0, 0 };
+        offset = frame * offset;
+        float3 offset_v3 = { offset.x, offset.y, offset.z };
+        offset_v3 *= 1000;
+        camera_eye += offset_v3;
+        camera_lookat += offset_v3;
         camera_changed = true;
     }
 
