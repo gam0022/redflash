@@ -321,7 +321,7 @@ void loadGeometry()
     setMaterial(gis.back(), diffuse, "diffuse_color", red);*/
 
     // Short block
-    gis.push_back( createParallelogram( make_float3( 130.0f, 165.0f, 65.0f),
+    /*gis.push_back( createParallelogram( make_float3( 130.0f, 165.0f, 65.0f),
                                         make_float3( -48.0f, 0.0f, 160.0f),
                                         make_float3( 160.0f, 0.0f, 49.0f) ) );
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
@@ -362,13 +362,13 @@ void loadGeometry()
     gis.push_back( createParallelogram( make_float3( 265.0f, 0.0f, 296.0f),
                                         make_float3( 0.0f, 330.0f, 0.0f),
                                         make_float3( 158.0f, 0.0f, -49.0f) ) );
-    setMaterial(gis.back(), diffuse, "diffuse_color", white);
+    setMaterial(gis.back(), diffuse, "diffuse_color", white);*/
 
     // Raymarcing
-    /*gis.push_back(createRaymrachingObject(
+    gis.push_back(createRaymrachingObject(
         make_float3(278.0f, 103.333f, 278.0f),
         make_float3(103.333f, 103.333f, 103.333f)));
-    setMaterial(gis.back(), diffuse, "diffuse_color", white);*/
+    setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
     // Create shadow group (no light)
     GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());

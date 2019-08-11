@@ -116,7 +116,7 @@ RT_PROGRAM void pathtrace_camera()
         // return new segments to be traced here.
         for(;;)
         {
-            Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, scene_epsilon, RT_DEFAULT_MAX);
+            Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, scene_epsilon * 10.0, RT_DEFAULT_MAX);
             rtTrace(top_object, ray, prd);
 
             if(prd.done)
@@ -199,7 +199,7 @@ RT_PROGRAM void diffuse()
     float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
     float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
 
-    float3 hitpoint = ray.origin + t_hit * ray.direction;
+    float3 hitpoint = ray.origin + t_hit * ray.direction + ffnormal * scene_epsilon * 10.0;
 
     //
     // Generate a reflection ray.  This will be traced back in ray-gen.
@@ -374,25 +374,24 @@ float map(float3 p)
     return dMenger((p - center) / scale, make_float3(1, 1, 1), 3.1) * scale;
 }
 
-const float EPS_N = 1e-4;
-#define calcNormal(p, dFunc) normalize(\
-    make_float3( EPS_N, -EPS_N, -EPS_N) * dFunc(p + make_float3( EPS_N, -EPS_N, -EPS_N)) + \
-    make_float3(-EPS_N, -EPS_N,  EPS_N) * dFunc(p + make_float3(-EPS_N, -EPS_N,  EPS_N)) + \
-    make_float3(-EPS_N,  EPS_N, -EPS_N) * dFunc(p + make_float3(-EPS_N,  EPS_N, -EPS_N)) + \
-    make_float3( EPS_N,  EPS_N,  EPS_N) * dFunc(p + make_float3( EPS_N,  EPS_N,  EPS_N)))
+#define calcNormal(p, dFunc, eps) normalize(\
+    make_float3( eps, -eps, -eps) * dFunc(p + make_float3( eps, -eps, -eps)) + \
+    make_float3(-eps, -eps,  eps) * dFunc(p + make_float3(-eps, -eps,  eps)) + \
+    make_float3(-eps,  eps, -eps) * dFunc(p + make_float3(-eps,  eps, -eps)) + \
+    make_float3( eps,  eps,  eps) * dFunc(p + make_float3( eps,  eps,  eps)))
 
-float3 calcNormalBasic(float3 p)
+float3 calcNormalBasic(float3 p, float eps)
 {
     return normalize(make_float3(
-        map(p + make_float3(EPS_N, 0.0, 0.0)) - map(p + make_float3(-EPS_N, 0.0, 0.0)),
-        map(p + make_float3(0.0, EPS_N, 0.0)) - map(p + make_float3(0.0, -EPS_N, 0.0)),
-        map(p + make_float3(0.0, 0.0, EPS_N)) - map(p + make_float3(0.0, 0.0, -EPS_N))
+        map(p + make_float3(eps, 0.0, 0.0)) - map(p + make_float3(-eps, 0.0, 0.0)),
+        map(p + make_float3(0.0, eps, 0.0)) - map(p + make_float3(0.0, -eps, 0.0)),
+        map(p + make_float3(0.0, 0.0, eps)) - map(p + make_float3(0.0, 0.0, -eps))
     ));
 }
 
 RT_PROGRAM void intersect(int primIdx)
 {
-    const float EPS = 1e-4;
+    const float EPS = scene_epsilon;
     float t = 0.0, d = 1e100;
     float3 p = ray.origin;
 
@@ -407,9 +406,9 @@ RT_PROGRAM void intersect(int primIdx)
         }
     }
 
-    if (abs(d) < EPS && rtPotentialIntersection(t - 10.0 * EPS))
+    if (abs(d) < EPS && rtPotentialIntersection(t))
     {
-        shading_normal = geometric_normal = calcNormal(p, map);
+        shading_normal = geometric_normal = calcNormal(p, map, scene_epsilon * 0.1);
         texcoord = make_float3(p.x, p.y, 0);
         lgt_idx = lgt_instance;
         rtReportIntersection(0);
