@@ -368,7 +368,7 @@ float map(float3 p)
 {
     //return length(p - center) - 100.0;
 
-    float scale = 100;
+    float scale = 100 * 0.25;
     // f((p - position) / scale) * scale;
     // return dMenger((p - center) / scale, make_float3(1.23, 1.65, 1.45), 2.56) * scale;
     return dMenger((p - center) / scale, make_float3(1, 1, 1), 3.1) * scale;
