@@ -732,11 +732,13 @@ int main( int argc, char** argv )
 
     try
     {
-        glutInitialize( &argc, argv );
+        if ( use_pbo && out_file.empty() ) {
+            glutInitialize(&argc, argv);
 
 #ifndef __APPLE__
-        glewInit();
+            glewInit();
 #endif
+        }
 
         createContext();
         setupCamera();
