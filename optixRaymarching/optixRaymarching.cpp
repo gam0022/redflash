@@ -50,6 +50,7 @@
 #include "optixRaymarching.h"
 #include <sutil.h>
 #include <Arcball.h>
+#include <OptiXMesh.h>
 
 #include <algorithm>
 #include <cstring>
@@ -210,6 +211,23 @@ GeometryInstance createRaymrachingObject(
     return gi;
 }
 
+GeometryInstance createMesh(
+    const std::string& filename,
+    Material material,
+    Program closest_hit,
+    Program any_hit)
+{
+    OptiXMesh mesh;
+    mesh.context = context;
+    mesh.use_tri_api = true;
+    mesh.ignore_mats = false;
+    mesh.material = material;
+    mesh.closest_hit = closest_hit;
+    mesh.any_hit = any_hit;
+    Matrix4x4 mat = Matrix4x4::translate(make_float3(278.0f, 0.0f, 278.0f)) * Matrix4x4::scale(make_float3(3000.0f));
+    loadMesh(filename, mesh, mat);
+    return mesh.geom_instance;
+}
 
 void createContext()
 {
@@ -241,26 +259,31 @@ void createContext()
     context["envmap"]->setTextureSampler(sutil::loadTexture(context, texpath, default_color));
 }
 
-
-void loadGeometry()
+GeometryGroup createGeometryTriangles()
 {
-    // Light buffer
-    ParallelogramLight light;
-    light.corner   = make_float3( 343.0f, 548.6f, 227.0f);
-    light.v1       = make_float3( -130.0f, 0.0f, 0.0f);
-    light.v2       = make_float3( 0.0f, 0.0f, 105.0f);
-    light.normal   = normalize( cross(light.v1, light.v2) );
-    light.emission = make_float3( 15.0f, 15.0f, 5.0f );
+    // Set up material
+    Material diffuse = context->createMaterial();
+    const char *ptx = sutil::getPtxString(SAMPLE_NAME, "optixRaymarching.cu");
+    Program diffuse_ch = context->createProgramFromPTXString(ptx, "diffuse");
+    Program diffuse_ah = context->createProgramFromPTXString(ptx, "shadow");
+    diffuse->setClosestHitProgram(0, diffuse_ch);
+    diffuse->setAnyHitProgram(1, diffuse_ah);
 
-    Buffer light_buffer = context->createBuffer( RT_BUFFER_INPUT );
-    light_buffer->setFormat( RT_FORMAT_USER );
-    light_buffer->setElementSize( sizeof( ParallelogramLight ) );
-    light_buffer->setSize( 1u );
-    memcpy( light_buffer->map(), &light, sizeof( light ) );
-    light_buffer->unmap();
-    context["lights"]->setBuffer( light_buffer );
+    std::vector<GeometryInstance> gis;
+    const float3 white = make_float3(0.8f, 0.8f, 0.8f);
 
+    // Mesh
+    std::string mesh_file = std::string(sutil::samplesDir()) + "/data/cow.obj";
+    gis.push_back(createMesh(mesh_file, diffuse, diffuse_ch, diffuse_ah));
+    gis.back()["diffuse_color"]->setFloat(white);
 
+    GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
+    shadow_group->setAcceleration(context->createAcceleration("Trbvh"));
+    return shadow_group;
+}
+
+GeometryGroup createGeometry()
+{
     // Set up material
     Material diffuse = context->createMaterial();
     const char *ptx = sutil::getPtxString( SAMPLE_NAME, "optixRaymarching.cu" );
@@ -268,10 +291,6 @@ void loadGeometry()
     Program diffuse_ah = context->createProgramFromPTXString( ptx, "shadow" );
     diffuse->setClosestHitProgram( 0, diffuse_ch );
     diffuse->setAnyHitProgram( 1, diffuse_ah );
-
-    Material diffuse_light = context->createMaterial();
-    Program diffuse_em = context->createProgramFromPTXString( ptx, "diffuseEmitter" );
-    diffuse_light->setClosestHitProgram( 0, diffuse_em );
 
     // Set up Raymarching programs
     pgram_raymarching_bounding_box = context->createProgramFromPTXString(ptx, "bounds");
@@ -288,7 +307,6 @@ void loadGeometry()
     const float3 white = make_float3( 0.8f, 0.8f, 0.8f );
     const float3 green = make_float3( 0.05f, 0.8f, 0.05f );
     const float3 red   = make_float3( 0.8f, 0.05f, 0.05f );
-    const float3 light_em = make_float3( 15.0f, 15.0f, 5.0f );
 
     // Floor
     gis.push_back( createParallelogram( make_float3( 0.0f, 0.0f, 0.0f ),
@@ -365,29 +383,86 @@ void loadGeometry()
     setMaterial(gis.back(), diffuse, "diffuse_color", white);*/
 
     // Raymarcing
-    gis.push_back(createRaymrachingObject(
+    /*gis.push_back(createRaymrachingObject(
         make_float3(278.0f, 103.333f, 278.0f),
         make_float3(103.333f, 103.333f, 103.333f)));
+    setMaterial(gis.back(), diffuse, "diffuse_color", white);*/
+
+    // Raymarcing Mini
+    float scale = 0.25f;
+    gis.push_back(createRaymrachingObject(
+        make_float3(278.0f* 1.5f, 103.333f * scale, 278.0f * 1.5f),
+        make_float3(103.333f * scale, 103.333f * scale, 103.333f * scale)));
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
+
 
     // Create shadow group (no light)
     GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
     shadow_group->setAcceleration( context->createAcceleration( "Trbvh" ) );
-    context["top_shadower"]->set( shadow_group );
+    return shadow_group;
+}
+
+GeometryGroup createGeometryLight()
+{
+    // Light buffer
+    ParallelogramLight light;
+    light.corner = make_float3(343.0f, 548.6f, 227.0f);
+    light.v1 = make_float3(-130.0f, 0.0f, 0.0f);
+    light.v2 = make_float3(0.0f, 0.0f, 105.0f);
+    light.normal = normalize(cross(light.v1, light.v2));
+    light.emission = make_float3(15.0f, 15.0f, 5.0f);
+
+    Buffer light_buffer = context->createBuffer(RT_BUFFER_INPUT);
+    light_buffer->setFormat(RT_FORMAT_USER);
+    light_buffer->setElementSize(sizeof(ParallelogramLight));
+    light_buffer->setSize(1u);
+    memcpy(light_buffer->map(), &light, sizeof(light));
+    light_buffer->unmap();
+    context["lights"]->setBuffer(light_buffer);
+
+    // Set up material
+    const char *ptx = sutil::getPtxString(SAMPLE_NAME, "optixRaymarching.cu");
+    Material diffuse_light = context->createMaterial();
+    Program diffuse_em = context->createProgramFromPTXString(ptx, "diffuseEmitter");
+    diffuse_light->setClosestHitProgram(0, diffuse_em);
 
     // Light
-    gis.push_back( createParallelogram( make_float3( 343.0f, 548.6f, 227.0f),
-                                        make_float3( -130.0f, 0.0f, 0.0f),
-                                        make_float3( 0.0f, 0.0f, 105.0f) ) );
+    const float3 light_em = make_float3(15.0f, 15.0f, 5.0f);
+    std::vector<GeometryInstance> gis;
+    gis.push_back(createParallelogram(make_float3(343.0f, 548.6f, 227.0f),
+        make_float3(-130.0f, 0.0f, 0.0f),
+        make_float3(0.0f, 0.0f, 105.0f)));
     setMaterial(gis.back(), diffuse_light, "emission_color", light_em);
 
     // Create geometry group
-    GeometryGroup geometry_group = context->createGeometryGroup(gis.begin(), gis.end());
-    geometry_group->setAcceleration( context->createAcceleration( "Trbvh" ) );
-    context["top_object"]->set( geometry_group );
+    GeometryGroup light_group = context->createGeometryGroup(gis.begin(), gis.end());
+    light_group->setAcceleration(context->createAcceleration("Trbvh"));
+    return light_group;
 }
 
-  
+void setupScene()
+{
+    // Create a GeometryGroup for the GeometryTriangles instances and a separate
+    // GeometryGroup for all other primitives.
+    GeometryGroup tri_gg = createGeometryTriangles();
+    GeometryGroup gg = createGeometry();
+    GeometryGroup light_gg = createGeometryLight();
+
+    // Create a top-level Group to contain the two GeometryGroups.
+    Group top_group = context->createGroup();
+    top_group->setAcceleration(context->createAcceleration("Trbvh"));
+    top_group->addChild(gg);
+    top_group->addChild(tri_gg);
+    context["top_shadower"]->set(top_group);
+
+    Group top_group_light = context->createGroup();
+    top_group_light->setAcceleration(context->createAcceleration("Trbvh"));
+    top_group_light->addChild(gg);
+    top_group_light->addChild(tri_gg);
+    top_group_light->addChild(light_gg);
+    context["top_object"]->set(top_group_light);
+}
+
 void setupCamera()
 {
     camera_eye    = make_float3( 278.0f, 273.0f, -400.0f );
@@ -657,15 +732,17 @@ int main( int argc, char** argv )
 
     try
     {
-        glutInitialize( &argc, argv );
+        if ( use_pbo && out_file.empty() ) {
+            glutInitialize(&argc, argv);
 
 #ifndef __APPLE__
-        glewInit();
+            glewInit();
 #endif
+        }
 
         createContext();
         setupCamera();
-        loadGeometry();
+        setupScene();
 
         context->validate();
 
