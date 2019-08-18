@@ -465,9 +465,15 @@ void setupScene()
 
 void setupCamera()
 {
+    camera_up = make_float3(0.0f, 1.0f, 0.0f);
+
+    // default
     camera_eye    = make_float3( 278.0f, 273.0f, -400.0f );
     camera_lookat = make_float3( 278.0f, 103.333f, 278.0f );
-    camera_up     = make_float3(   0.0f,   1.0f,    0.0f );
+
+    // look at raymarching
+    camera_eye = make_float3(418.47f, 73.97f, 415.23f);
+    camera_lookat = make_float3(419.18f, -2.79f, 414.33f);
 
     camera_rotate  = Matrix4x4::identity();
 }
