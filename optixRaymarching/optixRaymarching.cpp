@@ -573,6 +573,18 @@ void glutDisplay()
       sutil::displayFps( frame_count++ );
     }
 
+    {
+        static char camera_eye_text[32];
+        sprintf(camera_eye_text, "camera_eye:    %7.2f, %7.2f, %7.2f", camera_eye.x, camera_eye.y, camera_eye.z);
+        sutil::displayText(camera_eye_text, 10, 60);
+    }
+
+    {
+        static char camera_lookat_text[32];
+        sprintf(camera_lookat_text, "camera_lookat: %7.2f, %7.2f, %7.2f", camera_lookat.x, camera_lookat.y, camera_lookat.z);
+        sutil::displayText(camera_lookat_text, 10, 40);
+    }
+
     glutSwapBuffers();
 }
 
