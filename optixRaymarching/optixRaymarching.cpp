@@ -56,6 +56,9 @@
 #include <cstring>
 #include <iostream>
 #include <stdint.h>
+#include <filesystem>
+
+namespace fs = std::experimental::filesystem;
 
 using namespace optix;
 
@@ -96,9 +99,6 @@ Matrix4x4 frame_inv;
 int2           mouse_prev_pos;
 int            mouse_button;
 
-// assets
-std::string  texture_path;
-
 
 //------------------------------------------------------------------------------
 //
@@ -128,6 +128,31 @@ void glutResize( int w, int h );
 //  Helper functions
 //
 //------------------------------------------------------------------------------
+
+std::string resolveDataPath(const char* filename)
+{
+    std::vector<std::string> source_locations;
+
+    std::string base_dir = std::string(sutil::samplesDir());
+
+    // Potential source locations (in priority order)
+    source_locations.push_back(fs::current_path().string() + "/" + filename);
+    source_locations.push_back(fs::current_path().string() + "/data/" + filename);
+    source_locations.push_back(base_dir + "/data/" + filename);
+
+    for (std::vector<std::string>::const_iterator it = source_locations.begin(); it != source_locations.end(); ++it) {
+        std::cout << "[info] resolvePath source_location: " + *it << std::endl;
+
+        // Try to get source code from file
+        if (fs::exists(*it))
+        {
+            return *it;
+        }
+    }
+
+    // Wasn't able to find or open the requested file
+    throw Exception("Couldn't open source file " + std::string(filename));
+}
 
 Buffer getOutputBuffer()
 {
@@ -254,8 +279,7 @@ void createContext()
     context[ "bg_color"         ]->setFloat( make_float3(0.0f) );
 
     const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
-    texture_path = std::string(sutil::samplesDir()) + "/data";
-    const std::string texpath = texture_path + "/" + std::string("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
+    const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
     context["envmap"]->setTextureSampler(sutil::loadTexture(context, texpath, default_color));
 }
 
@@ -273,7 +297,7 @@ GeometryGroup createGeometryTriangles()
     const float3 white = make_float3(0.8f, 0.8f, 0.8f);
 
     // Mesh
-    std::string mesh_file = std::string(sutil::samplesDir()) + "/data/cow.obj";
+    std::string mesh_file = resolveDataPath("cow.obj");
     gis.push_back(createMesh(mesh_file, diffuse, diffuse_ch, diffuse_ah));
     gis.back()["diffuse_color"]->setFloat(white);
 
