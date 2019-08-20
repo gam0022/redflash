@@ -465,9 +465,15 @@ void setupScene()
 
 void setupCamera()
 {
+    camera_up = make_float3(0.0f, 1.0f, 0.0f);
+
+    // default
     camera_eye    = make_float3( 278.0f, 273.0f, -400.0f );
     camera_lookat = make_float3( 278.0f, 103.333f, 278.0f );
-    camera_up     = make_float3(   0.0f,   1.0f,    0.0f );
+
+    // look at raymarching
+    camera_eye = make_float3(418.47f, 73.97f, 415.23f);
+    camera_lookat = make_float3(419.18f, -2.79f, 414.33f);
 
     camera_rotate  = Matrix4x4::identity();
 }
@@ -571,6 +577,18 @@ void glutDisplay()
     {
       static unsigned frame_count = 0;
       sutil::displayFps( frame_count++ );
+    }
+
+    {
+        static char camera_eye_text[32];
+        sprintf(camera_eye_text, "camera_eye:    %7.2f, %7.2f, %7.2f", camera_eye.x, camera_eye.y, camera_eye.z);
+        sutil::displayText(camera_eye_text, 10, 60);
+    }
+
+    {
+        static char camera_lookat_text[32];
+        sprintf(camera_lookat_text, "camera_lookat: %7.2f, %7.2f, %7.2f", camera_lookat.x, camera_lookat.y, camera_lookat.z);
+        sutil::displayText(camera_lookat_text, 10, 40);
     }
 
     glutSwapBuffers();
