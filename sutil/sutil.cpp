@@ -69,6 +69,11 @@
 #endif
 
 
+#include <filesystem>
+
+namespace fs = std::experimental::filesystem;
+
+
 using namespace optix;
 
 
@@ -854,13 +859,16 @@ static void getCuStringFromFile( std::string &cu, std::string& location, const c
     std::vector<std::string> source_locations;
 
     std::string base_dir = std::string( sutil::samplesDir() );
-
+    
     // Potential source locations (in priority order)
+    source_locations.push_back( fs::current_path().string() + "/" + filename);
     if( sample_name )
         source_locations.push_back( base_dir + "/" + sample_name + "/" + filename );
     source_locations.push_back( base_dir + "/cuda/" + filename );
 
     for( std::vector<std::string>::const_iterator it = source_locations.begin(); it != source_locations.end(); ++it ) {
+        std::cout << "[info] getCuStringFromFile source_location: " + *it << std::endl;
+
         // Try to get source code from file
         if( readSourceFile( cu, *it ) )
         {
