@@ -744,6 +744,8 @@ void printUsageAndExit( const std::string& argv0 )
 int main( int argc, char** argv )
  {
     std::string out_file;
+    int sample = 20;
+
     for( int i=1; i<argc; ++i )
     {
         const std::string arg( argv[i] );
@@ -764,6 +766,15 @@ int main( int argc, char** argv )
         else if( arg == "-n" || arg == "--nopbo"  )
         {
             use_pbo = false;
+        }
+        else if (arg == "-s" || arg == "--sample")
+        {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            sample = atoi(argv[++i]);
         }
         else
         {
@@ -796,7 +807,11 @@ int main( int argc, char** argv )
         {
             updateCamera();
 
-            for (int i = 0; i < 20; ++i)
+            // print config
+            std::cout << "resolution: " << width << "x" << height << std::endl;
+            std::cout << "sample: " << sample << std::endl;
+
+            for (int i = 0; i < sample; ++i)
             {
                 context->launch(0, width, height);
                 context["frame_number"]->setUint(frame_number++);
