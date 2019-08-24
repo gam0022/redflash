@@ -824,7 +824,7 @@ int main( int argc, char** argv )
             updateCamera();
 
             // print config
-            std::cout << "resolution: " << width << "x" << height << std::endl;
+            std::cout << "resolution: " << width << "x" << height << " px" << std::endl;
             std::cout << "time_limit: " << time_limit << " sec." << std::endl;
 
             if (use_time_limit)
