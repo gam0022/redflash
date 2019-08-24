@@ -28,7 +28,7 @@
 
 //-----------------------------------------------------------------------------
 //
-// optixRaymarching: simple interactive path tracer
+// redflash: simple interactive path tracer
 //
 //-----------------------------------------------------------------------------
 
@@ -47,7 +47,7 @@
 #include <optixu/optixpp_namespace.h>
 #include <optixu/optixu_math_stream_namespace.h>
 
-#include "optixRaymarching.h"
+#include "redflash.h"
 #include <sutil.h>
 #include <Arcball.h>
 #include <OptiXMesh.h>
@@ -62,7 +62,7 @@ namespace fs = std::experimental::filesystem;
 
 using namespace optix;
 
-const char* const SAMPLE_NAME = "optixRaymarching";
+const char* const SAMPLE_NAME = "redflash";
 
 //------------------------------------------------------------------------------
 //
@@ -269,7 +269,7 @@ void createContext()
     context["output_buffer"]->set( buffer );
 
     // Setup programs
-    const char *ptx = sutil::getPtxString( SAMPLE_NAME, "optixRaymarching.cu" );
+    const char *ptx = sutil::getPtxString( SAMPLE_NAME, "redflash.cu" );
     context->setRayGenerationProgram( 0, context->createProgramFromPTXString( ptx, "pathtrace_camera" ) );
     context->setExceptionProgram( 0, context->createProgramFromPTXString( ptx, "exception" ) );
     context->setMissProgram( 0, context->createProgramFromPTXString( ptx, "envmap_miss" ) );
@@ -287,7 +287,7 @@ GeometryGroup createGeometryTriangles()
 {
     // Set up material
     Material diffuse = context->createMaterial();
-    const char *ptx = sutil::getPtxString(SAMPLE_NAME, "optixRaymarching.cu");
+    const char *ptx = sutil::getPtxString(SAMPLE_NAME, "redflash.cu");
     Program diffuse_ch = context->createProgramFromPTXString(ptx, "diffuse");
     Program diffuse_ah = context->createProgramFromPTXString(ptx, "shadow");
     diffuse->setClosestHitProgram(0, diffuse_ch);
@@ -310,7 +310,7 @@ GeometryGroup createGeometry()
 {
     // Set up material
     Material diffuse = context->createMaterial();
-    const char *ptx = sutil::getPtxString( SAMPLE_NAME, "optixRaymarching.cu" );
+    const char *ptx = sutil::getPtxString( SAMPLE_NAME, "redflash.cu" );
     Program diffuse_ch = context->createProgramFromPTXString( ptx, "diffuse" );
     Program diffuse_ah = context->createProgramFromPTXString( ptx, "shadow" );
     diffuse->setClosestHitProgram( 0, diffuse_ch );
@@ -445,7 +445,7 @@ GeometryGroup createGeometryLight()
     context["lights"]->setBuffer(light_buffer);
 
     // Set up material
-    const char *ptx = sutil::getPtxString(SAMPLE_NAME, "optixRaymarching.cu");
+    const char *ptx = sutil::getPtxString(SAMPLE_NAME, "redflash.cu");
     Material diffuse_light = context->createMaterial();
     Program diffuse_em = context->createProgramFromPTXString(ptx, "diffuseEmitter");
     diffuse_light->setClosestHitProgram(0, diffuse_em);

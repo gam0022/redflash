@@ -28,7 +28,7 @@
 
 #include <optixu/optixu_math_namespace.h>
 #include <common.h>
-#include "optixRaymarching.h"
+#include "redflash.h"
 #include "random.h"
 
 using namespace optix;

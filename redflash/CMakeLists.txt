@@ -32,10 +32,10 @@ if(GLUT_FOUND AND OPENGL_FOUND)
     include_directories(${GLUT_INCLUDE_DIR})
     add_definitions(-DGLUT_FOUND -DGLUT_NO_LIB_PRAGMA)
 
-    OPTIX_add_sample_executable( optixRaymarching 
-        optixRaymarching.cpp
-        optixRaymarching.cu
-        optixRaymarching.h
+    OPTIX_add_sample_executable( redflash 
+        redflash.cpp
+        redflash.cu
+        redflash.h
 
         # These files are common among multiple samples
         parallelogram.cu
@@ -43,5 +43,5 @@ if(GLUT_FOUND AND OPENGL_FOUND)
         )
 else()
     # GLUT or OpenGL not found
-    message("Disabling optixRaymarching, which requires GLUT and OpenGL.")
+    message("Disabling redflash, which requires GLUT and OpenGL.")
 endif()
