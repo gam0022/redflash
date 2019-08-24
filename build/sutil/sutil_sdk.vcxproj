@@ -388,6 +388,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\sutil\sutil.h" />
     <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\sutil\sutilapi.h" />
     <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\sutil\tinyobjloader\tiny_obj_loader.h" />
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\sutil\stb_image.h" />
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\sutil\stb_image_write.h" />
     <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\sutil\GL\glew.h" />
     <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\sutil\GL\wglew.h" />
     <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\sutil\rply-1.01\rply.c" >

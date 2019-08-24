@@ -632,7 +632,7 @@ void glutKeyboardPress( unsigned char k, int x, int y )
         }
         case( 's' ):
         {
-            const std::string outputImage = std::string(SAMPLE_NAME) + ".ppm";
+            const std::string outputImage = std::string(SAMPLE_NAME) + ".png";
             std::cerr << "Saving current frame to '" << outputImage << "'\n";
             sutil::displayBufferPPM( outputImage.c_str(), getOutputBuffer(), false );
             break;

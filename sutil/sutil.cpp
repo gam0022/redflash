@@ -68,6 +68,8 @@
 #    include <dirent.h>
 #endif
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 #include <filesystem>
 
@@ -294,6 +296,19 @@ void SavePPM(const unsigned char *Pix, const char *fname, int wid, int hgt, int 
     OutFile.close();
 }
 
+void SavePNG(const unsigned char *Pix, const char *fname, int wid, int hgt, int chan)
+{
+    if (Pix == NULL || wid < 1 || hgt < 1)
+        throw Exception("Image is ill-formed. Not saving");
+
+    if (chan != 1 && chan != 3 && chan != 4)
+        throw Exception("Attempting to save image with channel count != 1, 3, or 4.");
+
+    int bpp = chan;
+    int ret = stbi_write_png(fname, wid, hgt, bpp, Pix, wid * bpp);
+    if (!ret)
+        throw Exception("Failed to SavePNG");
+}
 
 bool dirExists( const char* path )
 {
@@ -608,7 +623,8 @@ void sutil::displayBufferPPM( const char* filename, RTbuffer buffer, bool disabl
             break;
     }
 
-    SavePPM(&pix[0], filename, width, height, 3);
+    // SavePPM(&pix[0], filename, width, height, 3);
+    SavePNG(&pix[0], filename, width, height, 3);
 
     // Now unmap the buffer
     RT_CHECK_ERROR( rtBufferUnmap(buffer) );
