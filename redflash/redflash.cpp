@@ -768,6 +768,7 @@ int main( int argc, char** argv )
                 printUsageAndExit( argv[0] );
             }
             out_file = argv[++i];
+            use_pbo = false;
         }
         else if( arg == "-n" || arg == "--nopbo"  )
         {
