@@ -634,7 +634,7 @@ void glutKeyboardPress( unsigned char k, int x, int y )
         {
             const std::string outputImage = std::string(SAMPLE_NAME) + ".png";
             std::cerr << "Saving current frame to '" << outputImage << "'\n";
-            sutil::displayBufferPPM( outputImage.c_str(), getOutputBuffer(), false );
+            sutil::displayBufferPNG( outputImage.c_str(), getOutputBuffer(), false );
             break;
         }
     }
@@ -734,7 +734,7 @@ void printUsageAndExit( const std::string& argv0 )
         "  -n | --nopbo              Disable GL interop for display buffer.\n"
         "App Keystrokes:\n"
         "  q  Quit\n" 
-        "  s  Save image to '" << SAMPLE_NAME << ".ppm'\n"
+        "  s  Save image to '" << SAMPLE_NAME << ".png'\n"
         << std::endl;
 
     exit(1);
@@ -802,7 +802,7 @@ int main( int argc, char** argv )
                 context["frame_number"]->setUint(frame_number++);
             }
 
-            sutil::displayBufferPPM(out_file.c_str(), getOutputBuffer(), false);
+            sutil::displayBufferPNG(out_file.c_str(), getOutputBuffer(), false);
             destroyContext();
         }
 

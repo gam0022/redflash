@@ -142,6 +142,18 @@ void SUTILAPI displayBufferPPM(
         RTbuffer buffer,                      // Buffer to be displayed
         bool disable_srgb_conversion = true); // Enables/disables srgb conversion before the image is saved. Disabled by default.            
 
+// Write the contents of the Buffer to a PNG image file
+void SUTILAPI displayBufferPNG(
+    const char* filename,                 // Image file to be created
+    optix::Buffer buffer,                 // Buffer to be displayed
+    bool disable_srgb_conversion = true); // Enables/disables srgb conversion before the image is saved. Disabled by default.            
+
+// Write the contents of the Buffer to a PNG image file (C API version).
+void SUTILAPI displayBufferPNG(
+    const char* filename,                 // Image file to be created
+    RTbuffer buffer,                      // Buffer to be displayed
+    bool disable_srgb_conversion = true); // Enables/disables srgb conversion before the image is saved. Disabled by default.          
+
 // Display contents of buffer, where the OpenGL/GLUT context is managed by caller.
 void SUTILAPI displayBufferGL(
         optix::Buffer buffer,       // Buffer to be displayed
