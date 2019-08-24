@@ -52,6 +52,10 @@ set(sources
   sutilapi.h
   tinyobjloader/tiny_obj_loader.cc
   tinyobjloader/tiny_obj_loader.h
+
+  # https://github.com/nothings/stb
+  stb_image.h
+  stb_image_write.h
   )
 
 if(OPENGL_FOUND AND NOT APPLE)

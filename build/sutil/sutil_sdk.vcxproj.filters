@@ -75,6 +75,12 @@
     <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\sutil\tinyobjloader\tiny_obj_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\sutil\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\sutil\stb_image_write.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\sutil\GL\glew.h">
       <Filter>Header Files</Filter>
     </ClInclude>
