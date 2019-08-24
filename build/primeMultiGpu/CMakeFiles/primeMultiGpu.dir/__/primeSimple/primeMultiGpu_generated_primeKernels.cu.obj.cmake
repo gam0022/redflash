@@ -67,7 +67,7 @@ set(cmake_dependency_file "C:/Users/gam0022/Dropbox/redflash/build/primeMultiGpu
 set(CUDA_make2cmake "C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/make2cmake.cmake") # path
 set(CUDA_parse_cubin "C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/parse_cubin.cmake") # path
 set(build_cubin OFF) # bool
-set(CUDA_HOST_COMPILER "$(VCInstallDir)bin") # path
+set(CUDA_HOST_COMPILER "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64/cl.exe") # path
 # We won't actually use these variables for now, but we need to set this, in
 # order to force this file to be run again if it changes.
 set(generated_file_path "C:/Users/gam0022/Dropbox/redflash/build/lib/ptx/$(Configuration)") # path

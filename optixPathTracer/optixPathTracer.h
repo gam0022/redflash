@@ -29,6 +29,7 @@
 #pragma once
 
 #include <optixu/optixu_math_namespace.h>                                        
+#include "common.h"
 
 struct ParallelogramLight                                                        
 {                                                                                

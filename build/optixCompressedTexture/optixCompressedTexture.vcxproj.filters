@@ -6,16 +6,22 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\optixCompressedTexture\draw_texture.cu">
+      <Filter>CUDA Files</Filter>
+    </CustomBuild>
     <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\optixCompressedTexture\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="C:\Users\gam0022\Dropbox\redflash\optixCompressedTexture\draw_texture.cu">
-      <Filter>CUDA Files</Filter>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\build\lib\ptx\optixCompressedTexture_generated_draw_texture.cu.ptx">
+      <Filter>PTX Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
       <UniqueIdentifier>{3514BB90-08DD-359A-8F7F-1995E5FAA240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PTX Files">
+      <UniqueIdentifier>{45E021E9-15DB-36E3-AC5E-27ED8121D337}</UniqueIdentifier>
     </Filter>
     <Filter Include="CUDA Files">
       <UniqueIdentifier>{502337A2-9EA0-3AB0-9B75-2E30386D6D6E}</UniqueIdentifier>

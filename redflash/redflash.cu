@@ -27,7 +27,6 @@
  */
 
 #include <optixu/optixu_math_namespace.h>
-#include <common.h>
 #include "redflash.h"
 #include "random.h"
 

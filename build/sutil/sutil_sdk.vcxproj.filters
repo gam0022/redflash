@@ -89,11 +89,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\cuda\phong.cu" />
+    <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\cuda\triangle_mesh.cu" />
     <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\sutil\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="C:\Users\gam0022\Dropbox\redflash\cuda\phong.cu" />
-    <None Include="C:\Users\gam0022\Dropbox\redflash\cuda\triangle_mesh.cu" />
+    <None Include="C:\Users\gam0022\Dropbox\redflash\build\lib\ptx\cuda_compile_ptx_generated_phong.cu.ptx" />
+    <None Include="C:\Users\gam0022\Dropbox\redflash\build\lib\ptx\cuda_compile_ptx_generated_triangle_mesh.cu.ptx" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

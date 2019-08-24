@@ -1,2 +1,6 @@
 # CMake generation dependency list for this directory.
 C:/Users/gam0022/Dropbox/redflash/redflash/CMakeLists.txt
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/redflash/CMakeFiles/redflash.dir/redflash_generated_redflash.cu.ptx.depend
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/redflash/CMakeFiles/redflash.dir/redflash_generated_parallelogram.cu.ptx.depend

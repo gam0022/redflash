@@ -11,20 +11,32 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\optixSpherePP\constantbg.cu">
+      <Filter>CUDA Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\optixSpherePP\normal_shader.cu">
+      <Filter>CUDA Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\optixSpherePP\pinhole_camera.cu">
+      <Filter>CUDA Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\optixSpherePP\sphere.cu">
+      <Filter>CUDA Files</Filter>
+    </CustomBuild>
     <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\optixSpherePP\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="C:\Users\gam0022\Dropbox\redflash\optixSpherePP\constantbg.cu">
-      <Filter>CUDA Files</Filter>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\build\lib\ptx\optixSpherePP_generated_constantbg.cu.ptx">
+      <Filter>PTX Files</Filter>
     </None>
-    <None Include="C:\Users\gam0022\Dropbox\redflash\optixSpherePP\normal_shader.cu">
-      <Filter>CUDA Files</Filter>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\build\lib\ptx\optixSpherePP_generated_normal_shader.cu.ptx">
+      <Filter>PTX Files</Filter>
     </None>
-    <None Include="C:\Users\gam0022\Dropbox\redflash\optixSpherePP\pinhole_camera.cu">
-      <Filter>CUDA Files</Filter>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\build\lib\ptx\optixSpherePP_generated_pinhole_camera.cu.ptx">
+      <Filter>PTX Files</Filter>
     </None>
-    <None Include="C:\Users\gam0022\Dropbox\redflash\optixSpherePP\sphere.cu">
-      <Filter>CUDA Files</Filter>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\build\lib\ptx\optixSpherePP_generated_sphere.cu.ptx">
+      <Filter>PTX Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -33,6 +45,9 @@
     </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{1ED9082F-20F6-3C9C-AD4B-66C340868CD3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PTX Files">
+      <UniqueIdentifier>{45E021E9-15DB-36E3-AC5E-27ED8121D337}</UniqueIdentifier>
     </Filter>
     <Filter Include="CUDA Files">
       <UniqueIdentifier>{502337A2-9EA0-3AB0-9B75-2E30386D6D6E}</UniqueIdentifier>
