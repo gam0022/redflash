@@ -244,10 +244,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{996B2FBA-8F9C-38D5-8F25-8D96C8605DDB}</Project>
       <Name>optixRaycasting</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixRaymarching\optixRaymarching.vcxproj">
-      <Project>{2F1A6698-F4A4-3577-8A9D-EC0ED5A084A4}</Project>
-      <Name>optixRaymarching</Name>
-    </ProjectReference>
     <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\optixSSIMPredictor.vcxproj">
       <Project>{EDCFB3D0-8330-3361-B5B1-795810F1AD6C}</Project>
       <Name>optixSSIMPredictor</Name>
@@ -299,6 +295,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\primeSimplePP\primeSimplePP.vcxproj">
       <Project>{0B02A415-C49E-326A-B3B2-5264AAB9D40B}</Project>
       <Name>primeSimplePP</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\redflash\redflash.vcxproj">
+      <Project>{70069FD4-8F17-3EDD-92E6-66EF784E3353}</Project>
+      <Name>redflash</Name>
     </ProjectReference>
     <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\sutil\sutil_sdk.vcxproj">
       <Project>{AAEE7076-7F0B-350D-AB74-AC1DC193B705}</Project>
