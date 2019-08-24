@@ -732,6 +732,8 @@ void printUsageAndExit( const std::string& argv0 )
         "  -h | --help               Print this usage message and exit.\n"
         "  -f | --file               Save single frame to file and exit.\n"
         "  -n | --nopbo              Disable GL interop for display buffer.\n"
+        "  -s | --sample             Sample number.\n"
+        "  -t | --time               Time limit(ssc).\n"
         "App Keystrokes:\n"
         "  q  Quit\n" 
         "  s  Save image to '" << SAMPLE_NAME << ".png'\n"
@@ -743,8 +745,11 @@ void printUsageAndExit( const std::string& argv0 )
 
 int main( int argc, char** argv )
  {
+    double launch_time = sutil::currentTime();
+
     std::string out_file;
     int sample = 20;
+    int time_limit = 60 * 60;// 1 hour
 
     for( int i=1; i<argc; ++i )
     {
@@ -775,6 +780,15 @@ int main( int argc, char** argv )
                 printUsageAndExit(argv[0]);
             }
             sample = atoi(argv[++i]);
+        }
+        else if (arg == "-t" || arg == "--time")
+        {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            time_limit = atoi(argv[++i]);
         }
         else
         {
@@ -810,6 +824,7 @@ int main( int argc, char** argv )
             // print config
             std::cout << "resolution: " << width << "x" << height << std::endl;
             std::cout << "sample: " << sample << std::endl;
+            std::cout << "time_limit: " << time_limit << std::endl;
 
             for (int i = 0; i < sample; ++i)
             {
@@ -819,6 +834,10 @@ int main( int argc, char** argv )
 
             sutil::displayBufferPNG(out_file.c_str(), getOutputBuffer(), false);
             destroyContext();
+
+            double finish_time = sutil::currentTime();
+            double total_time = finish_time - launch_time;
+            std::wcout << "total_time: " << total_time << " sec" << std::endl;
         }
 
         return 0;
