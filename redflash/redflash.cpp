@@ -749,7 +749,7 @@ int main( int argc, char** argv )
 
     std::string out_file;
     int sample = 20;
-    int time_limit = 60 * 60;// 1 hour
+    double time_limit = 60 * 60;// 1 hour
     bool use_time_limit = false;
 
     for( int i=1; i<argc; ++i )
@@ -789,7 +789,7 @@ int main( int argc, char** argv )
                 std::cerr << "Option '" << arg << "' requires additional argument.\n";
                 printUsageAndExit(argv[0]);
             }
-            time_limit = atoi(argv[++i]);
+            time_limit = atof(argv[++i]);
             use_time_limit = true;
         }
         else
@@ -825,7 +825,7 @@ int main( int argc, char** argv )
 
             // print config
             std::cout << "resolution: " << width << "x" << height << std::endl;
-            std::cout << "time_limit: " << time_limit << std::endl;
+            std::cout << "time_limit: " << time_limit << " sec." << std::endl;
 
             if (use_time_limit)
             {
@@ -849,7 +849,7 @@ int main( int argc, char** argv )
                 // NOTE: 前フレームの所要時間から次のフレームが制限時間内に終るかを予測する。時間超過を防ぐために1.1倍に見積もる
                 if (used_time + delta_time * 1.1 > time_limit)
                 {
-                    std::cout << "reached time limit! used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << "sec." << std::endl;
+                    std::cout << "reached time limit! used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << " sec." << std::endl;
                     std::cout << "sampled: " << i << std::endl;
                     break;
                 }
