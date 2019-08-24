@@ -750,6 +750,7 @@ int main( int argc, char** argv )
     std::string out_file;
     int sample = 20;
     int time_limit = 60 * 60;// 1 hour
+    bool use_time_limit = false;
 
     for( int i=1; i<argc; ++i )
     {
@@ -789,6 +790,7 @@ int main( int argc, char** argv )
                 printUsageAndExit(argv[0]);
             }
             time_limit = atoi(argv[++i]);
+            use_time_limit = true;
         }
         else
         {
@@ -823,11 +825,35 @@ int main( int argc, char** argv )
 
             // print config
             std::cout << "resolution: " << width << "x" << height << std::endl;
-            std::cout << "sample: " << sample << std::endl;
             std::cout << "time_limit: " << time_limit << std::endl;
 
-            for (int i = 0; i < sample; ++i)
+            if (use_time_limit)
             {
+                std::cout << "sample: INF(" << sample << ")" << std::endl;
+            }
+            else
+            {
+                std::cout << "sample: " << sample << std::endl;
+            }
+
+            double last_time = sutil::currentTime();
+
+            // NOTE: time_limit が指定されていたら、サンプル数は無制限にする
+            for (int i = 0; i < sample || use_time_limit; ++i)
+            {
+                double now = sutil::currentTime();
+                double used_time = now - launch_time;
+                double delta_time = now - last_time;
+                last_time = now;
+
+                // NOTE: 前フレームの所要時間から次のフレームが制限時間内に終るかを予測する。時間超過を防ぐために1.1倍に見積もる
+                if (used_time + delta_time * 1.1 > time_limit)
+                {
+                    std::cout << "reached time limit! used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << "sec." << std::endl;
+                    std::cout << "sampled: " << i << std::endl;
+                    break;
+                }
+
                 context->launch(0, width, height);
                 context["frame_number"]->setUint(frame_number++);
             }
@@ -837,7 +863,7 @@ int main( int argc, char** argv )
 
             double finish_time = sutil::currentTime();
             double total_time = finish_time - launch_time;
-            std::wcout << "total_time: " << total_time << " sec" << std::endl;
+            std::cout << "total_time: " << total_time << " sec." << std::endl;
         }
 
         return 0;
