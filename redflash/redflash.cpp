@@ -732,6 +732,8 @@ void printUsageAndExit( const std::string& argv0 )
         "  -h | --help               Print this usage message and exit.\n"
         "  -f | --file               Save single frame to file and exit.\n"
         "  -n | --nopbo              Disable GL interop for display buffer.\n"
+        "  -s | --sample             Sample number.\n"
+        "  -t | --time               Time limit(ssc).\n"
         "App Keystrokes:\n"
         "  q  Quit\n" 
         "  s  Save image to '" << SAMPLE_NAME << ".png'\n"
@@ -743,7 +745,13 @@ void printUsageAndExit( const std::string& argv0 )
 
 int main( int argc, char** argv )
  {
+    double launch_time = sutil::currentTime();
+
     std::string out_file;
+    int sample = 20;
+    double time_limit = 60 * 60;// 1 hour
+    bool use_time_limit = false;
+
     for( int i=1; i<argc; ++i )
     {
         const std::string arg( argv[i] );
@@ -764,6 +772,25 @@ int main( int argc, char** argv )
         else if( arg == "-n" || arg == "--nopbo"  )
         {
             use_pbo = false;
+        }
+        else if (arg == "-s" || arg == "--sample")
+        {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            sample = atoi(argv[++i]);
+        }
+        else if (arg == "-t" || arg == "--time")
+        {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            time_limit = atof(argv[++i]);
+            use_time_limit = true;
         }
         else
         {
@@ -796,14 +823,47 @@ int main( int argc, char** argv )
         {
             updateCamera();
 
-            for (int i = 0; i < 20; ++i)
+            // print config
+            std::cout << "resolution: " << width << "x" << height << " px" << std::endl;
+            std::cout << "time_limit: " << time_limit << " sec." << std::endl;
+
+            if (use_time_limit)
             {
+                std::cout << "sample: INF(" << sample << ")" << std::endl;
+            }
+            else
+            {
+                std::cout << "sample: " << sample << std::endl;
+            }
+
+            double last_time = sutil::currentTime();
+
+            // NOTE: time_limit が指定されていたら、サンプル数は無制限にする
+            for (int i = 0; i < sample || use_time_limit; ++i)
+            {
+                double now = sutil::currentTime();
+                double used_time = now - launch_time;
+                double delta_time = now - last_time;
+                last_time = now;
+
+                // NOTE: 前フレームの所要時間から次のフレームが制限時間内に終るかを予測する。時間超過を防ぐために1.1倍に見積もる
+                if (used_time + delta_time * 1.1 > time_limit)
+                {
+                    std::cout << "reached time limit! used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << " sec." << std::endl;
+                    std::cout << "sampled: " << i << std::endl;
+                    break;
+                }
+
                 context->launch(0, width, height);
                 context["frame_number"]->setUint(frame_number++);
             }
 
             sutil::displayBufferPNG(out_file.c_str(), getOutputBuffer(), false);
             destroyContext();
+
+            double finish_time = sutil::currentTime();
+            double total_time = finish_time - launch_time;
+            std::cout << "total_time: " << total_time << " sec." << std::endl;
         }
 
         return 0;
