@@ -986,11 +986,12 @@ static bool readSourceFile( std::string &str, const std::string &filename )
 static void getCuStringFromFile( std::string &cu, std::string& location, const char* sample_name, const char* filename )
 {
     std::vector<std::string> source_locations;
-
     std::string base_dir = std::string( sutil::samplesDir() );
     
     // Potential source locations (in priority order)
     source_locations.push_back( fs::current_path().string() + "/" + filename);
+    source_locations.push_back( fs::current_path().string() + "/cuda/" + filename);
+
     if( sample_name )
         source_locations.push_back( base_dir + "/" + sample_name + "/" + filename );
     source_locations.push_back( base_dir + "/cuda/" + filename );
