@@ -12,6 +12,9 @@
     <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\optixPathTracer\random.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\optixPathTracer\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\optixPathTracer\optixPathTracer.cu">
