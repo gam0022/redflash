@@ -1,2 +1,6 @@
 # CMake generation dependency list for this directory.
 C:/Users/gam0022/Dropbox/redflash/optixPathTracer/CMakeLists.txt
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/optixPathTracer/CMakeFiles/optixPathTracer.dir/optixPathTracer_generated_optixPathTracer.cu.ptx.depend
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/optixPathTracer/CMakeFiles/optixPathTracer.dir/optixPathTracer_generated_parallelogram.cu.ptx.depend

@@ -1,2 +1,10 @@
 # CMake generation dependency list for this directory.
 C:/Users/gam0022/Dropbox/redflash/optixSpherePP/CMakeLists.txt
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/optixSpherePP/CMakeFiles/optixSpherePP.dir/optixSpherePP_generated_constantbg.cu.ptx.depend
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/optixSpherePP/CMakeFiles/optixSpherePP.dir/optixSpherePP_generated_normal_shader.cu.ptx.depend
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/optixSpherePP/CMakeFiles/optixSpherePP.dir/optixSpherePP_generated_pinhole_camera.cu.ptx.depend
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/optixSpherePP/CMakeFiles/optixSpherePP.dir/optixSpherePP_generated_sphere.cu.ptx.depend

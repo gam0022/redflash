@@ -1,2 +1,12 @@
 # CMake generation dependency list for this directory.
 C:/Users/gam0022/Dropbox/redflash/optixSelector/CMakeLists.txt
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/optixSelector/CMakeFiles/optixSelector.dir/optixSelector_generated_checkerboard.cu.ptx.depend
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/optixSelector/CMakeFiles/optixSelector.dir/optixSelector_generated_constantbg.cu.ptx.depend
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/optixSelector/CMakeFiles/optixSelector.dir/optixSelector_generated_pinhole_camera.cu.ptx.depend
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/optixSelector/CMakeFiles/optixSelector.dir/optixSelector_generated_selector_example.cu.ptx.depend
+C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc.cmake
+C:/Users/gam0022/Dropbox/redflash/build/optixSelector/CMakeFiles/optixSelector.dir/optixSelector_generated_sphere.cu.ptx.depend

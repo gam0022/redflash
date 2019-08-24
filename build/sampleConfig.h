@@ -40,7 +40,7 @@
   "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.1/include", 
 
 // Signal whether to use NVRTC or not
-#define CUDA_NVRTC_ENABLED 1
+#define CUDA_NVRTC_ENABLED 0
 
 // NVRTC compiler options
 #define CUDA_NVRTC_OPTIONS  \

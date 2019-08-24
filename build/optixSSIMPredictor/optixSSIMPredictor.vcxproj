@@ -118,7 +118,7 @@
     </Midl>
     <Link>
       <AdditionalOptions>%(AdditionalOptions)  /machine:x64</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\lib\Debug\sutil_sdk.lib;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\lib64\optix.6.0.0.lib;..\..\support\freeglut\win64\Release\freeglut.lib;glu32.lib;opengl32.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64\nvrtc.lib;winmm.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\lib\Debug\sutil_sdk.lib;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\lib64\optix.6.0.0.lib;..\..\support\freeglut\win64\Release\freeglut.lib;glu32.lib;opengl32.lib;winmm.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -165,7 +165,7 @@
     </Midl>
     <Link>
       <AdditionalOptions>%(AdditionalOptions)  /machine:x64</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\lib\Release\sutil_sdk.lib;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\lib64\optix.6.0.0.lib;..\..\support\freeglut\win64\Release\freeglut.lib;glu32.lib;opengl32.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64\nvrtc.lib;winmm.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\lib\Release\sutil_sdk.lib;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\lib64\optix.6.0.0.lib;..\..\support\freeglut\win64\Release\freeglut.lib;glu32.lib;opengl32.lib;winmm.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -210,7 +210,7 @@
     </Midl>
     <Link>
       <AdditionalOptions>%(AdditionalOptions)  /machine:x64</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\lib\MinSizeRel\sutil_sdk.lib;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\lib64\optix.6.0.0.lib;..\..\support\freeglut\win64\Release\freeglut.lib;glu32.lib;opengl32.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64\nvrtc.lib;winmm.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\lib\MinSizeRel\sutil_sdk.lib;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\lib64\optix.6.0.0.lib;..\..\support\freeglut\win64\Release\freeglut.lib;glu32.lib;opengl32.lib;winmm.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>No</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -255,7 +255,7 @@
     </Midl>
     <Link>
       <AdditionalOptions>%(AdditionalOptions)  /machine:x64</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\lib\RelWithDebInfo\sutil_sdk.lib;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\lib64\optix.6.0.0.lib;..\..\support\freeglut\win64\Release\freeglut.lib;glu32.lib;opengl32.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64\nvrtc.lib;winmm.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;..\lib\RelWithDebInfo\sutil_sdk.lib;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\lib64\optix.6.0.0.lib;..\..\support\freeglut\win64\Release\freeglut.lib;glu32.lib;opengl32.lib;winmm.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -269,6 +269,86 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\optixSSIMPredictor.cu">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building NVCC ptx file lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+cd C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory C:/Users/gam0022/Dropbox/redflash/build/lib/ptx
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -D verbose:BOOL=OFF -D check_dependencies:BOOL=ON -D "CCBIN:PATH=$(VCInstallDir)bin" -D build_configuration:STRING=$(ConfigurationName) -D generated_file:STRING=C:/Users/gam0022/Dropbox/redflash/build/lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx -D generated_cubin_file:STRING=C:/Users/gam0022/Dropbox/redflash/build/lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.cubin.txt -D generated_fatbin_file:STRING=C:/Users/gam0022/Dropbox/redflash/build/lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.fatbin.txt -P C:/Users/gam0022/Dropbox/redflash/build/optixSSIMPredictor/CMakeFiles/optixSSIMPredictor.dir//optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.cmake
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/optixSSIMPredictor.cu;C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.depend;C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.cmake;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\optixSSIMPredictor.cu;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\gam0022\Dropbox\redflash\build\lib\ptx\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building NVCC ptx file lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+cd C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory C:/Users/gam0022/Dropbox/redflash/build/lib/ptx
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -D verbose:BOOL=OFF -D check_dependencies:BOOL=ON -D "CCBIN:PATH=$(VCInstallDir)bin" -D build_configuration:STRING=$(ConfigurationName) -D generated_file:STRING=C:/Users/gam0022/Dropbox/redflash/build/lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx -D generated_cubin_file:STRING=C:/Users/gam0022/Dropbox/redflash/build/lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.cubin.txt -D generated_fatbin_file:STRING=C:/Users/gam0022/Dropbox/redflash/build/lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.fatbin.txt -P C:/Users/gam0022/Dropbox/redflash/build/optixSSIMPredictor/CMakeFiles/optixSSIMPredictor.dir//optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.cmake
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/optixSSIMPredictor.cu;C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.depend;C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.cmake;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\optixSSIMPredictor.cu;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\gam0022\Dropbox\redflash\build\lib\ptx\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building NVCC ptx file lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+cd C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory C:/Users/gam0022/Dropbox/redflash/build/lib/ptx
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -D verbose:BOOL=OFF -D check_dependencies:BOOL=ON -D "CCBIN:PATH=$(VCInstallDir)bin" -D build_configuration:STRING=$(ConfigurationName) -D generated_file:STRING=C:/Users/gam0022/Dropbox/redflash/build/lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx -D generated_cubin_file:STRING=C:/Users/gam0022/Dropbox/redflash/build/lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.cubin.txt -D generated_fatbin_file:STRING=C:/Users/gam0022/Dropbox/redflash/build/lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.fatbin.txt -P C:/Users/gam0022/Dropbox/redflash/build/optixSSIMPredictor/CMakeFiles/optixSSIMPredictor.dir//optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.cmake
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/optixSSIMPredictor.cu;C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.depend;C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.cmake;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\optixSSIMPredictor.cu;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\gam0022\Dropbox\redflash\build\lib\ptx\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building NVCC ptx file lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+cd C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory C:/Users/gam0022/Dropbox/redflash/build/lib/ptx
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -D verbose:BOOL=OFF -D check_dependencies:BOOL=ON -D "CCBIN:PATH=$(VCInstallDir)bin" -D build_configuration:STRING=$(ConfigurationName) -D generated_file:STRING=C:/Users/gam0022/Dropbox/redflash/build/lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx -D generated_cubin_file:STRING=C:/Users/gam0022/Dropbox/redflash/build/lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.cubin.txt -D generated_fatbin_file:STRING=C:/Users/gam0022/Dropbox/redflash/build/lib/ptx/optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.fatbin.txt -P C:/Users/gam0022/Dropbox/redflash/build/optixSSIMPredictor/CMakeFiles/optixSSIMPredictor.dir//optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.cmake
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/optixSSIMPredictor.cu;C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.depend;C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.cmake;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\optixSSIMPredictor.cu;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\gam0022\Dropbox\redflash\build\lib\ptx\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
     <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
@@ -280,7 +360,7 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\CMake\FindCUDA\run_nvcc.cmake;C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.depend;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/CMakeLists.txt</Message>
@@ -293,7 +373,7 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\CMake\FindCUDA\run_nvcc.cmake;C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.depend;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/CMakeLists.txt</Message>
@@ -306,7 +386,7 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\CMake\FindCUDA\run_nvcc.cmake;C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.depend;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/CMakeLists.txt</Message>
@@ -319,14 +399,14 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/gam0022/Dropbox/redflash/optixSSIMPredictor/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\CMake\FindCUDA\run_nvcc.cmake;C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\optixSSIMPredictor.dir\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx.depend;C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\gam0022\Dropbox\redflash\build\optixSSIMPredictor\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\optixSSIMPredictor.cpp"  />
-    <None Include="C:\Users\gam0022\Dropbox\redflash\optixSSIMPredictor\optixSSIMPredictor.cu" />
+    <None Include="C:\Users\gam0022\Dropbox\redflash\build\lib\ptx\optixSSIMPredictor_generated_optixSSIMPredictor.cu.ptx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\ZERO_CHECK.vcxproj">

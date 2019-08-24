@@ -29,6 +29,10 @@
 #pragma once
 
 #include <optixu/optixu_math_namespace.h>                                        
+#include <optix.h>
+#include <optix_math.h>
+ // Used by all the tutorial cuda files
+#include "common.h"
 
 struct ParallelogramLight                                                        
 {                                                                                
