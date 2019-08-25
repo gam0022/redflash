@@ -609,6 +609,12 @@ void glutDisplay()
     }
 
     {
+        static char frame_number_text[32];
+        sprintf(frame_number_text, "frame_number:   %d", frame_number);
+        sutil::displayText(frame_number_text, 10, 80);
+    }
+
+    {
         static char camera_eye_text[32];
         sprintf(camera_eye_text, "camera_eye:    %7.2f, %7.2f, %7.2f", camera_eye.x, camera_eye.y, camera_eye.z);
         sutil::displayText(camera_eye_text, 10, 60);
