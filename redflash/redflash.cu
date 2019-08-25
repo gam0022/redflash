@@ -441,7 +441,7 @@ RT_PROGRAM void intersect(int primIdx)
         }
     }
 
-    if (abs(d) < EPS && rtPotentialIntersection(t))
+    if (rtPotentialIntersection(t))
     {
         shading_normal = geometric_normal = calcNormal(p, map, scene_epsilon * 0.1);
         texcoord = make_float3(p.x, p.y, 0);
