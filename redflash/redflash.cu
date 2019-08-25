@@ -199,7 +199,7 @@ RT_PROGRAM void diffuse()
     float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
     float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
 
-    float3 hitpoint = ray.origin + t_hit * ray.direction + ffnormal * scene_epsilon * 10.0;
+    float3 hitpoint = ray.origin + t_hit * ray.direction + ffnormal * scene_epsilon * 1000.0;
 
     //
     // Generate a reflection ray.  This will be traced back in ray-gen.
@@ -443,7 +443,7 @@ RT_PROGRAM void intersect(int primIdx)
 
     if (rtPotentialIntersection(t))
     {
-        shading_normal = geometric_normal = calcNormal(p, map, scene_epsilon * 0.1);
+        shading_normal = geometric_normal = calcNormal(p, map, scene_epsilon);
         texcoord = make_float3(p.x, p.y, 0);
         lgt_idx = lgt_instance;
         rtReportIntersection(0);
