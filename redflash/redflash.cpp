@@ -249,7 +249,7 @@ GeometryInstance createMesh(
     mesh.material = material;
     mesh.closest_hit = closest_hit;
     mesh.any_hit = any_hit;
-    Matrix4x4 mat = Matrix4x4::translate(make_float3(278.0f, 0.0f, 278.0f)) * Matrix4x4::scale(make_float3(3000.0f));
+    Matrix4x4 mat = Matrix4x4::translate(make_float3(278.0f, 0.0f, 278.0f)) * Matrix4x4::scale(make_float3(300.0f));
     loadMesh(filename, mesh, mat);
     return mesh.geom_instance;
 }
@@ -262,7 +262,7 @@ void createContext()
     context->setStackSize( 1800 );
     context->setMaxTraceDepth( 2 );
 
-    context[ "scene_epsilon"                  ]->setFloat( 1.e-3f );
+    context[ "scene_epsilon"                  ]->setFloat( 0.0002 );
     context[ "rr_begin_depth"                 ]->setUint( rr_begin_depth );
 
     Buffer buffer = sutil::createOutputBuffer( context, RT_FORMAT_FLOAT4, width, height, use_pbo );
@@ -329,6 +329,7 @@ GeometryGroup createGeometry()
     std::vector<GeometryInstance> gis;
 
     const float3 white = make_float3( 0.8f, 0.8f, 0.8f );
+    const float3 gray  = make_float3( 0.3f, 0.3f, 0.3f );
     const float3 green = make_float3( 0.05f, 0.8f, 0.05f );
     const float3 red   = make_float3( 0.8f, 0.05f, 0.05f );
 
@@ -413,9 +414,9 @@ GeometryGroup createGeometry()
     setMaterial(gis.back(), diffuse, "diffuse_color", white);*/
 
     // Raymarcing Mini
-    float scale = 0.25f;
+    float scale = 1.0f;
     gis.push_back(createRaymrachingObject(
-        make_float3(278.0f* 1.5f, 103.333f * scale, 278.0f * 1.5f),
+        make_float3(278.0f, 103.333f * scale, 278.0f),
         make_float3(103.333f * scale, 103.333f * scale, 103.333f * scale)));
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
@@ -498,6 +499,10 @@ void setupCamera()
     // look at raymarching
     camera_eye = make_float3(418.47f, 73.97f, 415.23f);
     camera_lookat = make_float3(419.18f, -2.79f, 414.33f);
+
+    // look at mandelbox
+    camera_eye    = make_float3(408.13f, 189.64f, 271.37f);
+    camera_lookat = make_float3(108.74f, 145.26f, 302.83f);
 
     camera_rotate  = Matrix4x4::identity();
 }
@@ -690,7 +695,7 @@ void glutMouseMotion( int x, int y)
         float4 offset = { -dx, dy, 0, 0 };
         offset = frame * offset;
         float3 offset_v3 = { offset.x, offset.y, offset.z };
-        offset_v3 *= 1000;
+        offset_v3 *= 200;
         camera_eye += offset_v3;
         camera_lookat += offset_v3;
         camera_changed = true;
