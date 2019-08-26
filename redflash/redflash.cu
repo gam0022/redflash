@@ -116,7 +116,7 @@ RT_PROGRAM void pathtrace_camera()
         // return new segments to be traced here.
         for(;;)
         {
-            Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, scene_epsilon * 10.0, RT_DEFAULT_MAX);
+            Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, scene_epsilon, RT_DEFAULT_MAX);
             rtTrace(top_object, ray, prd);
 
             if(prd.done)
@@ -199,7 +199,7 @@ RT_PROGRAM void diffuse()
     float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
     float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
 
-    float3 hitpoint = ray.origin + t_hit * ray.direction + ffnormal * scene_epsilon * 1000.0;
+    float3 hitpoint = ray.origin + t_hit * ray.direction + world_geometric_normal * scene_epsilon * 1000.0;
 
     //
     // Generate a reflection ray.  This will be traced back in ray-gen.
@@ -427,7 +427,7 @@ float3 calcNormalBasic(float3 p, float eps)
 RT_PROGRAM void intersect(int primIdx)
 {
     const float EPS = scene_epsilon;
-    float t = 0.0, d = 1e100;
+    float t = ray.tmin, d = 0.0;
     float3 p = ray.origin;
 
     for (int i = 0; i < 300; i++)
@@ -435,13 +435,13 @@ RT_PROGRAM void intersect(int primIdx)
         p = ray.origin + t * ray.direction;
         d = map(p);
         t += d;
-        if (abs(d) < EPS)
+        if (abs(d) < EPS || t > ray.tmax)
         {
             break;
         }
     }
 
-    if (rtPotentialIntersection(t))
+    if (t < ray.tmax && rtPotentialIntersection(t))
     {
         shading_normal = geometric_normal = calcNormal(p, map, scene_epsilon);
         texcoord = make_float3(p.x, p.y, 0);

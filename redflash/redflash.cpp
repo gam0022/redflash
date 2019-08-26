@@ -76,7 +76,7 @@ uint32_t       height = 512;
 bool           use_pbo = true;
 
 int            frame_number = 1;
-int            sqrt_num_samples = 2;
+int            sqrt_num_samples = 1;// default: 2
 int            rr_begin_depth = 1;
 Program        pgram_intersection = 0;
 Program        pgram_bounding_box = 0;
@@ -452,7 +452,7 @@ GeometryGroup createGeometryLight()
     diffuse_light->setClosestHitProgram(0, diffuse_em);
 
     // Light
-    const float3 light_em = make_float3(15.0f, 15.0f, 5.0f);
+    const float3 light_em = make_float3(15000.0f, 0.0f, 0.0f);
     std::vector<GeometryInstance> gis;
     gis.push_back(createParallelogram(
         make_float3(5.0f, 185.0f, 75.0f),
