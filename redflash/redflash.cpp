@@ -454,9 +454,10 @@ GeometryGroup createGeometryLight()
     // Light
     const float3 light_em = make_float3(15.0f, 15.0f, 5.0f);
     std::vector<GeometryInstance> gis;
-    gis.push_back(createParallelogram(make_float3(343.0f, 548.6f, 227.0f),
-        make_float3(-130.0f, 0.0f, 0.0f),
-        make_float3(0.0f, 0.0f, 105.0f)));
+    gis.push_back(createParallelogram(
+        make_float3(5.0f, 185.0f, 75.0f),
+        make_float3(-10.0f, 0.0f, 00.0f),
+        make_float3( 0.0f, 0.0f, 10.0f)));
     setMaterial(gis.back(), diffuse_light, "emission_color", light_em);
 
     // Create geometry group
@@ -503,6 +504,10 @@ void setupCamera()
     // look at mandelbox
     camera_eye    = make_float3(408.13f - 278.0f, 189.64f, 271.37f - 278.0f);
     camera_lookat = make_float3(108.74f - 278.0f, 145.26f, 302.83f - 278.0f);
+
+    // look at mandelbox v2
+    camera_eye    = make_float3(-13.08f, 186.07f, 137.11f);
+    camera_lookat = make_float3(  4.74f, 170.17f, 42.4f);
 
     camera_rotate  = Matrix4x4::identity();
 }
