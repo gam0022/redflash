@@ -249,7 +249,7 @@ GeometryInstance createMesh(
     mesh.material = material;
     mesh.closest_hit = closest_hit;
     mesh.any_hit = any_hit;
-    Matrix4x4 mat = Matrix4x4::translate(make_float3(278.0f, 0.0f, 278.0f)) * Matrix4x4::scale(make_float3(300.0f));
+    Matrix4x4 mat = Matrix4x4::translate(make_float3(0.0f, 0.0f, 0.0f)) * Matrix4x4::scale(make_float3(300.0f));
     loadMesh(filename, mesh, mat);
     return mesh.geom_instance;
 }
@@ -334,13 +334,13 @@ GeometryGroup createGeometry()
     const float3 red   = make_float3( 0.8f, 0.05f, 0.05f );
 
     // Floor
-    gis.push_back( createParallelogram( make_float3( 0.0f, 0.0f, 0.0f ),
+    /*gis.push_back( createParallelogram( make_float3( 0.0f, 0.0f, 0.0f ),
                                         make_float3( 0.0f, 0.0f, 559.2f ),
                                         make_float3( 556.0f, 0.0f, 0.0f ) ) );
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
     // Ceiling
-    /*gis.push_back( createParallelogram( make_float3( 0.0f, 548.8f, 0.0f ),
+    gis.push_back( createParallelogram( make_float3( 0.0f, 548.8f, 0.0f ),
                                         make_float3( 556.0f, 0.0f, 0.0f ),
                                         make_float3( 0.0f, 0.0f, 559.2f ) ) );
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
@@ -416,7 +416,7 @@ GeometryGroup createGeometry()
     // Raymarcing Mini
     float scale = 1.0f;
     gis.push_back(createRaymrachingObject(
-        make_float3(278.0f, 103.333f * scale, 278.0f),
+        make_float3(0.0f, 103.333f * scale, 0.0f),
         make_float3(103.333f * scale, 103.333f * scale, 103.333f * scale)));
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
@@ -501,8 +501,8 @@ void setupCamera()
     camera_lookat = make_float3(419.18f, -2.79f, 414.33f);
 
     // look at mandelbox
-    camera_eye    = make_float3(408.13f, 189.64f, 271.37f);
-    camera_lookat = make_float3(108.74f, 145.26f, 302.83f);
+    camera_eye    = make_float3(408.13f - 278.0f, 189.64f, 271.37f - 278.0f);
+    camera_lookat = make_float3(108.74f - 278.0f, 145.26f, 302.83f - 278.0f);
 
     camera_rotate  = Matrix4x4::identity();
 }
