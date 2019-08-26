@@ -195,7 +195,9 @@ void setMaterial(
 GeometryInstance createParallelogram(
         const float3& anchor,
         const float3& offset1,
-        const float3& offset2)
+        const float3& offset2,
+        ParallelogramLight* light = NULL
+    )
 {
     Geometry parallelogram = context->createGeometry();
     parallelogram->setPrimitiveCount( 1u );
@@ -213,6 +215,14 @@ GeometryInstance createParallelogram(
     parallelogram["anchor"]->setFloat( anchor );
     parallelogram["v1"]->setFloat( v1 );
     parallelogram["v2"]->setFloat( v2 );
+
+    if (light != NULL)
+    {
+        light->corner = anchor;
+        light->v1 = v1;
+        light->v2 = v2;
+        light->normal = normal;
+    }
 
     GeometryInstance gi = context->createGeometryInstance();
     gi->setGeometry(parallelogram);
@@ -429,13 +439,29 @@ GeometryGroup createGeometry()
 
 GeometryGroup createGeometryLight()
 {
-    // Light buffer
+    // Set up material
+    const char *ptx = sutil::getPtxString(SAMPLE_NAME, "redflash.cu");
+    Material diffuse_light = context->createMaterial();
+    Program diffuse_em = context->createProgramFromPTXString(ptx, "diffuseEmitter");
+    diffuse_light->setClosestHitProgram(0, diffuse_em);
+
+    // Light
     ParallelogramLight light;
-    light.corner = make_float3(343.0f, 548.6f, 227.0f);
-    light.v1 = make_float3(-130.0f, 0.0f, 0.0f);
-    light.v2 = make_float3(0.0f, 0.0f, 105.0f);
-    light.normal = normalize(cross(light.v1, light.v2));
-    light.emission = make_float3(15.0f, 15.0f, 5.0f);
+    const float3 light_em = make_float3(50000.0f, 0.5f, 0.5f);
+    std::vector<GeometryInstance> gis;
+    gis.push_back(createParallelogram(
+        make_float3(5.0f, 185.0f, 75.0f),
+        make_float3(-10.0f, 0.0f, 00.0f),
+        make_float3( 0.0f, 0.0f, 10.0f),
+        &light));
+    setMaterial(gis.back(), diffuse_light, "emission_color", light_em);
+
+    // Create geometry group
+    GeometryGroup light_group = context->createGeometryGroup(gis.begin(), gis.end());
+    light_group->setAcceleration(context->createAcceleration("Trbvh"));
+
+    // Light buffer
+    light.emission = light_em;
 
     Buffer light_buffer = context->createBuffer(RT_BUFFER_INPUT);
     light_buffer->setFormat(RT_FORMAT_USER);
@@ -445,24 +471,6 @@ GeometryGroup createGeometryLight()
     light_buffer->unmap();
     context["lights"]->setBuffer(light_buffer);
 
-    // Set up material
-    const char *ptx = sutil::getPtxString(SAMPLE_NAME, "redflash.cu");
-    Material diffuse_light = context->createMaterial();
-    Program diffuse_em = context->createProgramFromPTXString(ptx, "diffuseEmitter");
-    diffuse_light->setClosestHitProgram(0, diffuse_em);
-
-    // Light
-    const float3 light_em = make_float3(15000.0f, 0.0f, 0.0f);
-    std::vector<GeometryInstance> gis;
-    gis.push_back(createParallelogram(
-        make_float3(5.0f, 185.0f, 75.0f),
-        make_float3(-10.0f, 0.0f, 00.0f),
-        make_float3( 0.0f, 0.0f, 10.0f)));
-    setMaterial(gis.back(), diffuse_light, "emission_color", light_em);
-
-    // Create geometry group
-    GeometryGroup light_group = context->createGeometryGroup(gis.begin(), gis.end());
-    light_group->setAcceleration(context->createAcceleration("Trbvh"));
     return light_group;
 }
 
