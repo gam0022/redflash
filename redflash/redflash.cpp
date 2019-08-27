@@ -76,7 +76,7 @@ uint32_t       height = 512;
 bool           use_pbo = true;
 
 int            frame_number = 1;
-int            sqrt_num_samples = 2;
+int            sqrt_num_samples = 1;// default: 2
 int            rr_begin_depth = 1;
 Program        pgram_intersection = 0;
 Program        pgram_bounding_box = 0;
@@ -195,7 +195,9 @@ void setMaterial(
 GeometryInstance createParallelogram(
         const float3& anchor,
         const float3& offset1,
-        const float3& offset2)
+        const float3& offset2,
+        ParallelogramLight* light = NULL
+    )
 {
     Geometry parallelogram = context->createGeometry();
     parallelogram->setPrimitiveCount( 1u );
@@ -213,6 +215,14 @@ GeometryInstance createParallelogram(
     parallelogram["anchor"]->setFloat( anchor );
     parallelogram["v1"]->setFloat( v1 );
     parallelogram["v2"]->setFloat( v2 );
+
+    if (light != NULL)
+    {
+        light->corner = anchor;
+        light->v1 = v1;
+        light->v2 = v2;
+        light->normal = normal;
+    }
 
     GeometryInstance gi = context->createGeometryInstance();
     gi->setGeometry(parallelogram);
@@ -249,7 +259,7 @@ GeometryInstance createMesh(
     mesh.material = material;
     mesh.closest_hit = closest_hit;
     mesh.any_hit = any_hit;
-    Matrix4x4 mat = Matrix4x4::translate(make_float3(278.0f, 0.0f, 278.0f)) * Matrix4x4::scale(make_float3(3000.0f));
+    Matrix4x4 mat = Matrix4x4::translate(make_float3(0.0f, 0.0f, 0.0f)) * Matrix4x4::scale(make_float3(300.0f));
     loadMesh(filename, mesh, mat);
     return mesh.geom_instance;
 }
@@ -262,7 +272,7 @@ void createContext()
     context->setStackSize( 1800 );
     context->setMaxTraceDepth( 2 );
 
-    context[ "scene_epsilon"                  ]->setFloat( 1.e-3f );
+    context[ "scene_epsilon"                  ]->setFloat( 0.0002 );
     context[ "rr_begin_depth"                 ]->setUint( rr_begin_depth );
 
     Buffer buffer = sutil::createOutputBuffer( context, RT_FORMAT_FLOAT4, width, height, use_pbo );
@@ -329,17 +339,18 @@ GeometryGroup createGeometry()
     std::vector<GeometryInstance> gis;
 
     const float3 white = make_float3( 0.8f, 0.8f, 0.8f );
+    const float3 gray  = make_float3( 0.3f, 0.3f, 0.3f );
     const float3 green = make_float3( 0.05f, 0.8f, 0.05f );
     const float3 red   = make_float3( 0.8f, 0.05f, 0.05f );
 
     // Floor
-    gis.push_back( createParallelogram( make_float3( 0.0f, 0.0f, 0.0f ),
+    /*gis.push_back( createParallelogram( make_float3( 0.0f, 0.0f, 0.0f ),
                                         make_float3( 0.0f, 0.0f, 559.2f ),
                                         make_float3( 556.0f, 0.0f, 0.0f ) ) );
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
     // Ceiling
-    /*gis.push_back( createParallelogram( make_float3( 0.0f, 548.8f, 0.0f ),
+    gis.push_back( createParallelogram( make_float3( 0.0f, 548.8f, 0.0f ),
                                         make_float3( 556.0f, 0.0f, 0.0f ),
                                         make_float3( 0.0f, 0.0f, 559.2f ) ) );
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
@@ -413,9 +424,9 @@ GeometryGroup createGeometry()
     setMaterial(gis.back(), diffuse, "diffuse_color", white);*/
 
     // Raymarcing Mini
-    float scale = 0.25f;
+    float scale = 1.0f;
     gis.push_back(createRaymrachingObject(
-        make_float3(278.0f* 1.5f, 103.333f * scale, 278.0f * 1.5f),
+        make_float3(0.0f, 103.333f * scale, 0.0f),
         make_float3(103.333f * scale, 103.333f * scale, 103.333f * scale)));
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
@@ -428,13 +439,29 @@ GeometryGroup createGeometry()
 
 GeometryGroup createGeometryLight()
 {
-    // Light buffer
+    // Set up material
+    const char *ptx = sutil::getPtxString(SAMPLE_NAME, "redflash.cu");
+    Material diffuse_light = context->createMaterial();
+    Program diffuse_em = context->createProgramFromPTXString(ptx, "diffuseEmitter");
+    diffuse_light->setClosestHitProgram(0, diffuse_em);
+
+    // Light
     ParallelogramLight light;
-    light.corner = make_float3(343.0f, 548.6f, 227.0f);
-    light.v1 = make_float3(-130.0f, 0.0f, 0.0f);
-    light.v2 = make_float3(0.0f, 0.0f, 105.0f);
-    light.normal = normalize(cross(light.v1, light.v2));
-    light.emission = make_float3(15.0f, 15.0f, 5.0f);
+    const float3 light_em = make_float3(50000.0f, 0.5f, 0.5f);
+    std::vector<GeometryInstance> gis;
+    gis.push_back(createParallelogram(
+        make_float3(5.0f, 185.0f, 75.0f),
+        make_float3(-10.0f, 0.0f, 00.0f),
+        make_float3( 0.0f, 0.0f, 10.0f),
+        &light));
+    setMaterial(gis.back(), diffuse_light, "emission_color", light_em);
+
+    // Create geometry group
+    GeometryGroup light_group = context->createGeometryGroup(gis.begin(), gis.end());
+    light_group->setAcceleration(context->createAcceleration("Trbvh"));
+
+    // Light buffer
+    light.emission = light_em;
 
     Buffer light_buffer = context->createBuffer(RT_BUFFER_INPUT);
     light_buffer->setFormat(RT_FORMAT_USER);
@@ -444,23 +471,6 @@ GeometryGroup createGeometryLight()
     light_buffer->unmap();
     context["lights"]->setBuffer(light_buffer);
 
-    // Set up material
-    const char *ptx = sutil::getPtxString(SAMPLE_NAME, "redflash.cu");
-    Material diffuse_light = context->createMaterial();
-    Program diffuse_em = context->createProgramFromPTXString(ptx, "diffuseEmitter");
-    diffuse_light->setClosestHitProgram(0, diffuse_em);
-
-    // Light
-    const float3 light_em = make_float3(15.0f, 15.0f, 5.0f);
-    std::vector<GeometryInstance> gis;
-    gis.push_back(createParallelogram(make_float3(343.0f, 548.6f, 227.0f),
-        make_float3(-130.0f, 0.0f, 0.0f),
-        make_float3(0.0f, 0.0f, 105.0f)));
-    setMaterial(gis.back(), diffuse_light, "emission_color", light_em);
-
-    // Create geometry group
-    GeometryGroup light_group = context->createGeometryGroup(gis.begin(), gis.end());
-    light_group->setAcceleration(context->createAcceleration("Trbvh"));
     return light_group;
 }
 
@@ -498,6 +508,14 @@ void setupCamera()
     // look at raymarching
     camera_eye = make_float3(418.47f, 73.97f, 415.23f);
     camera_lookat = make_float3(419.18f, -2.79f, 414.33f);
+
+    // look at mandelbox
+    camera_eye    = make_float3(408.13f - 278.0f, 189.64f, 271.37f - 278.0f);
+    camera_lookat = make_float3(108.74f - 278.0f, 145.26f, 302.83f - 278.0f);
+
+    // look at mandelbox v2
+    camera_eye    = make_float3(-13.08f, 186.07f, 137.11f);
+    camera_lookat = make_float3(  4.74f, 170.17f, 42.4f);
 
     camera_rotate  = Matrix4x4::identity();
 }
@@ -604,6 +622,12 @@ void glutDisplay()
     }
 
     {
+        static char frame_number_text[32];
+        sprintf(frame_number_text, "frame_number:   %d", frame_number);
+        sutil::displayText(frame_number_text, 10, 80);
+    }
+
+    {
         static char camera_eye_text[32];
         sprintf(camera_eye_text, "camera_eye:    %7.2f, %7.2f, %7.2f", camera_eye.x, camera_eye.y, camera_eye.z);
         sutil::displayText(camera_eye_text, 10, 60);
@@ -690,7 +714,7 @@ void glutMouseMotion( int x, int y)
         float4 offset = { -dx, dy, 0, 0 };
         offset = frame * offset;
         float3 offset_v3 = { offset.x, offset.y, offset.z };
-        offset_v3 *= 1000;
+        offset_v3 *= 200;
         camera_eye += offset_v3;
         camera_lookat += offset_v3;
         camera_changed = true;
