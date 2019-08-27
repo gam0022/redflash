@@ -35,11 +35,12 @@ using namespace optix;
 
 struct PerRayData_pathtrace
 {
-    float3 result;
-    float3 radiance;
-    float3 attenuation;
     float3 origin;
     float3 direction;
+
+    float3 emission;
+    float3 albedo;
+
     unsigned int seed;
     int depth;
     int done;
@@ -104,44 +105,37 @@ RT_PROGRAM void pathtrace_camera()
 
         // Initialze per-ray data
         PerRayData_pathtrace prd;
-        prd.result = make_float3(0.f);
-        prd.attenuation = make_float3(1.f);
         prd.done = false;
         prd.seed = seed;
         prd.depth = 0;
 
+        float3 accumulation = make_float3(0.0f);
+        float3 reflectance  = make_float3(1.0f);
+
         // Each iteration is a segment of the ray path.  The closest hit will
         // return new segments to be traced here.
-        for(;;)
+        for(int i = 0; i < 10; i++)
         {
             Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, scene_epsilon, RT_DEFAULT_MAX);
             rtTrace(top_object, ray, prd);
 
-            if(prd.done)
+            accumulation += reflectance * prd.emission;
+            reflectance *= prd.albedo * 1.0/*current_reflectance*/;
+
+            if (prd.done)
             {
                 // We have hit the background or a luminaire
-                prd.result += prd.radiance * prd.attenuation;
                 break;
             }
-
-            // Russian roulette termination 
-            if(prd.depth >= rr_begin_depth)
-            {
-                float pcont = fmaxf(prd.attenuation);
-                if(rnd(prd.seed) >= pcont)
-                    break;
-                prd.attenuation /= pcont;
-            }
-
-            prd.depth++;
-            prd.result += prd.radiance * prd.attenuation;
 
             // Update ray data for the next path segment
             ray_origin = prd.origin;
             ray_direction = prd.direction;
+
+            prd.depth++;
         }
 
-        result += prd.result;
+        result += accumulation;
         seed = prd.seed;
     } while (--samples_per_pixel);
 
@@ -173,7 +167,8 @@ rtDeclareVariable(float3,        emission_color, , );
 
 RT_PROGRAM void diffuseEmitter()
 {
-    current_prd.radiance = emission_color;
+    current_prd.emission = emission_color;
+    current_prd.albedo   = make_float3(0, 0, 0);
     current_prd.done = true;
 }
 
@@ -197,7 +192,7 @@ RT_PROGRAM void diffuse()
     float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
     float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
 
-    float3 hitpoint = ray.origin + t_hit * ray.direction + world_geometric_normal * scene_epsilon * 1000.0;
+    float3 hitpoint = ray.origin + t_hit * ray.direction + ffnormal * scene_epsilon * 100.0;
 
     //
     // Generate a reflection ray.  This will be traced back in ray-gen.
@@ -214,14 +209,13 @@ RT_PROGRAM void diffuse()
 
     // NOTE: f/pdf = 1 since we are perfectly importance sampling lambertian
     // with cosine density.
-    current_prd.attenuation = current_prd.attenuation * diffuse_color;
+    current_prd.albedo   = diffuse_color;
+    current_prd.emission = make_float3(0.0);
 
     //
     // Next event estimation (compute direct lighting).
     //
     unsigned int num_lights = lights.size();
-    float3 result = make_float3(0.0f);
-
     for(int i = 0; i < num_lights; ++i)
     {
         // Choose random point on light
@@ -250,12 +244,10 @@ RT_PROGRAM void diffuse()
                 const float A = length(cross(light.v1, light.v2));
                 // convert area based pdf to solid angle
                 const float weight = nDl * LnDl * A / (M_PIf * Ldist * Ldist);
-                result += light.emission * weight;
+                current_prd.emission += light.emission * weight;
             }
         }
     }
-
-    current_prd.radiance = result;
 }
 
 
@@ -299,7 +291,8 @@ RT_PROGRAM void envmap_miss()
     float phi = M_PIf * 0.5f - acosf(ray.direction.y);
     float u = (theta + M_PIf) * (0.5f * M_1_PIf);
     float v = 0.5f * (1.0f + sin(phi));
-    current_prd.radiance = make_float3(tex2D(envmap, u, v));
+    current_prd.emission = make_float3(tex2D(envmap, u, v));
+    current_prd.albedo = make_float3(0.0);
     current_prd.done = true;
 }
 
