@@ -244,7 +244,7 @@ RT_PROGRAM void diffuse()
                 const float A = length(cross(light.v1, light.v2));
                 // convert area based pdf to solid angle
                 const float weight = nDl * LnDl * A / (M_PIf * Ldist * Ldist);
-                current_prd.emission += light.emission * weight;
+                current_prd.emission += current_prd.albedo * light.emission * weight;
             }
         }
     }
