@@ -42,7 +42,6 @@ struct PerRayData_pathtrace
     float3 direction;
     unsigned int seed;
     int depth;
-    int countEmitted;
     int done;
 };
 
@@ -107,7 +106,6 @@ RT_PROGRAM void pathtrace_camera()
         PerRayData_pathtrace prd;
         prd.result = make_float3(0.f);
         prd.attenuation = make_float3(1.f);
-        prd.countEmitted = true;
         prd.done = false;
         prd.seed = seed;
         prd.depth = 0;
@@ -217,7 +215,6 @@ RT_PROGRAM void diffuse()
     // NOTE: f/pdf = 1 since we are perfectly importance sampling lambertian
     // with cosine density.
     current_prd.attenuation = current_prd.attenuation * diffuse_color;
-    current_prd.countEmitted = false;
 
     //
     // Next event estimation (compute direct lighting).
