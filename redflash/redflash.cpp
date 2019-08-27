@@ -449,7 +449,7 @@ GeometryGroup createGeometryLight()
 
     // Light
     ParallelogramLight light;
-    const float3 light_em = make_float3(50000.0f, 0.5f, 0.5f);
+    const float3 light_em = make_float3(10.0f, 0.5f, 0.5f);
     std::vector<GeometryInstance> gis;
     gis.push_back(createParallelogram(
         make_float3(5.0f, 185.0f, 75.0f),
