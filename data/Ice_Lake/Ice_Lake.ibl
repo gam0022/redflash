@@ -1,0 +1,42 @@
+[Header]
+ICOfile = "Ice_Lake_Thumb.jpg"
+PREVIEWfile = "Ice_Lake_preview.jpg"
+Name = "Ice Lake"
+Author = "Blochi"
+Location = "California"
+Comment = "One of the Mammoth lakes, very cold indirect light, just before dawn"
+GEOlat = 37.61049188483683
+GEOlong = -119.00987148284912
+Link = "http://www.hdrlabs.com/sibl/archive.html"
+Date = "2006:11:25"
+Time = "08:25:00"
+Height = 1.2
+North = 0.88
+
+[Background]
+; yet another pixelpig. Huuuuge!
+BGfile = "Ice_Lake_HiRes_TMap.jpg"
+BGmap = 1
+BGu = 0.000000
+BGv = 0.000000
+BGheight = 4000
+
+[Enviroment]
+EVfile = "Ice_Lake_Env.hdr"
+EVmap = 1
+EVu = 0.000000
+EVv = 0.000000
+EVheight = 180
+EVmulti = 1.300000
+EVgamma = 1.800000
+
+[Reflection]
+REFfile = "Ice_Lake_Ref.hdr"
+REFmap = 1
+REFu = 0.000000
+REFv = 0.000000
+REFheight = 800
+REFmulti = 1.300000
+REFgamma = 1.800000
+
+
