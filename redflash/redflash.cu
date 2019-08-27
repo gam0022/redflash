@@ -292,11 +292,14 @@ RT_PROGRAM void exception()
 //
 //-----------------------------------------------------------------------------
 
-rtDeclareVariable(float3, bg_color, , );
-
-RT_PROGRAM void miss()
+rtTextureSampler<float4, 2> envmap;
+RT_PROGRAM void envmap_miss()
 {
-    current_prd.radiance = bg_color;
+    float theta = atan2f(ray.direction.x, ray.direction.z);
+    float phi = M_PIf * 0.5f - acosf(ray.direction.y);
+    float u = (theta + M_PIf) * (0.5f * M_1_PIf);
+    float v = 0.5f * (1.0f + sin(phi));
+    current_prd.radiance = make_float3(tex2D(envmap, u, v));
     current_prd.done = true;
 }
 
@@ -452,19 +455,4 @@ RT_PROGRAM void bounds(int, float result[6])
     optix::Aabb* aabb = (optix::Aabb*)result;
     aabb->m_min = center - size;
     aabb->m_max = center + size;
-}
-
-
-//
-// Environment map background
-//
-rtTextureSampler<float4, 2> envmap;
-RT_PROGRAM void envmap_miss()
-{
-    float theta = atan2f( ray.direction.x, ray.direction.z );
-    float phi   = M_PIf * 0.5f -  acosf( ray.direction.y );
-    float u     = (theta + M_PIf) * (0.5f * M_1_PIf);
-    float v     = 0.5f * ( 1.0f + sin(phi) );
-    current_prd.radiance = make_float3( tex2D(envmap, u, v) );
-    current_prd.done = true;
 }

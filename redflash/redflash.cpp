@@ -286,7 +286,6 @@ void createContext()
 
     context[ "sqrt_num_samples" ]->setUint( sqrt_num_samples );
     context[ "bad_color"        ]->setFloat( 1000000.0f, 0.0f, 1000000.0f ); // Super magenta to make sure it doesn't get averaged out in the progressive rendering.
-    context[ "bg_color"         ]->setFloat( make_float3(0.0f) );
 
     const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
     // const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
