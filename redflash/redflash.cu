@@ -30,7 +30,6 @@
 #include <common.h>
 #include "redflash.h"
 #include "random.h"
-#include "helpers.h"
 
 using namespace optix;
 
@@ -238,6 +237,12 @@ RT_CALLABLE_PROGRAM float3 Eval(MaterialParameter &mat, State &state, PerRayData
     return out * clamp(dot(N, L), 0.0f, 1.0f);
 }
 
+static __host__ __device__ __inline__ float powerHeuristic(float a, float b)
+{
+    float t = a * a;
+    return t / (b*b + t);
+}
+
 /*RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
 {
     float3 L = make_float3(0.0f);
@@ -284,46 +289,49 @@ RT_CALLABLE_PROGRAM float3 Eval(MaterialParameter &mat, State &state, PerRayData
 float3 DirectLightParallelogram(MaterialParameter &mat, State &state)
 {
     unsigned int num_lights = lights.size();
-    float3 result = make_float3(0.0f);
+    float3 L = make_float3(0.0f);
+    float3 surfaceNormal = state.ffnormal;
 
     for(int i = 0; i < num_lights; ++i)
     {
         // Choose random point on light
-        ParallelogramLight light = lights[i];
+        ParallelogramLight lightSample = lights[i];
         const float z1 = rnd(current_prd.seed);
         const float z2 = rnd(current_prd.seed);
-        const float3 light_pos = light.corner + light.v1 * z1 + light.v2 * z2;
+        const float3 light_pos = lightSample.corner + lightSample.v1 * z1 + lightSample.v2 * z2;
 
         // Calculate properties of light sample (for area based pdf)
-        const float  Ldist = length(light_pos - current_prd.origin);
-        const float3 L     = normalize(light_pos - current_prd.origin);
-        const float  nDl   = dot(state.ffnormal, L);
-        const float  LnDl  = dot(light.normal, L);
+        float3 lightDir = light_pos - current_prd.origin;
+        float lightDist = length(lightDir);
+        float lightDistSq = lightDist * lightDist;
+        lightDir /= sqrtf(lightDistSq);
 
         // cast shadow ray
-        if ( nDl > 0.0f && LnDl > 0.0f )
+        if (dot(lightDir, surfaceNormal) >= 0.0f && dot(lightDir, lightSample.normal) <= 0.0f)
         {
             PerRayData_pathtrace_shadow shadow_prd;
             shadow_prd.inShadow = false;
             // Note: bias both ends of the shadow ray, in case the light is also present as geometry in the scene.
-            Ray shadow_ray = make_Ray(current_prd.origin, L, SHADOW_RAY_TYPE, scene_epsilon, Ldist - scene_epsilon);
+            Ray shadow_ray = make_Ray(current_prd.origin, lightDir, SHADOW_RAY_TYPE, scene_epsilon, lightDist - scene_epsilon);
             rtTrace(top_object, shadow_ray, shadow_prd);
 
             if(!shadow_prd.inShadow)
             {
-                const float A = length(cross(light.v1, light.v2));// = 1.0 / light_pdf
-                // convert area based pdf to solid angle
-                const float g = nDl * LnDl / (Ldist * Ldist);
-                const float f = 1.0f / M_PIf;
-                // powerHeuristic(lightPdf, prd.pdf) * prd.throughput * f / max(0.001f, lightPdf);
-                // const float weight = nDl * LnDl * A / (M_PIf * Ldist * Ldist);
-                const float weight = f * g * A;
-                result += light.emission * current_prd.attenuation * weight;
+                const float A = length(cross(lightSample.v1, lightSample.v2));
+                float NdotL = dot(lightSample.normal, -lightDir);
+                float lightPdf = lightDistSq / (A * NdotL);
+
+                current_prd.direction = lightDir;
+
+                Pdf/*sysBRDFPdf[programId]*/(mat, state, current_prd);
+                float3 f = Eval/*sysBRDFEval[programId]*/(mat, state, current_prd);
+
+                L = powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
             }
         }
     }
 
-    return result * mat.albedo;
+    return L;
 }
 
 
