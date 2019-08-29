@@ -168,10 +168,9 @@ RT_PROGRAM void pathtrace_camera()
 
 rtDeclareVariable(float3,        emission_color, , );
 
-RT_PROGRAM void diffuseEmitter()
+RT_PROGRAM void light_closest_hit()
 {
     current_prd.radiance += emission_color * current_prd.attenuation;
-    current_prd.attenuation = make_float3(0.0f);
     current_prd.done = true;
 }
 
@@ -189,7 +188,7 @@ rtDeclareVariable(optix::Ray, ray,              rtCurrentRay, );
 rtDeclareVariable(float,      t_hit,            rtIntersectionDistance, );
 
 
-RT_PROGRAM void diffuse()
+RT_PROGRAM void closest_hit()
 {
     float3 world_shading_normal   = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, shading_normal ) );
     float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );

@@ -299,7 +299,7 @@ GeometryGroup createGeometryTriangles()
     // Set up material
     Material diffuse = context->createMaterial();
     const char *ptx = sutil::getPtxString(SAMPLE_NAME, "redflash.cu");
-    Program diffuse_ch = context->createProgramFromPTXString(ptx, "diffuse");
+    Program diffuse_ch = context->createProgramFromPTXString(ptx, "closest_hit");
     Program diffuse_ah = context->createProgramFromPTXString(ptx, "shadow");
     diffuse->setClosestHitProgram(0, diffuse_ch);
     diffuse->setAnyHitProgram(1, diffuse_ah);
@@ -322,7 +322,7 @@ GeometryGroup createGeometry()
     // Set up material
     Material diffuse = context->createMaterial();
     const char *ptx = sutil::getPtxString( SAMPLE_NAME, "redflash.cu" );
-    Program diffuse_ch = context->createProgramFromPTXString( ptx, "diffuse" );
+    Program diffuse_ch = context->createProgramFromPTXString( ptx, "closest_hit" );
     Program diffuse_ah = context->createProgramFromPTXString( ptx, "shadow" );
     diffuse->setClosestHitProgram( 0, diffuse_ch );
     diffuse->setAnyHitProgram( 1, diffuse_ah );
@@ -443,7 +443,7 @@ GeometryGroup createGeometryLight()
     // Set up material
     const char *ptx = sutil::getPtxString(SAMPLE_NAME, "redflash.cu");
     Material diffuse_light = context->createMaterial();
-    Program diffuse_em = context->createProgramFromPTXString(ptx, "diffuseEmitter");
+    Program diffuse_em = context->createProgramFromPTXString(ptx, "light_closest_hit");
     diffuse_light->setClosestHitProgram(0, diffuse_em);
 
     // Light
