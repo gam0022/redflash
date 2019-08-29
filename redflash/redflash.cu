@@ -311,10 +311,14 @@ float3 DirectLightParallelogram(MaterialParameter &mat, State &state)
 
             if(!shadow_prd.inShadow)
             {
-                const float A = length(cross(light.v1, light.v2));// light.area
+                const float A = length(cross(light.v1, light.v2));// = 1.0 / light_pdf
                 // convert area based pdf to solid angle
-                const float weight = nDl * LnDl * A / (M_PIf * Ldist * Ldist);// powerHeuristic(lightPdf, prd.pdf) * prd.throughput * f / max(0.001f, lightPdf);
-                result += light.emission * weight;
+                const float g = nDl * LnDl / (Ldist * Ldist);
+                const float f = 1.0f / M_PIf;
+                // powerHeuristic(lightPdf, prd.pdf) * prd.throughput * f / max(0.001f, lightPdf);
+                // const float weight = nDl * LnDl * A / (M_PIf * Ldist * Ldist);
+                const float weight = f * g * A;
+                result += light.emission * current_prd.attenuation * weight;
             }
         }
     }
