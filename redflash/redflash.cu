@@ -725,7 +725,7 @@ RT_PROGRAM void intersect(int primIdx)
         p = ray.origin + t * ray.direction;
         d = map(p);
         t += d;
-        eps = scene_epsilon * pow(t, 1.2f);
+        eps = scene_epsilon * t;
         if (abs(d) < eps || t > ray.tmax)
         {
             break;
