@@ -524,7 +524,7 @@ RT_PROGRAM void closest_hit()
 
     MaterialParameter mat;
     mat.albedo = diffuse_color;
-    mat.metallic = 1.0f;
+    mat.metallic = 0.9f;
     mat.roughness = 0.0f;
 
     // Direct light Sampling
@@ -692,7 +692,7 @@ float map(float3 p)
 {
     //return length(p - center) - 100.0;
 
-    float scale = 100 * 0.3;
+    float scale = 100 * 0.2;
     // f((p - position) / scale) * scale;
     // return dMenger((p - center) / scale, make_float3(1.23, 1.65, 1.45), 2.56) * scale;
     // return dMenger((p - center) / scale, make_float3(1, 1, 1), 3.1) * scale;
@@ -716,7 +716,7 @@ float3 calcNormalBasic(float3 p, float eps)
 
 RT_PROGRAM void intersect(int primIdx)
 {
-    const float EPS = scene_epsilon;
+    float eps;
     float t = ray.tmin, d = 0.0;
     float3 p = ray.origin;
 
@@ -725,7 +725,8 @@ RT_PROGRAM void intersect(int primIdx)
         p = ray.origin + t * ray.direction;
         d = map(p);
         t += d;
-        if (abs(d) < EPS || t > ray.tmax)
+        eps = scene_epsilon * pow(t, 1.2f);
+        if (abs(d) < eps || t > ray.tmax)
         {
             break;
         }
@@ -733,7 +734,7 @@ RT_PROGRAM void intersect(int primIdx)
 
     if (t < ray.tmax && rtPotentialIntersection(t))
     {
-        shading_normal = geometric_normal = calcNormal(p, map, scene_epsilon);
+        shading_normal = geometric_normal = calcNormal(p, map, eps);
         texcoord = make_float3(p.x, p.y, 0);
         lgt_idx = lgt_instance;
         rtReportIntersection(0);
