@@ -530,7 +530,7 @@ RT_PROGRAM void closest_hit()
     // Direct light Sampling
     if (true/*!prd.specularBounce && prd.depth < max_depth*/)
     {
-        //current_prd.radiance += DirectLightParallelogram(mat, state);
+        current_prd.radiance += DirectLightParallelogram(mat, state);
     }
 
     // BRDF Sampling
