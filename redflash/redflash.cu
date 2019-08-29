@@ -30,6 +30,7 @@
 #include <common.h>
 #include "redflash.h"
 #include "random.h"
+#include "helpers.h"
 
 using namespace optix;
 
@@ -232,9 +233,93 @@ RT_CALLABLE_PROGRAM float3 Eval(MaterialParameter &mat, State &state, PerRayData
     float NDotV = dot(N, V);
     if (NDotL <= 0.0f || NDotV <= 0.0f) return make_float3(0.0f);
 
-    float3 out = (1.0f / M_PIf) * mat.color;
+    float3 out = (1.0f / M_PIf) * mat.albedo;
 
     return out * clamp(dot(N, L), 0.0f, 1.0f);
+}
+
+/*RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
+{
+    float3 L = make_float3(0.0f);
+
+    //Pick a light to sample
+    int index = optix::clamp(static_cast<int>(floorf(rnd(prd.seed) * sysNumberOfLights)), 0, sysNumberOfLights - 1);
+    LightParameter light = sysLightParameters[index];
+    LightSample lightSample;
+
+    float3 surfacePos = state.fhp;
+    float3 surfaceNormal = state.ffnormal;
+
+    sysLightSample[light.lightType](light, prd, lightSample);
+
+    float3 lightDir = lightSample.surfacePos - surfacePos;
+    float lightDist = length(lightDir);
+    float lightDistSq = lightDist * lightDist;
+    lightDir /= sqrtf(lightDistSq);
+
+    if (dot(lightDir, surfaceNormal) <= 0.0f || dot(lightDir, lightSample.normal) >= 0.0f)
+        return L;
+
+    PerRayData_shadow prd_shadow;
+    prd_shadow.inShadow = false;
+    optix::Ray shadowRay = optix::make_Ray(surfacePos, lightDir, 1, scene_epsilon, lightDist - scene_epsilon);
+    rtTrace(top_object, shadowRay, prd_shadow);
+
+    if (!prd_shadow.inShadow)
+    {
+        float NdotL = dot(lightSample.normal, -lightDir);
+        float lightPdf = lightDistSq / (light.area * NdotL);
+
+        prd.bsdfDir = lightDir;
+
+        sysBRDFPdf[programId](mat, state, prd);
+        float3 f = sysBRDFEval[programId](mat, state, prd);
+
+        L = powerHeuristic(lightPdf, prd.pdf) * prd.throughput * f * lightSample.emission / max(0.001f, lightPdf);
+    }
+
+    return L;
+}*/
+
+float3 DirectLightParallelogram(MaterialParameter &mat, State &state)
+{
+    unsigned int num_lights = lights.size();
+    float3 result = make_float3(0.0f);
+
+    for(int i = 0; i < num_lights; ++i)
+    {
+        // Choose random point on light
+        ParallelogramLight light = lights[i];
+        const float z1 = rnd(current_prd.seed);
+        const float z2 = rnd(current_prd.seed);
+        const float3 light_pos = light.corner + light.v1 * z1 + light.v2 * z2;
+
+        // Calculate properties of light sample (for area based pdf)
+        const float  Ldist = length(light_pos - current_prd.origin);
+        const float3 L     = normalize(light_pos - current_prd.origin);
+        const float  nDl   = dot(state.ffnormal, L);
+        const float  LnDl  = dot(light.normal, L);
+
+        // cast shadow ray
+        if ( nDl > 0.0f && LnDl > 0.0f )
+        {
+            PerRayData_pathtrace_shadow shadow_prd;
+            shadow_prd.inShadow = false;
+            // Note: bias both ends of the shadow ray, in case the light is also present as geometry in the scene.
+            Ray shadow_ray = make_Ray(current_prd.origin, L, SHADOW_RAY_TYPE, scene_epsilon, Ldist - scene_epsilon);
+            rtTrace(top_object, shadow_ray, shadow_prd);
+
+            if(!shadow_prd.inShadow)
+            {
+                const float A = length(cross(light.v1, light.v2));// light.area
+                // convert area based pdf to solid angle
+                const float weight = nDl * LnDl * A / (M_PIf * Ldist * Ldist);// powerHeuristic(lightPdf, prd.pdf) * prd.throughput * f / max(0.001f, lightPdf);
+                result += light.emission * weight;
+            }
+        }
+    }
+
+    return result * mat.albedo;
 }
 
 
@@ -254,53 +339,29 @@ RT_PROGRAM void closest_hit()
     current_prd.origin = hitpoint;
     
     current_prd.radiance += emission_color * current_prd.attenuation;
-    current_prd.attenuation *= diffuse_color;
 
     MaterialParameter mat;
-    // TODO: set mat
+    mat.albedo = diffuse_color;
 
-    Sample(mat, state, current_prd);
-
-    //
-    // Next event estimation (compute direct lighting).
-    //
-    /*unsigned int num_lights = lights.size();
-    float3 result = make_float3(0.0f);
-
-    for(int i = 0; i < num_lights; ++i)
+    // Direct light Sampling
+    if (true/*!prd.specularBounce && prd.depth < max_depth*/)
     {
-        // Choose random point on light
-        ParallelogramLight light = lights[i];
-        const float z1 = rnd(current_prd.seed);
-        const float z2 = rnd(current_prd.seed);
-        const float3 light_pos = light.corner + light.v1 * z1 + light.v2 * z2;
-
-        // Calculate properties of light sample (for area based pdf)
-        const float  Ldist = length(light_pos - hitpoint);
-        const float3 L     = normalize(light_pos - hitpoint);
-        const float  nDl   = dot( ffnormal, L );
-        const float  LnDl  = dot( light.normal, L );
-
-        // cast shadow ray
-        if ( nDl > 0.0f && LnDl > 0.0f )
-        {
-            PerRayData_pathtrace_shadow shadow_prd;
-            shadow_prd.inShadow = false;
-            // Note: bias both ends of the shadow ray, in case the light is also present as geometry in the scene.
-            Ray shadow_ray = make_Ray( hitpoint, L, SHADOW_RAY_TYPE, scene_epsilon, Ldist - scene_epsilon );
-            rtTrace(top_object, shadow_ray, shadow_prd);
-
-            if(!shadow_prd.inShadow)
-            {
-                const float A = length(cross(light.v1, light.v2));
-                // convert area based pdf to solid angle
-                const float weight = nDl * LnDl * A / (M_PIf * Ldist * Ldist);
-                result += light.emission * weight;
-            }
-        }
+        current_prd.radiance += DirectLightParallelogram(mat, state);
     }
 
-    current_prd.radiance += diffuse_color * result;*/
+    // BRDF Sampling
+    Sample(mat, state, current_prd);
+    Pdf(mat, state, current_prd);
+    float3 f = Eval(mat, state, current_prd);
+
+    if (current_prd.pdf > 0.0f)
+    {
+        current_prd.attenuation *= f / current_prd.pdf;
+    }
+    else
+    {
+        current_prd.done = true;
+    }
 }
 
 

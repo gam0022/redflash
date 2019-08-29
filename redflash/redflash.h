@@ -51,7 +51,7 @@ struct MaterialParameter
 {
     RT_FUNCTION MaterialParameter()
     {
-        color = optix::make_float3(1.0f, 1.0f, 1.0f);
+        albedo = optix::make_float3(1.0f, 1.0f, 1.0f);
         emission = optix::make_float3(0.0f);
         metallic = 0.0;
         subsurface = 0.0f;
@@ -68,7 +68,7 @@ struct MaterialParameter
     }
 
     int albedoID;
-    optix::float3 color;
+    optix::float3 albedo;
     optix::float3 emission;
     float metallic;
     float subsurface;
