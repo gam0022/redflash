@@ -37,8 +37,13 @@ struct PerRayData_pathtrace
 {
     float3 radiance;
     float3 attenuation;
+
     float3 origin;
     float3 direction;
+
+    float pdf;
+    float3 wo;
+
     unsigned int seed;
     int depth;
     int done;
@@ -188,37 +193,78 @@ rtDeclareVariable(optix::Ray, ray,              rtCurrentRay, );
 rtDeclareVariable(float,      t_hit,            rtIntersectionDistance, );
 
 
+RT_CALLABLE_PROGRAM void Pdf(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+{
+    float3 n = state.ffnormal;
+    float3 L = prd.direction;
+
+    float pdfDiff = abs(dot(L, n))* (1.0f / M_PIf);
+
+    prd.pdf = pdfDiff;
+
+}
+
+RT_CALLABLE_PROGRAM void Sample(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+{
+    float3 N = state.ffnormal;
+
+    float3 dir;
+
+    float r1 = rnd(prd.seed);
+    float r2 = rnd(prd.seed);
+
+    optix::Onb onb(N);
+
+    cosine_sample_hemisphere(r1, r2, dir);
+    onb.inverse_transform(dir);
+
+    prd.direction = dir;
+}
+
+
+RT_CALLABLE_PROGRAM float3 Eval(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+{
+    float3 N = state.ffnormal;
+    float3 V = prd.wo;
+    float3 L = prd.direction;
+
+    float NDotL = dot(N, L);
+    float NDotV = dot(N, V);
+    if (NDotL <= 0.0f || NDotV <= 0.0f) return make_float3(0.0f);
+
+    float3 out = (1.0f / M_PIf) * mat.color;
+
+    return out * clamp(dot(N, L), 0.0f, 1.0f);
+}
+
+
 RT_PROGRAM void closest_hit()
 {
     float3 world_shading_normal   = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, shading_normal ) );
     float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
     float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
 
-    float3 hitpoint = ray.origin + t_hit * ray.direction + world_geometric_normal * scene_epsilon * 1000.0;
+    float3 hitpoint = ray.origin + t_hit * ray.direction + world_geometric_normal * scene_epsilon * 100.0;
 
-    //
-    // Generate a reflection ray.  This will be traced back in ray-gen.
-    //
+    State state;
+    state.normal = world_shading_normal;
+    state.ffnormal = ffnormal;
+
+    current_prd.wo = -ray.direction;
     current_prd.origin = hitpoint;
-
-    float z1=rnd(current_prd.seed);
-    float z2=rnd(current_prd.seed);
-    float3 p;
-    cosine_sample_hemisphere(z1, z2, p);
-    optix::Onb onb( ffnormal );
-    onb.inverse_transform( p );
-    current_prd.direction = p;
-
+    
     current_prd.radiance += emission_color * current_prd.attenuation;
-
-    // NOTE: f/pdf = 1 since we are perfectly importance sampling lambertian
-    // with cosine density.
     current_prd.attenuation *= diffuse_color;
+
+    MaterialParameter mat;
+    // TODO: set mat
+
+    Sample(mat, state, current_prd);
 
     //
     // Next event estimation (compute direct lighting).
     //
-    unsigned int num_lights = lights.size();
+    /*unsigned int num_lights = lights.size();
     float3 result = make_float3(0.0f);
 
     for(int i = 0; i < num_lights; ++i)
@@ -254,7 +300,7 @@ RT_PROGRAM void closest_hit()
         }
     }
 
-    current_prd.radiance += diffuse_color * result;
+    current_prd.radiance += diffuse_color * result;*/
 }
 
 
