@@ -35,7 +35,6 @@ using namespace optix;
 
 struct PerRayData_pathtrace
 {
-    float3 result;
     float3 radiance;
     float3 attenuation;
     float3 origin;
@@ -104,15 +103,15 @@ RT_PROGRAM void pathtrace_camera()
 
         // Initialze per-ray data
         PerRayData_pathtrace prd;
-        prd.result = make_float3(0.f);
-        prd.attenuation = make_float3(1.f);
+        prd.radiance = make_float3(0.0f);
+        prd.attenuation = make_float3(1.0f);
         prd.done = false;
         prd.seed = seed;
         prd.depth = 0;
 
         // Each iteration is a segment of the ray path.  The closest hit will
         // return new segments to be traced here.
-        for(;;)
+        for(int i = 0; i < 10; i++)
         {
             Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, scene_epsilon, RT_DEFAULT_MAX);
             rtTrace(top_object, ray, prd);
@@ -120,28 +119,26 @@ RT_PROGRAM void pathtrace_camera()
             if(prd.done)
             {
                 // We have hit the background or a luminaire
-                prd.result += prd.radiance * prd.attenuation;
                 break;
             }
 
             // Russian roulette termination 
-            if(prd.depth >= rr_begin_depth)
+            /*if(prd.depth >= rr_begin_depth)
             {
                 float pcont = fmaxf(prd.attenuation);
                 if(rnd(prd.seed) >= pcont)
                     break;
                 prd.attenuation /= pcont;
-            }
+            }*/
 
             prd.depth++;
-            prd.result += prd.radiance * prd.attenuation;
 
             // Update ray data for the next path segment
             ray_origin = prd.origin;
             ray_direction = prd.direction;
         }
 
-        result += prd.result;
+        result += prd.radiance;
         seed = prd.seed;
     } while (--samples_per_pixel);
 
@@ -173,7 +170,8 @@ rtDeclareVariable(float3,        emission_color, , );
 
 RT_PROGRAM void diffuseEmitter()
 {
-    current_prd.radiance = emission_color;
+    current_prd.radiance += emission_color * current_prd.attenuation;
+    current_prd.attenuation = make_float3(0.0f);
     current_prd.done = true;
 }
 
@@ -212,9 +210,11 @@ RT_PROGRAM void diffuse()
     onb.inverse_transform( p );
     current_prd.direction = p;
 
+    current_prd.radiance += emission_color * current_prd.attenuation;
+
     // NOTE: f/pdf = 1 since we are perfectly importance sampling lambertian
     // with cosine density.
-    current_prd.attenuation = current_prd.attenuation * diffuse_color;
+    current_prd.attenuation *= diffuse_color;
 
     //
     // Next event estimation (compute direct lighting).
@@ -255,7 +255,7 @@ RT_PROGRAM void diffuse()
         }
     }
 
-    current_prd.radiance = result;
+    current_prd.radiance += diffuse_color * result;
 }
 
 
