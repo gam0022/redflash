@@ -259,7 +259,7 @@ GeometryInstance createMesh(
     mesh.material = material;
     mesh.closest_hit = closest_hit;
     mesh.any_hit = any_hit;
-    Matrix4x4 mat = Matrix4x4::translate(make_float3(0.0f, 0.0f, 0.0f)) * Matrix4x4::scale(make_float3(300.0f));
+    Matrix4x4 mat = Matrix4x4::translate(make_float3(0.0f, 250.0f, 0.0f)) * Matrix4x4::scale(make_float3(300.0f));
     loadMesh(filename, mesh, mat);
     return mesh.geom_instance;
 }
