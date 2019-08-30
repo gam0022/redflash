@@ -229,17 +229,18 @@ GeometryInstance createParallelogram(
     return gi;
 }
 
-GeometryInstance createRaymrachingObject(
-    const float3& center,
-    const float3& size)
+GeometryInstance createRaymrachingObject(const float3& center, const float3& world_scale, const float3& unit_scale)
 {
     Geometry raymarching = context->createGeometry();
     raymarching->setPrimitiveCount(1u);
     raymarching->setIntersectionProgram(pgram_raymarching_intersection);
     raymarching->setBoundingBoxProgram(pgram_raymarching_bounding_box);
 
+    const float3 local_scale = world_scale / unit_scale;
     raymarching["center"]->setFloat(center);
-    raymarching["size"]->setFloat(size);
+    raymarching["local_scale"]->setFloat(local_scale);
+    raymarching["aabb_min"]->setFloat(center - world_scale);
+    raymarching["aabb_max"]->setFloat(center + world_scale);
 
     GeometryInstance gi = context->createGeometryInstance();
     gi->setGeometry(raymarching);
@@ -250,7 +251,9 @@ GeometryInstance createMesh(
     const std::string& filename,
     Material material,
     Program closest_hit,
-    Program any_hit)
+    Program any_hit,
+    const float3& center,
+    const float3& scale)
 {
     OptiXMesh mesh;
     mesh.context = context;
@@ -259,7 +262,7 @@ GeometryInstance createMesh(
     mesh.material = material;
     mesh.closest_hit = closest_hit;
     mesh.any_hit = any_hit;
-    Matrix4x4 mat = Matrix4x4::translate(make_float3(0.0f, 250.0f, 0.0f)) * Matrix4x4::scale(make_float3(300.0f));
+    Matrix4x4 mat =Matrix4x4::translate(center) *  Matrix4x4::scale(scale);// 行優先っぽいので、右から順番に適用される
     loadMesh(filename, mesh, mat);
     return mesh.geom_instance;
 }
@@ -305,12 +308,12 @@ GeometryGroup createGeometryTriangles()
     diffuse->setAnyHitProgram(1, diffuse_ah);
 
     std::vector<GeometryInstance> gis;
-    const float3 white = make_float3(0.8f, 0.8f, 0.8f);
+    const float3 color = make_float3(0.9f, 0.1f, 0.1f);
 
     // Mesh
     std::string mesh_file = resolveDataPath("cow.obj");
-    gis.push_back(createMesh(mesh_file, diffuse, diffuse_ch, diffuse_ah));
-    gis.back()["diffuse_color"]->setFloat(white);
+    gis.push_back(createMesh(mesh_file, diffuse, diffuse_ch, diffuse_ah, make_float3(0.0f, 300.0f, 0.0f), make_float3(500.0f)));
+    gis.back()["diffuse_color"]->setFloat(color);
 
     GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
     shadow_group->setAcceleration(context->createAcceleration("Trbvh"));
@@ -425,10 +428,10 @@ GeometryGroup createGeometry()
     setMaterial(gis.back(), diffuse, "diffuse_color", white);*/
 
     // Raymarcing Mini
-    float scale = 1.0f;
     gis.push_back(createRaymrachingObject(
-        make_float3(0.0f, 103.333f * scale, 0.0f),
-        make_float3(103.333f * scale, 103.333f * scale, 103.333f * scale)));
+        make_float3(0.0f),
+        make_float3(300.0f),
+        make_float3(4.3f)));
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
 

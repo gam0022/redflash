@@ -603,7 +603,9 @@ RT_PROGRAM void envmap_miss()
 #include <optix_world.h>
 
 rtDeclareVariable(float3, center, , );
-rtDeclareVariable(float3, size, , );
+rtDeclareVariable(float3, local_scale, , );
+rtDeclareVariable(float3, aabb_min, , );
+rtDeclareVariable(float3, aabb_max, , );
 rtDeclareVariable(int, lgt_instance, , ) = {0};
 rtDeclareVariable(float3, texcoord, attribute texcoord, );
 rtDeclareVariable(int, lgt_idx, attribute lgt_idx, );
@@ -690,13 +692,9 @@ float dMandelFast(float3 p, float scale, int n) {
 
 float map(float3 p)
 {
-    //return length(p - center) - 100.0;
-
-    float scale = 100 * 0.2;
-    // f((p - position) / scale) * scale;
-    // return dMenger((p - center) / scale, make_float3(1.23, 1.65, 1.45), 2.56) * scale;
-    // return dMenger((p - center) / scale, make_float3(1, 1, 1), 3.1) * scale;
-    return dMandelFast((p - center) / scale, 2.76, 20) * scale;
+    // return dMenger((p - center) / local_scale, make_float3(1.23, 1.65, 1.45), 2.56) * local_scale;
+    // return dMenger((p - center) / local_scale, make_float3(1, 1, 1), 3.1) * local_scale;
+    return dMandelFast((p - center) / local_scale, 2.76, 20) * min(min(local_scale.x, local_scale.y), local_scale.z);
 }
 
 #define calcNormal(p, dFunc, eps) normalize(\
@@ -744,6 +742,6 @@ RT_PROGRAM void intersect(int primIdx)
 RT_PROGRAM void bounds(int, float result[6])
 {
     optix::Aabb* aabb = (optix::Aabb*)result;
-    aabb->m_min = center - size;
-    aabb->m_max = center + size;
+    aabb->m_min = aabb_min;
+    aabb->m_max = aabb_max;
 }
