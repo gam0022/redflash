@@ -272,7 +272,7 @@ void createContext()
     context->setStackSize( 1800 );
     context->setMaxTraceDepth( 2 );
 
-    context[ "scene_epsilon"                  ]->setFloat( 0.0002f * 100.0f );
+    context[ "scene_epsilon"                  ]->setFloat( 0.001f );
     context[ "rr_begin_depth"                 ]->setUint( rr_begin_depth );
 
     Buffer buffer = sutil::createOutputBuffer( context, RT_FORMAT_FLOAT4, width, height, use_pbo );
