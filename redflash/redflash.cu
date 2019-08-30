@@ -511,7 +511,7 @@ RT_PROGRAM void closest_hit()
     float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
     float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
 
-    float3 hitpoint = ray.origin + t_hit * ray.direction + world_geometric_normal * scene_epsilon * 100.0;
+    float3 hitpoint = ray.origin + t_hit * ray.direction + world_geometric_normal * scene_epsilon;
 
     State state;
     state.normal = world_shading_normal;
@@ -524,8 +524,8 @@ RT_PROGRAM void closest_hit()
 
     MaterialParameter mat;
     mat.albedo = diffuse_color;
-    mat.metallic = 0.9f;
-    mat.roughness = 0.0f;
+    mat.metallic = 0.8f;
+    mat.roughness = 0.05f;
 
     // Direct light Sampling
     if (true/*!prd.specularBounce && prd.depth < max_depth*/)
