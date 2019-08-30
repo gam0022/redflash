@@ -259,7 +259,7 @@ GeometryInstance createMesh(
     mesh.material = material;
     mesh.closest_hit = closest_hit;
     mesh.any_hit = any_hit;
-    Matrix4x4 mat = Matrix4x4::translate(make_float3(0.0f, 0.0f, 0.0f)) * Matrix4x4::scale(make_float3(300.0f));
+    Matrix4x4 mat = Matrix4x4::translate(make_float3(0.0f, 250.0f, 0.0f)) * Matrix4x4::scale(make_float3(300.0f));
     loadMesh(filename, mesh, mat);
     return mesh.geom_instance;
 }
@@ -272,7 +272,7 @@ void createContext()
     context->setStackSize( 1800 );
     context->setMaxTraceDepth( 2 );
 
-    context[ "scene_epsilon"                  ]->setFloat( 0.0002 );
+    context[ "scene_epsilon"                  ]->setFloat( 0.0002f * 100.0f );
     context[ "rr_begin_depth"                 ]->setUint( rr_begin_depth );
 
     Buffer buffer = sutil::createOutputBuffer( context, RT_FORMAT_FLOAT4, width, height, use_pbo );
@@ -286,7 +286,6 @@ void createContext()
 
     context[ "sqrt_num_samples" ]->setUint( sqrt_num_samples );
     context[ "bad_color"        ]->setFloat( 1000000.0f, 0.0f, 1000000.0f ); // Super magenta to make sure it doesn't get averaged out in the progressive rendering.
-    context[ "bg_color"         ]->setFloat( make_float3(0.0f) );
 
     const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
     // const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
@@ -300,7 +299,7 @@ GeometryGroup createGeometryTriangles()
     // Set up material
     Material diffuse = context->createMaterial();
     const char *ptx = sutil::getPtxString(SAMPLE_NAME, "redflash.cu");
-    Program diffuse_ch = context->createProgramFromPTXString(ptx, "diffuse");
+    Program diffuse_ch = context->createProgramFromPTXString(ptx, "closest_hit");
     Program diffuse_ah = context->createProgramFromPTXString(ptx, "shadow");
     diffuse->setClosestHitProgram(0, diffuse_ch);
     diffuse->setAnyHitProgram(1, diffuse_ah);
@@ -323,7 +322,7 @@ GeometryGroup createGeometry()
     // Set up material
     Material diffuse = context->createMaterial();
     const char *ptx = sutil::getPtxString( SAMPLE_NAME, "redflash.cu" );
-    Program diffuse_ch = context->createProgramFromPTXString( ptx, "diffuse" );
+    Program diffuse_ch = context->createProgramFromPTXString( ptx, "closest_hit" );
     Program diffuse_ah = context->createProgramFromPTXString( ptx, "shadow" );
     diffuse->setClosestHitProgram( 0, diffuse_ch );
     diffuse->setAnyHitProgram( 1, diffuse_ah );
@@ -444,12 +443,12 @@ GeometryGroup createGeometryLight()
     // Set up material
     const char *ptx = sutil::getPtxString(SAMPLE_NAME, "redflash.cu");
     Material diffuse_light = context->createMaterial();
-    Program diffuse_em = context->createProgramFromPTXString(ptx, "diffuseEmitter");
+    Program diffuse_em = context->createProgramFromPTXString(ptx, "light_closest_hit");
     diffuse_light->setClosestHitProgram(0, diffuse_em);
 
     // Light
     ParallelogramLight light;
-    const float3 light_em = make_float3(50000.0f, 0.5f, 0.5f);
+    const float3 light_em = make_float3(10.0f, 0.5f, 0.5f);
     std::vector<GeometryInstance> gis;
     gis.push_back(createParallelogram(
         make_float3(5.0f, 185.0f, 75.0f),

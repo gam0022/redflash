@@ -35,14 +35,17 @@ using namespace optix;
 
 struct PerRayData_pathtrace
 {
-    float3 result;
     float3 radiance;
     float3 attenuation;
+
     float3 origin;
     float3 direction;
+
+    float pdf;
+    float3 wo;
+
     unsigned int seed;
     int depth;
-    int countEmitted;
     int done;
 };
 
@@ -105,16 +108,15 @@ RT_PROGRAM void pathtrace_camera()
 
         // Initialze per-ray data
         PerRayData_pathtrace prd;
-        prd.result = make_float3(0.f);
-        prd.attenuation = make_float3(1.f);
-        prd.countEmitted = true;
+        prd.radiance = make_float3(0.0f);
+        prd.attenuation = make_float3(1.0f);
         prd.done = false;
         prd.seed = seed;
         prd.depth = 0;
 
         // Each iteration is a segment of the ray path.  The closest hit will
         // return new segments to be traced here.
-        for(;;)
+        for(int i = 0; i < 10; i++)
         {
             Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, scene_epsilon, RT_DEFAULT_MAX);
             rtTrace(top_object, ray, prd);
@@ -122,28 +124,26 @@ RT_PROGRAM void pathtrace_camera()
             if(prd.done)
             {
                 // We have hit the background or a luminaire
-                prd.result += prd.radiance * prd.attenuation;
                 break;
             }
 
             // Russian roulette termination 
-            if(prd.depth >= rr_begin_depth)
+            /*if(prd.depth >= rr_begin_depth)
             {
                 float pcont = fmaxf(prd.attenuation);
                 if(rnd(prd.seed) >= pcont)
                     break;
                 prd.attenuation /= pcont;
-            }
+            }*/
 
             prd.depth++;
-            prd.result += prd.radiance * prd.attenuation;
 
             // Update ray data for the next path segment
             ray_origin = prd.origin;
             ray_direction = prd.direction;
         }
 
-        result += prd.result;
+        result += prd.radiance;
         seed = prd.seed;
     } while (--samples_per_pixel);
 
@@ -173,9 +173,9 @@ RT_PROGRAM void pathtrace_camera()
 
 rtDeclareVariable(float3,        emission_color, , );
 
-RT_PROGRAM void diffuseEmitter()
+RT_PROGRAM void light_closest_hit()
 {
-    current_prd.radiance = current_prd.countEmitted ? emission_color : make_float3(0.f);
+    current_prd.radiance += emission_color * current_prd.attenuation;
     current_prd.done = true;
 }
 
@@ -193,72 +193,359 @@ rtDeclareVariable(optix::Ray, ray,              rtCurrentRay, );
 rtDeclareVariable(float,      t_hit,            rtIntersectionDistance, );
 
 
-RT_PROGRAM void diffuse()
+/*RT_CALLABLE_PROGRAM void Pdf(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+{
+    float3 n = state.ffnormal;
+    float3 L = prd.direction;
+
+    float pdfDiff = abs(dot(L, n))* (1.0f / M_PIf);
+
+    prd.pdf = pdfDiff;
+
+}
+
+RT_CALLABLE_PROGRAM void Sample(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+{
+    float3 N = state.ffnormal;
+
+    float3 dir;
+
+    float r1 = rnd(prd.seed);
+    float r2 = rnd(prd.seed);
+
+    optix::Onb onb(N);
+
+    cosine_sample_hemisphere(r1, r2, dir);
+    onb.inverse_transform(dir);
+
+    prd.direction = dir;
+}
+
+
+RT_CALLABLE_PROGRAM float3 Eval(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+{
+    float3 N = state.ffnormal;
+    float3 V = prd.wo;
+    float3 L = prd.direction;
+
+    float NDotL = dot(N, L);
+    float NDotV = dot(N, V);
+    if (NDotL <= 0.0f || NDotV <= 0.0f) return make_float3(0.0f);
+
+    float3 out = (1.0f / M_PIf) * mat.albedo;
+
+    return out * clamp(dot(N, L), 0.0f, 1.0f);
+}*/
+
+
+RT_FUNCTION float sqr(float x) { return x * x; }
+
+RT_FUNCTION float SchlickFresnel(float u)
+{
+    float m = clamp(1.0f - u, 0.0f, 1.0f);
+    float m2 = m * m;
+    return m2 * m2*m; // pow(m,5)
+}
+
+RT_FUNCTION float GTR1(float NDotH, float a)
+{
+    if (a >= 1.0f) return (1.0f / M_PIf);
+    float a2 = a * a;
+    float t = 1.0f + (a2 - 1.0f)*NDotH*NDotH;
+    return (a2 - 1.0f) / (M_PIf*logf(a2)*t);
+}
+
+RT_FUNCTION float GTR2(float NDotH, float a)
+{
+    float a2 = a * a;
+    float t = 1.0f + (a2 - 1.0f)*NDotH*NDotH;
+    return a2 / (M_PIf * t*t);
+}
+
+RT_FUNCTION float smithG_GGX(float NDotv, float alphaG)
+{
+    float a = alphaG * alphaG;
+    float b = NDotv * NDotv;
+    return 1.0f / (NDotv + sqrtf(a + b - a * b));
+}
+
+
+/*
+    http://simon-kallweit.me/rendercompo2015/
+*/
+RT_CALLABLE_PROGRAM void Pdf(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+{
+    float3 n = state.ffnormal;
+    float3 V = prd.wo;
+    float3 L = prd.direction;
+
+    float specularAlpha = max(0.001f, mat.roughness);
+    float clearcoatAlpha = lerp(0.1f, 0.001f, mat.clearcoatGloss);
+
+    float diffuseRatio = 0.5f * (1.f - mat.metallic);
+    float specularRatio = 1.f - diffuseRatio;
+
+    float3 half = normalize(L + V);
+
+    float cosTheta = abs(dot(half, n));
+    float pdfGTR2 = GTR2(cosTheta, specularAlpha) * cosTheta;
+    float pdfGTR1 = GTR1(cosTheta, clearcoatAlpha) * cosTheta;
+
+    // calculate diffuse and specular pdfs and mix ratio
+    float ratio = 1.0f / (1.0f + mat.clearcoat);
+    float pdfSpec = lerp(pdfGTR1, pdfGTR2, ratio) / (4.0 * abs(dot(L, half)));
+    float pdfDiff = abs(dot(L, n))* (1.0f / M_PIf);
+
+    // weight pdfs according to ratios
+    prd.pdf = diffuseRatio * pdfDiff + specularRatio * pdfSpec;
+}
+
+/*
+    https://learnopengl.com/PBR/IBL/Specular-IBL
+*/
+
+RT_CALLABLE_PROGRAM void Sample(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+{
+    float3 N = state.ffnormal;
+    float3 V = prd.wo;
+
+    float3 dir;
+
+    float probability = rnd(prd.seed);
+    float diffuseRatio = 0.5f * (1.0f - mat.metallic);
+
+    float r1 = rnd(prd.seed);
+    float r2 = rnd(prd.seed);
+
+    optix::Onb onb(N); // basis
+
+    if (probability < diffuseRatio) // sample diffuse
+    {
+        cosine_sample_hemisphere(r1, r2, dir);
+        onb.inverse_transform(dir);
+    }
+    else
+    {
+        float a = max(0.001f, mat.roughness);
+
+        float phi = r1 * 2.0f * M_PIf;
+
+        float cosTheta = sqrtf((1.0f - r2) / (1.0f + (a*a - 1.0f) *r2));
+        float sinTheta = sqrtf(1.0f - (cosTheta * cosTheta));
+        float sinPhi = sinf(phi);
+        float cosPhi = cosf(phi);
+
+        float3 half = make_float3(sinTheta*cosPhi, sinTheta*sinPhi, cosTheta);
+        onb.inverse_transform(half);
+
+        dir = 2.0f*dot(V, half)*half - V; //reflection vector
+
+    }
+    prd.direction = dir;
+}
+
+
+RT_CALLABLE_PROGRAM float3 Eval(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+{
+    float3 N = state.ffnormal;
+    float3 V = prd.wo;
+    float3 L = prd.direction;
+
+    float NDotL = dot(N, L);
+    float NDotV = dot(N, V);
+    if (NDotL <= 0.0f || NDotV <= 0.0f) return make_float3(0.0f);
+
+    float3 H = normalize(L + V);
+    float NDotH = dot(N, H);
+    float LDotH = dot(L, H);
+
+    float3 Cdlin = mat.albedo;
+    float Cdlum = 0.3f*Cdlin.x + 0.6f*Cdlin.y + 0.1f*Cdlin.z; // luminance approx.
+
+    float3 Ctint = Cdlum > 0.0f ? Cdlin / Cdlum : make_float3(1.0f); // normalize lum. to isolate hue+sat
+    float3 Cspec0 = lerp(mat.specular*0.08f*lerp(make_float3(1.0f), Ctint, mat.specularTint), Cdlin, mat.metallic);
+    float3 Csheen = lerp(make_float3(1.0f), Ctint, mat.sheenTint);
+
+    // Diffuse fresnel - go from 1 at normal incidence to .5 at grazing
+    // and mix in diffuse retro-reflection based on roughness
+    float FL = SchlickFresnel(NDotL), FV = SchlickFresnel(NDotV);
+    float Fd90 = 0.5f + 2.0f * LDotH*LDotH * mat.roughness;
+    float Fd = lerp(1.0f, Fd90, FL) * lerp(1.0f, Fd90, FV);
+
+    // Based on Hanrahan-Krueger brdf approximation of isotrokPic bssrdf
+    // 1.25 scale is used to (roughly) preserve albedo
+    // Fss90 used to "flatten" retroreflection based on roughness
+    float Fss90 = LDotH * LDotH*mat.roughness;
+    float Fss = lerp(1.0f, Fss90, FL) * lerp(1.0f, Fss90, FV);
+    float ss = 1.25f * (Fss * (1.0f / (NDotL + NDotV) - 0.5f) + 0.5f);
+
+    // specular
+    //float aspect = sqrt(1-mat.anisotrokPic*.9);
+    //float ax = Max(.001f, sqr(mat.roughness)/aspect);
+    //float ay = Max(.001f, sqr(mat.roughness)*aspect);
+    //float Ds = GTR2_aniso(NDotH, Dot(H, X), Dot(H, Y), ax, ay);
+
+    float a = max(0.001f, mat.roughness);
+    float Ds = GTR2(NDotH, a);
+    float FH = SchlickFresnel(LDotH);
+    float3 Fs = lerp(Cspec0, make_float3(1.0f), FH);
+    float roughg = sqr(mat.roughness*0.5f + 0.5f);
+    float Gs = smithG_GGX(NDotL, roughg) * smithG_GGX(NDotV, roughg);
+
+    // sheen
+    float3 Fsheen = FH * mat.sheen * Csheen;
+
+    // clearcoat (ior = 1.5 -> F0 = 0.04)
+    float Dr = GTR1(NDotH, lerp(0.1f, 0.001f, mat.clearcoatGloss));
+    float Fr = lerp(0.04f, 1.0f, FH);
+    float Gr = smithG_GGX(NDotL, 0.25f) * smithG_GGX(NDotV, 0.25f);
+
+    float3 out = ((1.0f / M_PIf) * lerp(Fd, ss, mat.subsurface)*Cdlin + Fsheen)
+        * (1.0f - mat.metallic)
+        + Gs * Fs*Ds + 0.25f*mat.clearcoat*Gr*Fr*Dr;
+
+    return out * clamp(dot(N, L), 0.0f, 1.0f);
+}
+
+static __host__ __device__ __inline__ float powerHeuristic(float a, float b)
+{
+    float t = a * a;
+    return t / (b*b + t);
+}
+
+/*RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
+{
+    float3 L = make_float3(0.0f);
+
+    //Pick a light to sample
+    int index = optix::clamp(static_cast<int>(floorf(rnd(prd.seed) * sysNumberOfLights)), 0, sysNumberOfLights - 1);
+    LightParameter light = sysLightParameters[index];
+    LightSample lightSample;
+
+    float3 surfacePos = state.fhp;
+    float3 surfaceNormal = state.ffnormal;
+
+    sysLightSample[light.lightType](light, prd, lightSample);
+
+    float3 lightDir = lightSample.surfacePos - surfacePos;
+    float lightDist = length(lightDir);
+    float lightDistSq = lightDist * lightDist;
+    lightDir /= sqrtf(lightDistSq);
+
+    if (dot(lightDir, surfaceNormal) <= 0.0f || dot(lightDir, lightSample.normal) >= 0.0f)
+        return L;
+
+    PerRayData_shadow prd_shadow;
+    prd_shadow.inShadow = false;
+    optix::Ray shadowRay = optix::make_Ray(surfacePos, lightDir, 1, scene_epsilon, lightDist - scene_epsilon);
+    rtTrace(top_object, shadowRay, prd_shadow);
+
+    if (!prd_shadow.inShadow)
+    {
+        float NdotL = dot(lightSample.normal, -lightDir);
+        float lightPdf = lightDistSq / (light.area * NdotL);
+
+        prd.direction = lightDir;
+
+        sysBRDFPdf[programId](mat, state, prd);
+        float3 f = sysBRDFEval[programId](mat, state, prd);
+
+        L = powerHeuristic(lightPdf, prd.pdf) * prd.throughput * f * lightSample.emission / max(0.001f, lightPdf);
+    }
+
+    return L;
+}*/
+
+float3 DirectLightParallelogram(MaterialParameter &mat, State &state)
+{
+    unsigned int num_lights = lights.size();
+    float3 L = make_float3(0.0f);
+    float3 surfaceNormal = state.ffnormal;
+
+    for(int i = 0; i < num_lights; ++i)
+    {
+        // Choose random point on light
+        ParallelogramLight lightSample = lights[i];
+        const float z1 = rnd(current_prd.seed);
+        const float z2 = rnd(current_prd.seed);
+        const float3 light_pos = lightSample.corner + lightSample.v1 * z1 + lightSample.v2 * z2;
+
+        // Calculate properties of light sample (for area based pdf)
+        float3 lightDir = light_pos - current_prd.origin;
+        float lightDist = length(lightDir);
+        float lightDistSq = lightDist * lightDist;
+        lightDir /= sqrtf(lightDistSq);
+
+        // cast shadow ray
+        if (dot(lightDir, surfaceNormal) >= 0.0f && dot(lightDir, lightSample.normal) <= 0.0f)
+        {
+            PerRayData_pathtrace_shadow shadow_prd;
+            shadow_prd.inShadow = false;
+            // Note: bias both ends of the shadow ray, in case the light is also present as geometry in the scene.
+            Ray shadow_ray = make_Ray(current_prd.origin, lightDir, SHADOW_RAY_TYPE, scene_epsilon, lightDist - scene_epsilon);
+            rtTrace(top_object, shadow_ray, shadow_prd);
+
+            if(!shadow_prd.inShadow)
+            {
+                const float A = length(cross(lightSample.v1, lightSample.v2));
+                float NdotL = dot(lightSample.normal, -lightDir);
+                float lightPdf = lightDistSq / (A * NdotL);
+
+                current_prd.direction = lightDir;
+
+                Pdf/*sysBRDFPdf[programId]*/(mat, state, current_prd);
+                float3 f = Eval/*sysBRDFEval[programId]*/(mat, state, current_prd);
+
+                L = powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
+            }
+        }
+    }
+
+    return L;
+}
+
+
+RT_PROGRAM void closest_hit()
 {
     float3 world_shading_normal   = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, shading_normal ) );
     float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
     float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
 
-    float3 hitpoint = ray.origin + t_hit * ray.direction + world_geometric_normal * scene_epsilon * 1000.0;
+    float3 hitpoint = ray.origin + t_hit * ray.direction + world_geometric_normal * scene_epsilon * 100.0;
 
-    //
-    // Generate a reflection ray.  This will be traced back in ray-gen.
-    //
+    State state;
+    state.normal = world_shading_normal;
+    state.ffnormal = ffnormal;
+
+    current_prd.wo = -ray.direction;
     current_prd.origin = hitpoint;
+    
+    current_prd.radiance += emission_color * current_prd.attenuation;
 
-    float z1=rnd(current_prd.seed);
-    float z2=rnd(current_prd.seed);
-    float3 p;
-    cosine_sample_hemisphere(z1, z2, p);
-    optix::Onb onb( ffnormal );
-    onb.inverse_transform( p );
-    current_prd.direction = p;
+    MaterialParameter mat;
+    mat.albedo = diffuse_color;
+    mat.metallic = 1.0f;
+    mat.roughness = 0.0f;
 
-    // NOTE: f/pdf = 1 since we are perfectly importance sampling lambertian
-    // with cosine density.
-    current_prd.attenuation = current_prd.attenuation * diffuse_color;
-    current_prd.countEmitted = false;
-
-    //
-    // Next event estimation (compute direct lighting).
-    //
-    unsigned int num_lights = lights.size();
-    float3 result = make_float3(0.0f);
-
-    for(int i = 0; i < num_lights; ++i)
+    // Direct light Sampling
+    if (true/*!prd.specularBounce && prd.depth < max_depth*/)
     {
-        // Choose random point on light
-        ParallelogramLight light = lights[i];
-        const float z1 = rnd(current_prd.seed);
-        const float z2 = rnd(current_prd.seed);
-        const float3 light_pos = light.corner + light.v1 * z1 + light.v2 * z2;
-
-        // Calculate properties of light sample (for area based pdf)
-        const float  Ldist = length(light_pos - hitpoint);
-        const float3 L     = normalize(light_pos - hitpoint);
-        const float  nDl   = dot( ffnormal, L );
-        const float  LnDl  = dot( light.normal, L );
-
-        // cast shadow ray
-        if ( nDl > 0.0f && LnDl > 0.0f )
-        {
-            PerRayData_pathtrace_shadow shadow_prd;
-            shadow_prd.inShadow = false;
-            // Note: bias both ends of the shadow ray, in case the light is also present as geometry in the scene.
-            Ray shadow_ray = make_Ray( hitpoint, L, SHADOW_RAY_TYPE, scene_epsilon, Ldist - scene_epsilon );
-            rtTrace(top_object, shadow_ray, shadow_prd);
-
-            if(!shadow_prd.inShadow)
-            {
-                const float A = length(cross(light.v1, light.v2));
-                // convert area based pdf to solid angle
-                const float weight = nDl * LnDl * A / (M_PIf * Ldist * Ldist);
-                result += light.emission * weight;
-            }
-        }
+        current_prd.radiance += DirectLightParallelogram(mat, state);
     }
 
-    current_prd.radiance = result;
+    // BRDF Sampling
+    Sample(mat, state, current_prd);
+    Pdf(mat, state, current_prd);
+    float3 f = Eval(mat, state, current_prd);
+
+    if (current_prd.pdf > 0.0f)
+    {
+        current_prd.attenuation *= f / current_prd.pdf;
+    }
+    else
+    {
+        current_prd.done = true;
+    }
 }
 
 
@@ -295,11 +582,14 @@ RT_PROGRAM void exception()
 //
 //-----------------------------------------------------------------------------
 
-rtDeclareVariable(float3, bg_color, , );
-
-RT_PROGRAM void miss()
+rtTextureSampler<float4, 2> envmap;
+RT_PROGRAM void envmap_miss()
 {
-    current_prd.radiance = bg_color;
+    float theta = atan2f(ray.direction.x, ray.direction.z);
+    float phi = M_PIf * 0.5f - acosf(ray.direction.y);
+    float u = (theta + M_PIf) * (0.5f * M_1_PIf);
+    float v = 0.5f * (1.0f + sin(phi));
+    current_prd.radiance = make_float3(tex2D(envmap, u, v));
     current_prd.done = true;
 }
 
@@ -455,19 +745,4 @@ RT_PROGRAM void bounds(int, float result[6])
     optix::Aabb* aabb = (optix::Aabb*)result;
     aabb->m_min = center - size;
     aabb->m_max = center + size;
-}
-
-
-//
-// Environment map background
-//
-rtTextureSampler<float4, 2> envmap;
-RT_PROGRAM void envmap_miss()
-{
-    float theta = atan2f( ray.direction.x, ray.direction.z );
-    float phi   = M_PIf * 0.5f -  acosf( ray.direction.y );
-    float u     = (theta + M_PIf) * (0.5f * M_1_PIf);
-    float v     = 0.5f * ( 1.0f + sin(phi) );
-    current_prd.radiance = make_float3( tex2D(envmap, u, v) );
-    current_prd.done = true;
 }
