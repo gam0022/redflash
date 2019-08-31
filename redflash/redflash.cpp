@@ -74,7 +74,7 @@ Context        context = 0;
 uint32_t       width  = 1920 / 4;
 uint32_t       height = 1080 / 4;
 int max_depth = 10;
-int sample_per_launch = 2;
+int sample_per_launch = 1;
 bool           use_pbo = true;
 
 int            frame_number = 1;
@@ -780,6 +780,15 @@ int main( int argc, char** argv )
             }
             height = atoi(argv[++i]);
         }
+        else if (arg == "-S" || arg == "--sample_per_launch")
+        {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            sample_per_launch = atoi(argv[++i]);
+        }
         else
         {
             std::cerr << "Unknown option '" << arg << "'\n";
@@ -814,6 +823,7 @@ int main( int argc, char** argv )
             // print config
             std::cout << "resolution: " << width << "x" << height << " px" << std::endl;
             std::cout << "time_limit: " << time_limit << " sec." << std::endl;
+            std::cout << "sample_per_launch: " << sample_per_launch << std::endl;
 
             if (use_time_limit)
             {
@@ -826,6 +836,8 @@ int main( int argc, char** argv )
 
             double last_time = sutil::currentTime();
 
+            int total_sample;
+
             // NOTE: time_limit が指定されていたら、サンプル数は無制限にする
             for (int i = 0; i < sample || use_time_limit; ++i)
             {
@@ -837,13 +849,25 @@ int main( int argc, char** argv )
                 // NOTE: 前フレームの所要時間から次のフレームが制限時間内に終るかを予測する。時間超過を防ぐために1.1倍に見積もる
                 if (used_time + delta_time * 1.1 > time_limit)
                 {
-                    std::cout << "reached time limit! used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << " sec." << std::endl;
-                    std::cout << "sampled: " << i << std::endl;
-                    break;
+                    if (sample_per_launch == 1)
+                    {
+                        std::cout << "reached time limit! used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << " sec." << std::endl;
+                        std::cout << "sampled: " << i << std::endl;
+                        break;
+                    }
+                    else
+                    {
+                        std::cout << "chnage sample_per_launch: " << sample_per_launch << " to 1" << std::endl;
+                        sample_per_launch = 1;
+                    }
                 }
 
                 context->launch(0, width, height);
                 context["frame_number"]->setUint(frame_number++);
+                total_sample += sample_per_launch;
+
+                std::cout << "progress used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << " sec. sample: " 
+                    << total_sample << ". loop_count: " << i << std::endl;
             }
 
             sutil::displayBufferPNG(out_file.c_str(), getOutputBuffer(), false);
@@ -852,6 +876,7 @@ int main( int argc, char** argv )
             double finish_time = sutil::currentTime();
             double total_time = finish_time - launch_time;
             std::cout << "total_time: " << total_time << " sec." << std::endl;
+            std::cout << "total_sample: " << total_sample  << std::endl;
         }
 
         return 0;
