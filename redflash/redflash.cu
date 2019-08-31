@@ -465,7 +465,6 @@ RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
             // float3 f = sysBRDFEval[programId](mat, state, current_prd);
             float3 f = Eval(mat, state, current_prd);
 
-            // if (NdotL > 0.0f)
             L = powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
         }
     }
@@ -501,7 +500,7 @@ RT_PROGRAM void closest_hit()
     // Direct light Sampling
     if (/*!prd.specularBounce && */ current_prd.depth < max_depth)
     {
-        //current_prd.radiance += DirectLight(mat, state);
+        current_prd.radiance += DirectLight(mat, state);
     }
 
     // BRDF Sampling

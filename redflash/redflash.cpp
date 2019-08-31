@@ -422,18 +422,24 @@ GeometryGroup createGeometryLight()
     diffuse_light->setClosestHitProgram(0, diffuse_em);
 
     // Light
-    ParallelogramLight light;
-    const float3 light_em = make_float3(10.0f, 0.5f, 0.5f);
-
     std::vector<LightParameter> lightParameters;
     std::vector<GeometryInstance> gis;
 
-    {
+    /*{
         LightParameter light;
         light.lightType = SPHERE;
         light.position = make_float3(50, 310, 50);
         light.radius = 10.0f;
         light.emission = make_float3(1.0);
+        lightParameters.push_back(light);
+    }*/
+
+    {
+        LightParameter light;
+        light.lightType = SPHERE;
+        light.position = make_float3(0.01f, 166.787f, 190.00f);
+        light.radius = 2.0f;
+        light.emission = make_float3(10.0f, 0.01f, 0.01f);
         lightParameters.push_back(light);
     }
 
@@ -488,25 +494,13 @@ void setupCamera()
 {
     camera_up = make_float3(0.0f, 1.0f, 0.0f);
 
-    // default
-    camera_eye    = make_float3( 278.0f, 273.0f, -400.0f );
-    camera_lookat = make_float3( 278.0f, 103.333f, 278.0f );
-
-    // look at raymarching
-    camera_eye = make_float3(418.47f, 73.97f, 415.23f);
-    camera_lookat = make_float3(419.18f, -2.79f, 414.33f);
-
-    // look at mandelbox
-    camera_eye    = make_float3(408.13f - 278.0f, 189.64f, 271.37f - 278.0f);
-    camera_lookat = make_float3(108.74f - 278.0f, 145.26f, 302.83f - 278.0f);
-
-    // look at mandelbox v2
-    camera_eye    = make_float3(-13.08f, 186.07f, 137.11f);
-    camera_lookat = make_float3(  4.74f, 170.17f, 42.4f);
-
     // look at emission
     camera_eye = make_float3(50.4f, 338.1f, -66.82f);
     camera_lookat = make_float3(48.49f, 311.32f, 21.44f);
+
+    // look at center
+    camera_eye = make_float3(13.91f, 166.787f, 413.00f);
+    camera_lookat = make_float3(-6.59f, 169.94f, -9.11f);
 
     camera_rotate  = Matrix4x4::identity();
 }
