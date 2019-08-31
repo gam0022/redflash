@@ -500,6 +500,8 @@ void updateCamera()
     camera_changed = false;
 
     context[ "frame_number" ]->setUint( frame_number++ );
+    context[ "total_sample" ]->setUint( frame_number );
+
     context[ "eye"]->setFloat( camera_eye );
     context[ "U"  ]->setFloat( camera_u );
     context[ "V"  ]->setFloat( camera_v );
@@ -864,7 +866,10 @@ int main( int argc, char** argv )
                 }
 
                 context->launch(0, width, height);
-                context["frame_number"]->setUint(frame_number++);
+
+                context["frame_number"]->setUint(frame_number);
+                context["total_sample"]->setUint(total_sample);
+                frame_number++;
                 total_sample += sample_per_launch;
 
                 std::cout << "progress used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << " sec. sample: " 

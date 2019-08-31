@@ -82,6 +82,7 @@ rtDeclareVariable(float3,        V, , );
 rtDeclareVariable(float3,        W, , );
 rtDeclareVariable(float3,        bad_color, , );
 rtDeclareVariable(unsigned int,  frame_number, , );
+rtDeclareVariable(unsigned int,  total_sample, , );
 rtDeclareVariable(unsigned int,  sample_per_launch, , );
 rtDeclareVariable(unsigned int,  rr_begin_depth, , );
 rtDeclareVariable(unsigned int, max_depth, , );
@@ -96,11 +97,11 @@ rtDeclareVariable(int, lightMaterialId, , );
 RT_PROGRAM void pathtrace_camera()
 {
     size_t2 screen = output_buffer.size();
-    unsigned int seed = tea<16>(screen.x * launch_index.y + launch_index.x, frame_number);
     float3 result = make_float3(0.0f);
 
     for(int i = 0; i < sample_per_launch; i++)
     {
+        unsigned int seed = tea<16>(screen.x * launch_index.y + launch_index.x, total_sample + i);
         float2 subpixel_jitter = make_float2(rnd(seed) - 0.5f, rnd(seed) - 0.5f);
         float2 d = (make_float2(launch_index) + subpixel_jitter) / make_float2(screen) * 2.f - 1.f;
         float3 ray_origin = eye;
@@ -144,7 +145,6 @@ RT_PROGRAM void pathtrace_camera()
         }
 
         result += prd.radiance;
-        seed = prd.seed;
     }
 
     //
