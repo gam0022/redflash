@@ -193,7 +193,7 @@ rtDeclareVariable(optix::Ray, ray,              rtCurrentRay, );
 rtDeclareVariable(float,      t_hit,            rtIntersectionDistance, );
 
 
-/*RT_CALLABLE_PROGRAM void Pdf(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+RT_CALLABLE_PROGRAM void diffuse_Pdf(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
 {
     float3 n = state.ffnormal;
     float3 L = prd.direction;
@@ -204,7 +204,7 @@ rtDeclareVariable(float,      t_hit,            rtIntersectionDistance, );
 
 }
 
-RT_CALLABLE_PROGRAM void Sample(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+RT_CALLABLE_PROGRAM void diffuse_Sample(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
 {
     float3 N = state.ffnormal;
 
@@ -222,7 +222,7 @@ RT_CALLABLE_PROGRAM void Sample(MaterialParameter &mat, State &state, PerRayData
 }
 
 
-RT_CALLABLE_PROGRAM float3 Eval(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+RT_CALLABLE_PROGRAM float3 diffuse_Eval(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
 {
     float3 N = state.ffnormal;
     float3 V = prd.wo;
@@ -235,8 +235,7 @@ RT_CALLABLE_PROGRAM float3 Eval(MaterialParameter &mat, State &state, PerRayData
     float3 out = (1.0f / M_PIf) * mat.albedo;
 
     return out * clamp(dot(N, L), 0.0f, 1.0f);
-}*/
-
+}
 
 RT_FUNCTION float sqr(float x) { return x * x; }
 
@@ -589,7 +588,7 @@ RT_PROGRAM void envmap_miss()
     float phi = M_PIf * 0.5f - acosf(ray.direction.y);
     float u = (theta + M_PIf) * (0.5f * M_1_PIf);
     float v = 0.5f * (1.0f + sin(phi));
-    current_prd.radiance = make_float3(tex2D(envmap, u, v));
+    current_prd.radiance += make_float3(tex2D(envmap, u, v)) * current_prd.attenuation;
     current_prd.done = true;
 }
 
