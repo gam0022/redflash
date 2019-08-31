@@ -455,7 +455,7 @@ RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
     if (!prd_shadow.inShadow)
     {
         float NdotL = dot(lightSample.normal, -lightDir);
-        if (NdotL > 0.0f)
+        if (lightDistSq > 0.0f)
         {
             float lightPdf = lightDistSq / (light.area * NdotL);
             current_prd.direction = lightDir;
@@ -501,7 +501,7 @@ RT_PROGRAM void closest_hit()
     // Direct light Sampling
     if (/*!prd.specularBounce && */ current_prd.depth < max_depth)
     {
-        current_prd.radiance += DirectLight(mat, state);
+        //current_prd.radiance += DirectLight(mat, state);
     }
 
     // BRDF Sampling
