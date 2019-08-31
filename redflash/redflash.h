@@ -30,13 +30,12 @@
 
 #include <optixu/optixu_math_namespace.h>
 
-struct ParallelogramLight                                                        
-{                                                                                
-    optix::float3 corner;                                                          
-    optix::float3 v1, v2;                                                          
-    optix::float3 normal;                                                          
-    optix::float3 emission;                                                        
-};                                                                               
+struct State
+{
+    optix::float3 hitpoint;
+    optix::float3 normal;
+    optix::float3 ffnormal;
+};
 
 enum BrdfType
 {
@@ -83,8 +82,27 @@ struct MaterialParameter
     BrdfType brdf;
 };
 
-struct State
+enum LightType
 {
+    SPHERE, QUAD
+};
+
+struct LightParameter
+{
+    optix::float3 position;
     optix::float3 normal;
-    optix::float3 ffnormal;
+    optix::float3 emission;
+    optix::float3 u;
+    optix::float3 v;
+    float area;
+    float radius;
+    LightType lightType;
+};
+
+struct LightSample
+{
+    optix::float3 surfacePos;
+    optix::float3 normal;
+    optix::float3 emission;
+    float pdf;
 };

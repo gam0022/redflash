@@ -36,9 +36,10 @@ if(GLUT_FOUND AND OPENGL_FOUND)
         redflash.cpp
         redflash.cu
         redflash.h
+        intersect_raymarching.cu
+        intersect_sphere.cu
 
         # These files are common among multiple samples
-        parallelogram.cu
         random.h
         )
 else()

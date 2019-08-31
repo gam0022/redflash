@@ -33,6 +33,12 @@
 
 using namespace optix;
 
+static __host__ __device__ __inline__ float powerHeuristic(float a, float b)
+{
+    float t = a * a;
+    return t / (b*b + t);
+}
+
 struct PerRayData_pathtrace
 {
     float3 radiance;
@@ -46,7 +52,8 @@ struct PerRayData_pathtrace
 
     unsigned int seed;
     int depth;
-    int done;
+    bool done;
+    bool specularBounce;
 };
 
 struct PerRayData_pathtrace_shadow
@@ -75,34 +82,27 @@ rtDeclareVariable(float3,        V, , );
 rtDeclareVariable(float3,        W, , );
 rtDeclareVariable(float3,        bad_color, , );
 rtDeclareVariable(unsigned int,  frame_number, , );
-rtDeclareVariable(unsigned int,  sqrt_num_samples, , );
+rtDeclareVariable(unsigned int,  sample_at_once, , );
 rtDeclareVariable(unsigned int,  rr_begin_depth, , );
+rtDeclareVariable(unsigned int, max_depth, , );
 
 rtBuffer<float4, 2>              output_buffer;
-rtBuffer<ParallelogramLight>     lights;
+
+rtDeclareVariable(int, sysNumberOfLights, , );
+rtBuffer<LightParameter> sysLightParameters;
+rtDeclareVariable(int, lightMaterialId, , );
 
 
 RT_PROGRAM void pathtrace_camera()
 {
     size_t2 screen = output_buffer.size();
-
-    float2 inv_screen = 1.0f/make_float2(screen) * 2.f;
-    float2 pixel = (make_float2(launch_index)) * inv_screen - 1.f;
-
-    float2 jitter_scale = inv_screen / sqrt_num_samples;
-    unsigned int samples_per_pixel = sqrt_num_samples*sqrt_num_samples;
+    unsigned int seed = tea<16>(screen.x * launch_index.y + launch_index.x, frame_number);
     float3 result = make_float3(0.0f);
 
-    unsigned int seed = tea<16>(screen.x*launch_index.y+launch_index.x, frame_number);
-    do 
+    for(int i = 0; i < sample_at_once; i++)
     {
-        //
-        // Sample pixel using jittering
-        //
-        unsigned int x = samples_per_pixel%sqrt_num_samples;
-        unsigned int y = samples_per_pixel/sqrt_num_samples;
-        float2 jitter = make_float2(x-rnd(seed), y-rnd(seed));
-        float2 d = pixel + jitter*jitter_scale;
+        float2 subpixel_jitter = frame_number == 0 ? make_float2(0.0f) : make_float2(rnd(seed) - 0.5f, rnd(seed) - 0.5f);
+        float2 d = (make_float2(launch_index) + subpixel_jitter) / make_float2(screen) * 2.f - 1.f;
         float3 ray_origin = eye;
         float3 ray_direction = normalize(d.x*U + d.y*V + W);
 
@@ -116,14 +116,14 @@ RT_PROGRAM void pathtrace_camera()
 
         // Each iteration is a segment of the ray path.  The closest hit will
         // return new segments to be traced here.
-        for(int i = 0; i < 10; i++)
+        for(;;)
         {
             Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, scene_epsilon, RT_DEFAULT_MAX);
+            prd.wo = -ray.direction;
             rtTrace(top_object, ray, prd);
 
-            if(prd.done)
+            if (prd.done || prd.depth >= max_depth)
             {
-                // We have hit the background or a luminaire
                 break;
             }
 
@@ -145,12 +145,12 @@ RT_PROGRAM void pathtrace_camera()
 
         result += prd.radiance;
         seed = prd.seed;
-    } while (--samples_per_pixel);
+    }
 
     //
     // Update the output buffer
     //
-    float3 pixel_color = result/(sqrt_num_samples*sqrt_num_samples);
+    float3 pixel_color = result / (float)sample_at_once;
 
     if (frame_number > 1)
     {
@@ -167,33 +167,54 @@ RT_PROGRAM void pathtrace_camera()
 
 //-----------------------------------------------------------------------------
 //
-//  Emissive surface closest-hit
+//  closest-hit
 //
 //-----------------------------------------------------------------------------
 
-rtDeclareVariable(float3,        emission_color, , );
+rtDeclareVariable(float3, emission_color, , );
+rtDeclareVariable(float3, albedo_color, , );
+rtDeclareVariable(float3, geometric_normal, attribute geometric_normal, );
+rtDeclareVariable(float3, shading_normal, attribute shading_normal, );
+rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
+rtDeclareVariable(float, t_hit, rtIntersectionDistance, );
+
+/*RT_PROGRAM void light_closest_hit()
+{
+    current_prd.radiance += emission_color * current_prd.attenuation;
+    current_prd.done = true;
+}*/
 
 RT_PROGRAM void light_closest_hit()
 {
-    current_prd.radiance += emission_color * current_prd.attenuation;
+    const float3 world_shading_normal = normalize(rtTransformNormal(RT_OBJECT_TO_WORLD, shading_normal));
+    const float3 world_geometric_normal = normalize(rtTransformNormal(RT_OBJECT_TO_WORLD, geometric_normal));
+    const float3 ffnormal = faceforward(world_shading_normal, -ray.direction, world_geometric_normal);
+
+    LightParameter light = sysLightParameters[lightMaterialId];
+    float cosTheta = dot(-ray.direction, light.normal);
+
+    if ((light.lightType == QUAD && cosTheta > 0.0f) || light.lightType == SPHERE)
+    {
+        if (current_prd.depth == 0 || current_prd.specularBounce)
+            current_prd.radiance += light.emission * current_prd.attenuation;
+        else
+        {
+            float lightPdf = (t_hit * t_hit) / (light.area * clamp(cosTheta, 1.e-3f, 1.0f));
+            current_prd.radiance += powerHeuristic(current_prd.pdf, lightPdf) * current_prd.attenuation * light.emission;
+        }
+    }
+
     current_prd.done = true;
 }
 
 
 //-----------------------------------------------------------------------------
 //
-//  Lambertian surface closest-hit
+//  bsdf
 //
 //-----------------------------------------------------------------------------
 
-rtDeclareVariable(float3,     diffuse_color, , );
-rtDeclareVariable(float3,     geometric_normal, attribute geometric_normal, );
-rtDeclareVariable(float3,     shading_normal,   attribute shading_normal, );
-rtDeclareVariable(optix::Ray, ray,              rtCurrentRay, );
-rtDeclareVariable(float,      t_hit,            rtIntersectionDistance, );
-
-
-/*RT_CALLABLE_PROGRAM void Pdf(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+RT_CALLABLE_PROGRAM void diffuse_Pdf(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
 {
     float3 n = state.ffnormal;
     float3 L = prd.direction;
@@ -204,7 +225,7 @@ rtDeclareVariable(float,      t_hit,            rtIntersectionDistance, );
 
 }
 
-RT_CALLABLE_PROGRAM void Sample(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+RT_CALLABLE_PROGRAM void diffuse_Sample(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
 {
     float3 N = state.ffnormal;
 
@@ -222,7 +243,7 @@ RT_CALLABLE_PROGRAM void Sample(MaterialParameter &mat, State &state, PerRayData
 }
 
 
-RT_CALLABLE_PROGRAM float3 Eval(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
+RT_CALLABLE_PROGRAM float3 diffuse_Eval(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
 {
     float3 N = state.ffnormal;
     float3 V = prd.wo;
@@ -235,8 +256,7 @@ RT_CALLABLE_PROGRAM float3 Eval(MaterialParameter &mat, State &state, PerRayData
     float3 out = (1.0f / M_PIf) * mat.albedo;
 
     return out * clamp(dot(N, L), 0.0f, 1.0f);
-}*/
-
+}
 
 RT_FUNCTION float sqr(float x) { return x * x; }
 
@@ -407,25 +427,39 @@ RT_CALLABLE_PROGRAM float3 Eval(MaterialParameter &mat, State &state, PerRayData
     return out * clamp(dot(N, L), 0.0f, 1.0f);
 }
 
-static __host__ __device__ __inline__ float powerHeuristic(float a, float b)
+RT_FUNCTION float3 UniformSampleSphere(float u1, float u2)
 {
-    float t = a * a;
-    return t / (b*b + t);
+    float z = 1.f - 2.f * u1;
+    float r = sqrtf(max(0.f, 1.f - z * z));
+    float phi = 2.f * M_PIf * u2;
+    float x = r * cosf(phi);
+    float y = r * sinf(phi);
+
+    return make_float3(x, y, z);
 }
 
-/*RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
+RT_CALLABLE_PROGRAM void sphere_sample(LightParameter &light, PerRayData_pathtrace &prd, LightSample &sample)
 {
-    float3 L = make_float3(0.0f);
+    const float r1 = rnd(prd.seed);
+    const float r2 = rnd(prd.seed);
+    sample.surfacePos = light.position + UniformSampleSphere(r1, r2) * light.radius;
+    sample.normal = normalize(sample.surfacePos - light.position);
+    sample.emission = light.emission * sysNumberOfLights;
+}
 
+RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
+{
     //Pick a light to sample
-    int index = optix::clamp(static_cast<int>(floorf(rnd(prd.seed) * sysNumberOfLights)), 0, sysNumberOfLights - 1);
+    int index = optix::clamp(static_cast<int>(floorf(rnd(current_prd.seed) * sysNumberOfLights)), 0, sysNumberOfLights - 1);
     LightParameter light = sysLightParameters[index];
     LightSample lightSample;
 
-    float3 surfacePos = state.fhp;
+    // float3 surfacePos = state.fhp;
+    float3 surfacePos = state.hitpoint;
     float3 surfaceNormal = state.ffnormal;
 
-    sysLightSample[light.lightType](light, prd, lightSample);
+    // sysLightSample[light.lightType](light, current_prd, lightSample);
+    sphere_sample(light, current_prd, lightSample);
 
     float3 lightDir = lightSample.surfacePos - surfacePos;
     float lightDist = length(lightDir);
@@ -433,77 +467,27 @@ static __host__ __device__ __inline__ float powerHeuristic(float a, float b)
     lightDir /= sqrtf(lightDistSq);
 
     if (dot(lightDir, surfaceNormal) <= 0.0f || dot(lightDir, lightSample.normal) >= 0.0f)
-        return L;
+        return make_float3(0.0f);
 
-    PerRayData_shadow prd_shadow;
+    PerRayData_pathtrace_shadow prd_shadow;
     prd_shadow.inShadow = false;
     optix::Ray shadowRay = optix::make_Ray(surfacePos, lightDir, 1, scene_epsilon, lightDist - scene_epsilon);
     rtTrace(top_object, shadowRay, prd_shadow);
 
-    if (!prd_shadow.inShadow)
-    {
-        float NdotL = dot(lightSample.normal, -lightDir);
-        float lightPdf = lightDistSq / (light.area * NdotL);
+    if (prd_shadow.inShadow)
+        return make_float3(0.0f);
 
-        prd.direction = lightDir;
+    float NdotL = dot(lightSample.normal, -lightDir);
+    float lightPdf = lightDistSq / (light.area * NdotL);
+    current_prd.direction = lightDir;
 
-        sysBRDFPdf[programId](mat, state, prd);
-        float3 f = sysBRDFEval[programId](mat, state, prd);
+    // sysBRDFPdf[programId](mat, state, current_prd);
+    Pdf(mat, state, current_prd);
+    // float3 f = sysBRDFEval[programId](mat, state, current_prd);
+    float3 f = Eval(mat, state, current_prd);
 
-        L = powerHeuristic(lightPdf, prd.pdf) * prd.throughput * f * lightSample.emission / max(0.001f, lightPdf);
-    }
-
-    return L;
-}*/
-
-float3 DirectLightParallelogram(MaterialParameter &mat, State &state)
-{
-    unsigned int num_lights = lights.size();
-    float3 L = make_float3(0.0f);
-    float3 surfaceNormal = state.ffnormal;
-
-    for(int i = 0; i < num_lights; ++i)
-    {
-        // Choose random point on light
-        ParallelogramLight lightSample = lights[i];
-        const float z1 = rnd(current_prd.seed);
-        const float z2 = rnd(current_prd.seed);
-        const float3 light_pos = lightSample.corner + lightSample.v1 * z1 + lightSample.v2 * z2;
-
-        // Calculate properties of light sample (for area based pdf)
-        float3 lightDir = light_pos - current_prd.origin;
-        float lightDist = length(lightDir);
-        float lightDistSq = lightDist * lightDist;
-        lightDir /= sqrtf(lightDistSq);
-
-        // cast shadow ray
-        if (dot(lightDir, surfaceNormal) >= 0.0f && dot(lightDir, lightSample.normal) <= 0.0f)
-        {
-            PerRayData_pathtrace_shadow shadow_prd;
-            shadow_prd.inShadow = false;
-            // Note: bias both ends of the shadow ray, in case the light is also present as geometry in the scene.
-            Ray shadow_ray = make_Ray(current_prd.origin, lightDir, SHADOW_RAY_TYPE, scene_epsilon, lightDist - scene_epsilon);
-            rtTrace(top_object, shadow_ray, shadow_prd);
-
-            if(!shadow_prd.inShadow)
-            {
-                const float A = length(cross(lightSample.v1, lightSample.v2));
-                float NdotL = dot(lightSample.normal, -lightDir);
-                float lightPdf = lightDistSq / (A * NdotL);
-
-                current_prd.direction = lightDir;
-
-                Pdf/*sysBRDFPdf[programId]*/(mat, state, current_prd);
-                float3 f = Eval/*sysBRDFEval[programId]*/(mat, state, current_prd);
-
-                L = powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
-            }
-        }
-    }
-
-    return L;
+    return powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
 }
-
 
 RT_PROGRAM void closest_hit()
 {
@@ -511,26 +495,33 @@ RT_PROGRAM void closest_hit()
     float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
     float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
 
-    float3 hitpoint = ray.origin + t_hit * ray.direction + world_geometric_normal * scene_epsilon;
+    float3 hitpoint = ray.origin + t_hit * ray.direction + ffnormal * scene_epsilon * 10.0;
 
     State state;
+    state.hitpoint = hitpoint;
     state.normal = world_shading_normal;
     state.ffnormal = ffnormal;
 
     current_prd.wo = -ray.direction;
+
+    // FIXME: Sample‚É‚à‚Á‚Ä‚¢‚­
     current_prd.origin = hitpoint;
     
     current_prd.radiance += emission_color * current_prd.attenuation;
 
+    // FIXME: Ý’è‚ð“¦‚·
     MaterialParameter mat;
-    mat.albedo = diffuse_color;
+    mat.albedo = albedo_color;
     mat.metallic = 0.8f;
     mat.roughness = 0.05f;
 
+    // FIXME: bsdfId ‚©‚ç”»’è
+    current_prd.specularBounce = false;
+
     // Direct light Sampling
-    if (true/*!prd.specularBounce && prd.depth < max_depth*/)
+    if (!current_prd.specularBounce && current_prd.depth < max_depth)
     {
-        current_prd.radiance += DirectLightParallelogram(mat, state);
+        current_prd.radiance += DirectLight(mat, state);
     }
 
     // BRDF Sampling
@@ -589,161 +580,6 @@ RT_PROGRAM void envmap_miss()
     float phi = M_PIf * 0.5f - acosf(ray.direction.y);
     float u = (theta + M_PIf) * (0.5f * M_1_PIf);
     float v = 0.5f * (1.0f + sin(phi));
-    current_prd.radiance = make_float3(tex2D(envmap, u, v));
+    current_prd.radiance += make_float3(tex2D(envmap, u, v)) * current_prd.attenuation;
     current_prd.done = true;
-}
-
-
-//-----------------------------------------------------------------------------
-//
-//  Raymarching
-//
-//-----------------------------------------------------------------------------
-
-#include <optix_world.h>
-
-rtDeclareVariable(float3, center, , );
-rtDeclareVariable(float3, size, , );
-rtDeclareVariable(int, lgt_instance, , ) = {0};
-rtDeclareVariable(float3, texcoord, attribute texcoord, );
-rtDeclareVariable(int, lgt_idx, attribute lgt_idx, );
-
-float dMenger(float3 z0, float3 offset, float scale) {
-    float4 z = make_float4(z0, 1.0);
-    for (int n = 0; n < 4; n++) {
-        // z = abs(z);
-        z.x = abs(z.x);
-        z.y = abs(z.y);
-        z.z = abs(z.z);
-        z.w = abs(z.w);
-
-        // if (z.x < z.y) z.xy = z.yx;
-        if (z.x < z.y)
-        {
-            float x = z.x;
-            z.x = z.y;
-            z.y = x;
-        }
-
-        // if (z.x < z.z) z.xz = z.zx;
-        if (z.x < z.z)
-        {
-            float x = z.x;
-            z.x = z.z;
-            z.z = x;
-        }
-
-        // if (z.y < z.z) z.yz = z.zy;
-        if (z.y < z.z)
-        {
-            float y = z.y;
-            z.y = z.z;
-            z.z = y;
-        }
-
-        z *= scale;
-        // z.xyz -= offset * (scale - 1.0);
-        z.x -= offset.x * (scale - 1.0);
-        z.y -= offset.y * (scale - 1.0);
-        z.z -= offset.z * (scale - 1.0);
-
-        if (z.z < -0.5 * offset.z * (scale - 1.0))
-            z.z += offset.z * (scale - 1.0);
-    }
-    // return (length(max(abs(z.xyz) - make_float3(1.0, 1.0, 1.0), 0.0)) - 0.05) / z.w;
-    return (length(make_float3(max(abs(z.x) - 1.0, 0.0), max(abs(z.y) - 1.0, 0.0), max(abs(z.z) - 1.0, 0.0))) - 0.05) / z.w;
-}
-
-float3 get_xyz(float4 p)
-{
-    return make_float3(p.x, p.y, p.z);
-}
-
-// not work...
-void set_xyz(float4 &a, float3 b)
-{
-    a.x = b.x;
-    a.y = b.y;
-    a.x = b.z;
-}
-
-float dMandelFast(float3 p, float scale, int n) {
-    float4 q0 = make_float4(p, 1.);
-    float4 q = q0;
-
-    for (int i = 0; i < n; i++) {
-        // q.xyz = clamp(q.xyz, -1.0, 1.0) * 2.0 - q.xyz;
-        // set_xyz(q, clamp(get_xyz(q), -1.0, 1.0) * 2.0 - get_xyz(q));
-        float4 tmp = clamp(q, -1.0, 1.0) * 2.0 - q;
-        q.x = tmp.x;
-        q.y = tmp.y;
-        q.z = tmp.z;
-
-        // q = q * scale / clamp( dot( q.xyz, q.xyz ), 0.3, 1.0 ) + q0;
-        float3 q_xyz = get_xyz(q);
-        q = q * scale / clamp(dot(q_xyz, q_xyz), 0.3, 1.0) + q0;
-    }
-
-    // return length( q.xyz ) / abs( q.w );
-    return length(get_xyz(q)) / abs(q.w);
-}
-
-float map(float3 p)
-{
-    //return length(p - center) - 100.0;
-
-    float scale = 100 * 0.2;
-    // f((p - position) / scale) * scale;
-    // return dMenger((p - center) / scale, make_float3(1.23, 1.65, 1.45), 2.56) * scale;
-    // return dMenger((p - center) / scale, make_float3(1, 1, 1), 3.1) * scale;
-    return dMandelFast((p - center) / scale, 2.76, 20) * scale;
-}
-
-#define calcNormal(p, dFunc, eps) normalize(\
-    make_float3( eps, -eps, -eps) * dFunc(p + make_float3( eps, -eps, -eps)) + \
-    make_float3(-eps, -eps,  eps) * dFunc(p + make_float3(-eps, -eps,  eps)) + \
-    make_float3(-eps,  eps, -eps) * dFunc(p + make_float3(-eps,  eps, -eps)) + \
-    make_float3( eps,  eps,  eps) * dFunc(p + make_float3( eps,  eps,  eps)))
-
-float3 calcNormalBasic(float3 p, float eps)
-{
-    return normalize(make_float3(
-        map(p + make_float3(eps, 0.0, 0.0)) - map(p + make_float3(-eps, 0.0, 0.0)),
-        map(p + make_float3(0.0, eps, 0.0)) - map(p + make_float3(0.0, -eps, 0.0)),
-        map(p + make_float3(0.0, 0.0, eps)) - map(p + make_float3(0.0, 0.0, -eps))
-    ));
-}
-
-RT_PROGRAM void intersect(int primIdx)
-{
-    float eps;
-    float t = ray.tmin, d = 0.0;
-    float3 p = ray.origin;
-
-    for (int i = 0; i < 300; i++)
-    {
-        p = ray.origin + t * ray.direction;
-        d = map(p);
-        t += d;
-        eps = scene_epsilon * t;
-        if (abs(d) < eps || t > ray.tmax)
-        {
-            break;
-        }
-    }
-
-    if (t < ray.tmax && rtPotentialIntersection(t))
-    {
-        shading_normal = geometric_normal = calcNormal(p, map, eps);
-        texcoord = make_float3(p.x, p.y, 0);
-        lgt_idx = lgt_instance;
-        rtReportIntersection(0);
-    }
-}
-
-RT_PROGRAM void bounds(int, float result[6])
-{
-    optix::Aabb* aabb = (optix::Aabb*)result;
-    aabb->m_min = center - size;
-    aabb->m_max = center + size;
 }

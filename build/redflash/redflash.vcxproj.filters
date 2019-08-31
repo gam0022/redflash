@@ -20,7 +20,10 @@
     <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\redflash.cu">
       <Filter>CUDA Files</Filter>
     </None>
-    <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\parallelogram.cu">
+    <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\intersect_raymarching.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\intersect_sphere.cu">
       <Filter>CUDA Files</Filter>
     </None>
   </ItemGroup>
