@@ -762,6 +762,24 @@ int main( int argc, char** argv )
             time_limit = atof(argv[++i]);
             use_time_limit = true;
         }
+        else if (arg == "-W" || arg == "--width")
+        {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            width = atoi(argv[++i]);
+        }
+        else if (arg == "-H" || arg == "--height")
+        {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            height = atoi(argv[++i]);
+        }
         else
         {
             std::cerr << "Unknown option '" << arg << "'\n";
