@@ -101,7 +101,7 @@ RT_PROGRAM void pathtrace_camera()
 
     for(int i = 0; i < sample_per_launch; i++)
     {
-        float2 subpixel_jitter = frame_number == 0 ? make_float2(0.0f) : make_float2(rnd(seed) - 0.5f, rnd(seed) - 0.5f);
+        float2 subpixel_jitter = make_float2(rnd(seed) - 0.5f, rnd(seed) - 0.5f);
         float2 d = (make_float2(launch_index) + subpixel_jitter) / make_float2(screen) * 2.f - 1.f;
         float3 ray_origin = eye;
         float3 ray_direction = normalize(d.x*U + d.y*V + W);

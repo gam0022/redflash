@@ -859,6 +859,7 @@ int main( int argc, char** argv )
                     {
                         std::cout << "chnage sample_per_launch: " << sample_per_launch << " to 1" << std::endl;
                         sample_per_launch = 1;
+                        context["sample_per_launch"]->setUint(sample_per_launch);
                     }
                 }
 
