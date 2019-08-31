@@ -83,6 +83,32 @@ struct MaterialParameter
     BrdfType brdf;
 };
 
+enum LightType
+{
+    SPHERE, QUAD
+};
+
+struct LightParameter
+{
+    optix::float3 position;
+    optix::float3 normal;
+    optix::float3 emission;
+    optix::float3 u;
+    optix::float3 v;
+    float area;
+    float radius;
+    LightType lightType;
+};
+
+struct LightSample
+{
+    optix::float3 surfacePos;
+    optix::float3 normal;
+    optix::float3 emission;
+    float pdf;
+
+};
+
 struct State
 {
     optix::float3 normal;

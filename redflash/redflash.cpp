@@ -393,6 +393,26 @@ GeometryGroup createGeometry()
     return shadow_group;
 }
 
+optix::Buffer m_bufferLightParameters;
+
+void updateLightParameters(const std::vector<LightParameter> &lightParameters)
+{
+    LightParameter* dst = static_cast<LightParameter*>(m_bufferLightParameters->map(0, RT_BUFFER_MAP_WRITE_DISCARD));
+    for (size_t i = 0; i < lightParameters.size(); ++i, ++dst) {
+        LightParameter mat = lightParameters[i];
+
+        dst->position = mat.position;
+        dst->emission = mat.emission;
+        dst->radius = mat.radius;
+        dst->area = mat.area;
+        dst->u = mat.u;
+        dst->v = mat.v;
+        dst->normal = mat.normal;
+        dst->lightType = mat.lightType;
+    }
+    m_bufferLightParameters->unmap();
+}
+
 GeometryGroup createGeometryLight()
 {
     // Set up material
@@ -404,28 +424,39 @@ GeometryGroup createGeometryLight()
     // Light
     ParallelogramLight light;
     const float3 light_em = make_float3(10.0f, 0.5f, 0.5f);
+
+    std::vector<LightParameter> lightParameters;
     std::vector<GeometryInstance> gis;
-    gis.push_back(createParallelogram(
-        make_float3(5.0f, 185.0f, 75.0f),
-        make_float3(-10.0f, 0.0f, 00.0f),
-        make_float3( 0.0f, 0.0f, 10.0f),
-        &light));
-    setMaterial(gis.back(), diffuse_light, "emission_color", light_em);
+
+    {
+        LightParameter light;
+        light.lightType = SPHERE;
+        light.position = make_float3(50, 310, 50);
+        light.radius = 10.0f;
+        light.emission = make_float3(1.0);
+        lightParameters.push_back(light);
+    }
+
+    for (auto light = lightParameters.begin(); light != lightParameters.end(); ++light)
+    {
+        light->area = 4.0f * M_PIf * light->radius * light->radius;
+        light->normal = optix::normalize(light->normal);
+
+        gis.push_back(createSphereObject(light->position, light->radius));
+        setMaterial(gis.back(), diffuse_light, "emission_color", light->emission);
+    }
 
     // Create geometry group
     GeometryGroup light_group = context->createGeometryGroup(gis.begin(), gis.end());
     light_group->setAcceleration(context->createAcceleration("Trbvh"));
 
-    // Light buffer
-    light.emission = light_em;
-
-    Buffer light_buffer = context->createBuffer(RT_BUFFER_INPUT);
-    light_buffer->setFormat(RT_FORMAT_USER);
-    light_buffer->setElementSize(sizeof(ParallelogramLight));
-    light_buffer->setSize(1u);
-    memcpy(light_buffer->map(), &light, sizeof(light));
-    light_buffer->unmap();
-    context["lights"]->setBuffer(light_buffer);
+    // Create sysLightParameters
+    m_bufferLightParameters = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_USER);
+    m_bufferLightParameters->setElementSize(sizeof(LightParameter));
+    m_bufferLightParameters->setSize(lightParameters.size());
+    updateLightParameters(lightParameters);
+    context["sysNumberOfLights"]->setInt(lightParameters.size());
+    context["sysLightParameters"]->setBuffer(m_bufferLightParameters);
 
     return light_group;
 }
@@ -472,6 +503,10 @@ void setupCamera()
     // look at mandelbox v2
     camera_eye    = make_float3(-13.08f, 186.07f, 137.11f);
     camera_lookat = make_float3(  4.74f, 170.17f, 42.4f);
+
+    // look at emission
+    camera_eye = make_float3(50.4f, 338.1f, -66.82f);
+    camera_lookat = make_float3(48.49f, 311.32f, 21.44f);
 
     camera_rotate  = Matrix4x4::identity();
 }

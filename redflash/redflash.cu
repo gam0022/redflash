@@ -80,7 +80,10 @@ rtDeclareVariable(unsigned int,  rr_begin_depth, , );
 rtDeclareVariable(unsigned int, max_depth, , );
 
 rtBuffer<float4, 2>              output_buffer;
-rtBuffer<ParallelogramLight>     lights;
+//rtBuffer<ParallelogramLight>     lights;
+
+rtDeclareVariable(int, sysNumberOfLights, , );
+rtBuffer<LightParameter> sysLightParameters;
 
 
 RT_PROGRAM void pathtrace_camera()
@@ -400,19 +403,41 @@ static __host__ __device__ __inline__ float powerHeuristic(float a, float b)
     return t / (b*b + t);
 }
 
-/*RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
+RT_FUNCTION float3 UniformSampleSphere(float u1, float u2)
+{
+    float z = 1.f - 2.f * u1;
+    float r = sqrtf(max(0.f, 1.f - z * z));
+    float phi = 2.f * M_PIf * u2;
+    float x = r * cosf(phi);
+    float y = r * sinf(phi);
+
+    return make_float3(x, y, z);
+}
+
+RT_CALLABLE_PROGRAM void sphere_sample(LightParameter &light, PerRayData_pathtrace &prd, LightSample &sample)
+{
+    const float r1 = rnd(prd.seed);
+    const float r2 = rnd(prd.seed);
+    sample.surfacePos = light.position + UniformSampleSphere(r1, r2) * light.radius;
+    sample.normal = normalize(sample.surfacePos - light.position);
+    sample.emission = light.emission * sysNumberOfLights;
+}
+
+RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
 {
     float3 L = make_float3(0.0f);
 
     //Pick a light to sample
-    int index = optix::clamp(static_cast<int>(floorf(rnd(prd.seed) * sysNumberOfLights)), 0, sysNumberOfLights - 1);
+    int index = optix::clamp(static_cast<int>(floorf(rnd(current_prd.seed) * sysNumberOfLights)), 0, sysNumberOfLights - 1);
     LightParameter light = sysLightParameters[index];
     LightSample lightSample;
 
-    float3 surfacePos = state.fhp;
+    // float3 surfacePos = state.fhp;
+    float3 surfacePos = current_prd.origin;
     float3 surfaceNormal = state.ffnormal;
 
-    sysLightSample[light.lightType](light, prd, lightSample);
+    // sysLightSample[light.lightType](light, current_prd, lightSample);
+    sphere_sample(light, current_prd, lightSample);
 
     float3 lightDir = lightSample.surfacePos - surfacePos;
     float lightDist = length(lightDir);
@@ -422,7 +447,7 @@ static __host__ __device__ __inline__ float powerHeuristic(float a, float b)
     if (dot(lightDir, surfaceNormal) <= 0.0f || dot(lightDir, lightSample.normal) >= 0.0f)
         return L;
 
-    PerRayData_shadow prd_shadow;
+    PerRayData_pathtrace_shadow prd_shadow;
     prd_shadow.inShadow = false;
     optix::Ray shadowRay = optix::make_Ray(surfacePos, lightDir, 1, scene_epsilon, lightDist - scene_epsilon);
     rtTrace(top_object, shadowRay, prd_shadow);
@@ -432,65 +457,18 @@ static __host__ __device__ __inline__ float powerHeuristic(float a, float b)
         float NdotL = dot(lightSample.normal, -lightDir);
         float lightPdf = lightDistSq / (light.area * NdotL);
 
-        prd.direction = lightDir;
+        current_prd.direction = lightDir;
 
-        sysBRDFPdf[programId](mat, state, prd);
-        float3 f = sysBRDFEval[programId](mat, state, prd);
+        // sysBRDFPdf[programId](mat, state, current_prd);
+        Pdf(mat, state, current_prd);
+        // float3 f = sysBRDFEval[programId](mat, state, current_prd);
+        float3 f = Eval(mat, state, current_prd);
 
-        L = powerHeuristic(lightPdf, prd.pdf) * prd.throughput * f * lightSample.emission / max(0.001f, lightPdf);
-    }
-
-    return L;
-}*/
-
-float3 DirectLightParallelogram(MaterialParameter &mat, State &state)
-{
-    unsigned int num_lights = lights.size();
-    float3 L = make_float3(0.0f);
-    float3 surfaceNormal = state.ffnormal;
-
-    for(int i = 0; i < num_lights; ++i)
-    {
-        // Choose random point on light
-        ParallelogramLight lightSample = lights[i];
-        const float z1 = rnd(current_prd.seed);
-        const float z2 = rnd(current_prd.seed);
-        const float3 light_pos = lightSample.corner + lightSample.v1 * z1 + lightSample.v2 * z2;
-
-        // Calculate properties of light sample (for area based pdf)
-        float3 lightDir = light_pos - current_prd.origin;
-        float lightDist = length(lightDir);
-        float lightDistSq = lightDist * lightDist;
-        lightDir /= sqrtf(lightDistSq);
-
-        // cast shadow ray
-        if (dot(lightDir, surfaceNormal) >= 0.0f && dot(lightDir, lightSample.normal) <= 0.0f)
-        {
-            PerRayData_pathtrace_shadow shadow_prd;
-            shadow_prd.inShadow = false;
-            // Note: bias both ends of the shadow ray, in case the light is also present as geometry in the scene.
-            Ray shadow_ray = make_Ray(current_prd.origin, lightDir, SHADOW_RAY_TYPE, scene_epsilon, lightDist - scene_epsilon);
-            rtTrace(top_object, shadow_ray, shadow_prd);
-
-            if(!shadow_prd.inShadow)
-            {
-                const float A = length(cross(lightSample.v1, lightSample.v2));
-                float NdotL = dot(lightSample.normal, -lightDir);
-                float lightPdf = lightDistSq / (A * NdotL);
-
-                current_prd.direction = lightDir;
-
-                Pdf/*sysBRDFPdf[programId]*/(mat, state, current_prd);
-                float3 f = Eval/*sysBRDFEval[programId]*/(mat, state, current_prd);
-
-                L = powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
-            }
-        }
+        L = powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
     }
 
     return L;
 }
-
 
 RT_PROGRAM void closest_hit()
 {
@@ -517,7 +495,7 @@ RT_PROGRAM void closest_hit()
     // Direct light Sampling
     if (/*!prd.specularBounce && */ current_prd.depth < max_depth)
     {
-        current_prd.radiance += DirectLightParallelogram(mat, state);
+        current_prd.radiance += DirectLight(mat, state);
     }
 
     // BRDF Sampling
