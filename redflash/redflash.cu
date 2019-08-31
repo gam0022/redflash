@@ -82,7 +82,7 @@ rtDeclareVariable(float3,        V, , );
 rtDeclareVariable(float3,        W, , );
 rtDeclareVariable(float3,        bad_color, , );
 rtDeclareVariable(unsigned int,  frame_number, , );
-rtDeclareVariable(unsigned int,  sample_at_once, , );
+rtDeclareVariable(unsigned int,  sample_per_launch, , );
 rtDeclareVariable(unsigned int,  rr_begin_depth, , );
 rtDeclareVariable(unsigned int, max_depth, , );
 
@@ -99,7 +99,7 @@ RT_PROGRAM void pathtrace_camera()
     unsigned int seed = tea<16>(screen.x * launch_index.y + launch_index.x, frame_number);
     float3 result = make_float3(0.0f);
 
-    for(int i = 0; i < sample_at_once; i++)
+    for(int i = 0; i < sample_per_launch; i++)
     {
         float2 subpixel_jitter = frame_number == 0 ? make_float2(0.0f) : make_float2(rnd(seed) - 0.5f, rnd(seed) - 0.5f);
         float2 d = (make_float2(launch_index) + subpixel_jitter) / make_float2(screen) * 2.f - 1.f;
@@ -150,7 +150,7 @@ RT_PROGRAM void pathtrace_camera()
     //
     // Update the output buffer
     //
-    float3 pixel_color = result / (float)sample_at_once;
+    float3 pixel_color = result / (float)sample_per_launch;
 
     if (frame_number > 1)
     {

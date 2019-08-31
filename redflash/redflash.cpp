@@ -74,7 +74,7 @@ Context        context = 0;
 uint32_t       width  = 1920 / 4;
 uint32_t       height = 1080 / 4;
 int max_depth = 10;
-int sample_at_once = 2;
+int sample_per_launch = 2;
 bool           use_pbo = true;
 
 int            frame_number = 1;
@@ -260,7 +260,7 @@ void createContext()
     context[ "scene_epsilon"                  ]->setFloat( 0.001f );
     context[ "rr_begin_depth"                 ]->setUint( rr_begin_depth );
     context["max_depth"]->setUint(max_depth);
-    context["sample_at_once"]->setUint(sample_at_once);
+    context["sample_per_launch"]->setUint(sample_per_launch);
 
     Buffer buffer = sutil::createOutputBuffer( context, RT_FORMAT_FLOAT4, width, height, use_pbo );
     context["output_buffer"]->set( buffer );
