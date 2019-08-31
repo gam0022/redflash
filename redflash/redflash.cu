@@ -167,11 +167,16 @@ RT_PROGRAM void pathtrace_camera()
 
 //-----------------------------------------------------------------------------
 //
-//  Emissive surface closest-hit
+//  closest-hit
 //
 //-----------------------------------------------------------------------------
 
-rtDeclareVariable(float3,        emission_color, , );
+rtDeclareVariable(float3, emission_color, , );
+rtDeclareVariable(float3, albedo_color, , );
+rtDeclareVariable(float3, geometric_normal, attribute geometric_normal, );
+rtDeclareVariable(float3, shading_normal, attribute shading_normal, );
+rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
+rtDeclareVariable(float, t_hit, rtIntersectionDistance, );
 
 RT_PROGRAM void light_closest_hit()
 {
@@ -182,16 +187,9 @@ RT_PROGRAM void light_closest_hit()
 
 //-----------------------------------------------------------------------------
 //
-//  Lambertian surface closest-hit
+//  bsdf
 //
 //-----------------------------------------------------------------------------
-
-rtDeclareVariable(float3,     diffuse_color, , );
-rtDeclareVariable(float3,     geometric_normal, attribute geometric_normal, );
-rtDeclareVariable(float3,     shading_normal,   attribute shading_normal, );
-rtDeclareVariable(optix::Ray, ray,              rtCurrentRay, );
-rtDeclareVariable(float,      t_hit,            rtIntersectionDistance, );
-
 
 RT_CALLABLE_PROGRAM void diffuse_Pdf(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
 {
@@ -522,7 +520,7 @@ RT_PROGRAM void closest_hit()
     current_prd.radiance += emission_color * current_prd.attenuation;
 
     MaterialParameter mat;
-    mat.albedo = diffuse_color;
+    mat.albedo = albedo_color;
     mat.metallic = 0.8f;
     mat.roughness = 0.05f;
 

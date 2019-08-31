@@ -332,7 +332,7 @@ GeometryGroup createGeometryTriangles()
     // Mesh
     std::string mesh_file = resolveDataPath("cow.obj");
     gis.push_back(createMesh(mesh_file, diffuse, diffuse_ch, diffuse_ah, make_float3(0.0f, 300.0f, 0.0f), make_float3(500.0f)));
-    gis.back()["diffuse_color"]->setFloat(color);
+    gis.back()["albedo_color"]->setFloat(color);
 
     GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
     shadow_group->setAcceleration(context->createAcceleration("Trbvh"));
@@ -377,12 +377,13 @@ GeometryGroup createGeometry()
         make_float3(0.0f),
         make_float3(300.0f),
         make_float3(4.3f)));
-    setMaterial(gis.back(), diffuse, "diffuse_color", white);
+    setMaterial(gis.back(), diffuse, "albedo_color", white);
 
     // Sphere
     gis.push_back(createSphereObject(
         make_float3(0.0f, 310.0f, 50.0f), 10.0f));
-    setMaterial(gis.back(), diffuse, "diffuse_color", green);
+    setMaterial(gis.back(), diffuse, "albedo_color", green);
+    gis.back()["emission_color"]->setFloat(make_float3(1.0));
 
     // Create shadow group (no light)
     GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
