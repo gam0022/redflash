@@ -71,8 +71,8 @@ const char* const SAMPLE_NAME = "redflash";
 //------------------------------------------------------------------------------
 
 Context        context = 0;
-uint32_t       width  = 512;
-uint32_t       height = 512;
+uint32_t       width  = 1920 / 4;
+uint32_t       height = 1080 / 4;
 int max_depth = 10;
 int sample_at_once = 2;
 bool           use_pbo = true;
