@@ -154,7 +154,7 @@ RT_PROGRAM void pathtrace_camera()
 
     if (frame_number > 1)
     {
-        float a = 1.0f / (float)frame_number;
+        float a = 1.0f / static_cast<float>(total_sample + 1);
         float3 old_color = make_float3(output_buffer[launch_index]);
         output_buffer[launch_index] = make_float4( lerp( old_color, pixel_color, a ), 1.0f );
     }

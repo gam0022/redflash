@@ -261,6 +261,7 @@ void createContext()
     context[ "rr_begin_depth"                 ]->setUint( rr_begin_depth );
     context["max_depth"]->setUint(max_depth);
     context["sample_per_launch"]->setUint(sample_per_launch);
+    context["total_sample"]->setUint(0u);
 
     Buffer buffer = sutil::createOutputBuffer( context, RT_FORMAT_FLOAT4, width, height, use_pbo );
     context["output_buffer"]->set( buffer );
@@ -500,7 +501,7 @@ void updateCamera()
     camera_changed = false;
 
     context[ "frame_number" ]->setUint( frame_number++ );
-    context[ "total_sample" ]->setUint( frame_number );
+    context[ "total_sample" ]->setUint( frame_number * sample_per_launch );
 
     context[ "eye"]->setFloat( camera_eye );
     context[ "U"  ]->setFloat( camera_u );
