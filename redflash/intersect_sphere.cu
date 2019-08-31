@@ -4,6 +4,8 @@ using namespace optix;
 
 rtDeclareVariable(float3, center, , );
 rtDeclareVariable(float, radius, , );
+rtDeclareVariable(float3, aabb_min, , );
+rtDeclareVariable(float3, aabb_max, , );
 
 rtDeclareVariable(float3, geometric_normal, attribute geometric_normal, );
 rtDeclareVariable(float3, shading_normal, attribute shading_normal, );
@@ -85,17 +87,7 @@ RT_PROGRAM void sphere_intersect_robust(int primIdx)
 
 RT_PROGRAM void bounds(int, float result[6])
 {
-    const float3 cen = center;
-    const float3 rad = make_float3(radius);
-
     optix::Aabb* aabb = (optix::Aabb*)result;
-
-    if (rad.x > 0.0f && !isinf(rad.x)) {
-        aabb->m_min = cen - rad;
-        aabb->m_max = cen + rad;
-    }
-    else {
-        aabb->invalidate();
-    }
+    aabb->m_min = aabb_min;
+    aabb->m_max = aabb_max;
 }
-
