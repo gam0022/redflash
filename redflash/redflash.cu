@@ -450,8 +450,6 @@ RT_CALLABLE_PROGRAM void sphere_sample(LightParameter &light, PerRayData_pathtra
 
 RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
 {
-    float3 L = make_float3(0.0f);
-
     //Pick a light to sample
     int index = optix::clamp(static_cast<int>(floorf(rnd(current_prd.seed) * sysNumberOfLights)), 0, sysNumberOfLights - 1);
     LightParameter light = sysLightParameters[index];
@@ -470,31 +468,26 @@ RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
     lightDir /= sqrtf(lightDistSq);
 
     if (dot(lightDir, surfaceNormal) <= 0.0f || dot(lightDir, lightSample.normal) >= 0.0f)
-        return L;
+        return make_float3(0.0f);
 
     PerRayData_pathtrace_shadow prd_shadow;
     prd_shadow.inShadow = false;
     optix::Ray shadowRay = optix::make_Ray(surfacePos, lightDir, 1, scene_epsilon, lightDist - scene_epsilon);
     rtTrace(top_object, shadowRay, prd_shadow);
 
-    if (!prd_shadow.inShadow)
-    {
-        float NdotL = dot(lightSample.normal, -lightDir);
-        //if (lightDistSq < 0.0f)
-        {
-            float lightPdf = lightDistSq / (light.area * NdotL);
-            current_prd.direction = lightDir;
+    if (prd_shadow.inShadow)
+        return make_float3(0.0f);
 
-            // sysBRDFPdf[programId](mat, state, current_prd);
-            Pdf(mat, state, current_prd);
-            // float3 f = sysBRDFEval[programId](mat, state, current_prd);
-            float3 f = Eval(mat, state, current_prd);
+    float NdotL = dot(lightSample.normal, -lightDir);
+    float lightPdf = lightDistSq / (light.area * NdotL);
+    current_prd.direction = lightDir;
 
-            L = powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
-        }
-    }
+    // sysBRDFPdf[programId](mat, state, current_prd);
+    Pdf(mat, state, current_prd);
+    // float3 f = sysBRDFEval[programId](mat, state, current_prd);
+    float3 f = Eval(mat, state, current_prd);
 
-    return L;
+    return powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
 }
 
 RT_PROGRAM void closest_hit()
@@ -503,7 +496,7 @@ RT_PROGRAM void closest_hit()
     float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
     float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
 
-    float3 hitpoint = ray.origin + t_hit * ray.direction + ffnormal * 0.1;
+    float3 hitpoint = ray.origin + t_hit * ray.direction + ffnormal * scene_epsilon * 10.0;
 
     State state;
     state.hitpoint = hitpoint;

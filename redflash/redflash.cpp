@@ -425,14 +425,14 @@ GeometryGroup createGeometryLight()
     std::vector<LightParameter> lightParameters;
     std::vector<GeometryInstance> gis;
 
-    /*{
+    {
         LightParameter light;
         light.lightType = SPHERE;
         light.position = make_float3(50, 310, 50);
         light.radius = 10.0f;
         light.emission = make_float3(1.0);
         lightParameters.push_back(light);
-    }*/
+    }
 
     {
         LightParameter light;
