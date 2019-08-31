@@ -33,6 +33,12 @@
 
 using namespace optix;
 
+static __host__ __device__ __inline__ float powerHeuristic(float a, float b)
+{
+    float t = a * a;
+    return t / (b*b + t);
+}
+
 struct PerRayData_pathtrace
 {
     float3 radiance;
@@ -46,7 +52,8 @@ struct PerRayData_pathtrace
 
     unsigned int seed;
     int depth;
-    int done;
+    bool done;
+    bool specularBounce;
 };
 
 struct PerRayData_pathtrace_shadow
@@ -84,6 +91,7 @@ rtBuffer<float4, 2>              output_buffer;
 
 rtDeclareVariable(int, sysNumberOfLights, , );
 rtBuffer<LightParameter> sysLightParameters;
+rtDeclareVariable(int, lightMaterialId, , );
 
 
 RT_PROGRAM void pathtrace_camera()
@@ -171,9 +179,32 @@ rtDeclareVariable(float3, shading_normal, attribute shading_normal, );
 rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
 rtDeclareVariable(float, t_hit, rtIntersectionDistance, );
 
-RT_PROGRAM void light_closest_hit()
+/*RT_PROGRAM void light_closest_hit()
 {
     current_prd.radiance += emission_color * current_prd.attenuation;
+    current_prd.done = true;
+}*/
+
+RT_PROGRAM void light_closest_hit()
+{
+    const float3 world_shading_normal = normalize(rtTransformNormal(RT_OBJECT_TO_WORLD, shading_normal));
+    const float3 world_geometric_normal = normalize(rtTransformNormal(RT_OBJECT_TO_WORLD, geometric_normal));
+    const float3 ffnormal = faceforward(world_shading_normal, -ray.direction, world_geometric_normal);
+
+    LightParameter light = sysLightParameters[lightMaterialId];
+    float cosTheta = dot(-ray.direction, light.normal);
+
+    if ((light.lightType == QUAD && cosTheta > 0.0f) || light.lightType == SPHERE)
+    {
+        if (current_prd.depth == 0 || current_prd.specularBounce)
+            current_prd.radiance += light.emission * current_prd.attenuation;
+        else
+        {
+            float lightPdf = (t_hit * t_hit) / (light.area * clamp(cosTheta, 1.e-3f, 1.0f));
+            current_prd.radiance += powerHeuristic(current_prd.pdf, lightPdf) * current_prd.attenuation * light.emission;
+        }
+    }
+
     current_prd.done = true;
 }
 
@@ -397,12 +428,6 @@ RT_CALLABLE_PROGRAM float3 Eval(MaterialParameter &mat, State &state, PerRayData
     return out * clamp(dot(N, L), 0.0f, 1.0f);
 }
 
-static __host__ __device__ __inline__ float powerHeuristic(float a, float b)
-{
-    float t = a * a;
-    return t / (b*b + t);
-}
-
 RT_FUNCTION float3 UniformSampleSphere(float u1, float u2)
 {
     float z = 1.f - 2.f * u1;
@@ -455,7 +480,7 @@ RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
     if (!prd_shadow.inShadow)
     {
         float NdotL = dot(lightSample.normal, -lightDir);
-        if (lightDistSq > 0.0f)
+        //if (lightDistSq < 0.0f)
         {
             float lightPdf = lightDistSq / (light.area * NdotL);
             current_prd.direction = lightDir;
@@ -478,7 +503,7 @@ RT_PROGRAM void closest_hit()
     float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
     float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
 
-    float3 hitpoint = ray.origin + t_hit * ray.direction + ffnormal * scene_epsilon;
+    float3 hitpoint = ray.origin + t_hit * ray.direction + ffnormal * 0.1;
 
     State state;
     state.hitpoint = hitpoint;
@@ -492,13 +517,17 @@ RT_PROGRAM void closest_hit()
     
     current_prd.radiance += emission_color * current_prd.attenuation;
 
+    // FIXME: Ý’è‚ð“¦‚·
     MaterialParameter mat;
     mat.albedo = albedo_color;
     mat.metallic = 0.8f;
     mat.roughness = 0.05f;
 
+    // FIXME: bsdfId ‚©‚ç”»’è
+    current_prd.specularBounce = false;
+
     // Direct light Sampling
-    if (/*!prd.specularBounce && */ current_prd.depth < max_depth)
+    if (!current_prd.specularBounce && current_prd.depth < max_depth)
     {
         current_prd.radiance += DirectLight(mat, state);
     }

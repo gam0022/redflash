@@ -443,6 +443,7 @@ GeometryGroup createGeometryLight()
         lightParameters.push_back(light);
     }
 
+    int index = 0;
     for (auto light = lightParameters.begin(); light != lightParameters.end(); ++light)
     {
         light->area = 4.0f * M_PIf * light->radius * light->radius;
@@ -450,6 +451,8 @@ GeometryGroup createGeometryLight()
 
         gis.push_back(createSphereObject(light->position, light->radius));
         setMaterial(gis.back(), diffuse_light, "emission_color", light->emission);
+        gis.back()["lightMaterialId"]->setInt(index);
+        ++index;
     }
 
     // Create geometry group
