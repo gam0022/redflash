@@ -26,9 +26,6 @@
     <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\intersect_sphere.cu">
       <Filter>CUDA Files</Filter>
     </None>
-    <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\parallelogram.cu">
-      <Filter>CUDA Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

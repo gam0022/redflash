@@ -40,7 +40,6 @@ if(GLUT_FOUND AND OPENGL_FOUND)
         intersect_sphere.cu
 
         # These files are common among multiple samples
-        parallelogram.cu
         random.h
         )
 else()

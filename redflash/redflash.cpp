@@ -194,44 +194,6 @@ void setMaterial(
     gi[color_name]->setFloat(color);
 }
 
-
-GeometryInstance createParallelogram(
-        const float3& anchor,
-        const float3& offset1,
-        const float3& offset2,
-        ParallelogramLight* light = NULL
-    )
-{
-    Geometry parallelogram = context->createGeometry();
-    parallelogram->setPrimitiveCount( 1u );
-    parallelogram->setIntersectionProgram( pgram_intersection );
-    parallelogram->setBoundingBoxProgram( pgram_bounding_box );
-
-    float3 normal = normalize( cross( offset1, offset2 ) );
-    float d = dot( normal, anchor );
-    float4 plane = make_float4( normal, d );
-
-    float3 v1 = offset1 / dot( offset1, offset1 );
-    float3 v2 = offset2 / dot( offset2, offset2 );
-
-    parallelogram["plane"]->setFloat( plane );
-    parallelogram["anchor"]->setFloat( anchor );
-    parallelogram["v1"]->setFloat( v1 );
-    parallelogram["v2"]->setFloat( v2 );
-
-    if (light != NULL)
-    {
-        light->corner = anchor;
-        light->v1 = v1;
-        light->v2 = v2;
-        light->normal = normal;
-    }
-
-    GeometryInstance gi = context->createGeometryInstance();
-    gi->setGeometry(parallelogram);
-    return gi;
-}
-
 GeometryInstance createRaymrachingObject(const float3& center, const float3& world_scale, const float3& unit_scale)
 {
     Geometry raymarching = context->createGeometry();
@@ -360,11 +322,6 @@ GeometryGroup createGeometry()
     ptx = sutil::getPtxString(SAMPLE_NAME, "intersect_sphere.cu");
     pgram_bounding_box_sphere = context->createProgramFromPTXString(ptx, "bounds");
     pgram_intersection_sphere = context->createProgramFromPTXString(ptx, "sphere_intersect");
-
-    // Set up parallelogram programs
-    ptx = sutil::getPtxString(SAMPLE_NAME, "parallelogram.cu");
-    pgram_bounding_box = context->createProgramFromPTXString( ptx, "bounds" );
-    pgram_intersection = context->createProgramFromPTXString( ptx, "intersect" );
 
     // create geometry instances
     std::vector<GeometryInstance> gis;

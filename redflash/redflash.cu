@@ -87,7 +87,6 @@ rtDeclareVariable(unsigned int,  rr_begin_depth, , );
 rtDeclareVariable(unsigned int, max_depth, , );
 
 rtBuffer<float4, 2>              output_buffer;
-//rtBuffer<ParallelogramLight>     lights;
 
 rtDeclareVariable(int, sysNumberOfLights, , );
 rtBuffer<LightParameter> sysLightParameters;
