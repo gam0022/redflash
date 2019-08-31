@@ -75,9 +75,9 @@ rtDeclareVariable(float3,        V, , );
 rtDeclareVariable(float3,        W, , );
 rtDeclareVariable(float3,        bad_color, , );
 rtDeclareVariable(unsigned int,  frame_number, , );
-rtDeclareVariable(unsigned int,  sqrt_num_samples, , );
+rtDeclareVariable(unsigned int,  sample_at_once, , );
 rtDeclareVariable(unsigned int,  rr_begin_depth, , );
-rtDeclareVariable(int, max_depth, , );
+rtDeclareVariable(unsigned int, max_depth, , );
 
 rtBuffer<float4, 2>              output_buffer;
 rtBuffer<ParallelogramLight>     lights;
@@ -86,24 +86,13 @@ rtBuffer<ParallelogramLight>     lights;
 RT_PROGRAM void pathtrace_camera()
 {
     size_t2 screen = output_buffer.size();
-
-    float2 inv_screen = 1.0f/make_float2(screen) * 2.f;
-    float2 pixel = (make_float2(launch_index)) * inv_screen - 1.f;
-
-    float2 jitter_scale = inv_screen / sqrt_num_samples;
-    unsigned int samples_per_pixel = sqrt_num_samples*sqrt_num_samples;
+    unsigned int seed = tea<16>(screen.x * launch_index.y + launch_index.x, frame_number);
     float3 result = make_float3(0.0f);
 
-    unsigned int seed = tea<16>(screen.x*launch_index.y+launch_index.x, frame_number);
-    do 
+    for(int i = 0; i < sample_at_once; i++)
     {
-        //
-        // Sample pixel using jittering
-        //
-        unsigned int x = samples_per_pixel%sqrt_num_samples;
-        unsigned int y = samples_per_pixel/sqrt_num_samples;
-        float2 jitter = make_float2(x-rnd(seed), y-rnd(seed));
-        float2 d = pixel + jitter*jitter_scale;
+        float2 subpixel_jitter = frame_number == 0 ? make_float2(0.0f) : make_float2(rnd(seed) - 0.5f, rnd(seed) - 0.5f);
+        float2 d = (make_float2(launch_index) + subpixel_jitter) / make_float2(screen) * 2.f - 1.f;
         float3 ray_origin = eye;
         float3 ray_direction = normalize(d.x*U + d.y*V + W);
 
@@ -146,12 +135,12 @@ RT_PROGRAM void pathtrace_camera()
 
         result += prd.radiance;
         seed = prd.seed;
-    } while (--samples_per_pixel);
+    }
 
     //
     // Update the output buffer
     //
-    float3 pixel_color = result/(sqrt_num_samples*sqrt_num_samples);
+    float3 pixel_color = result / (float)sample_at_once;
 
     if (frame_number > 1)
     {

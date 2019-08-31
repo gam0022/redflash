@@ -74,10 +74,10 @@ Context        context = 0;
 uint32_t       width  = 512;
 uint32_t       height = 512;
 int max_depth = 10;
+int sample_at_once = 2;
 bool           use_pbo = true;
 
 int            frame_number = 1;
-int            sqrt_num_samples = 1;// default: 2
 int            rr_begin_depth = 1;
 Program        pgram_intersection = 0;
 Program        pgram_bounding_box = 0;
@@ -297,7 +297,8 @@ void createContext()
 
     context[ "scene_epsilon"                  ]->setFloat( 0.001f );
     context[ "rr_begin_depth"                 ]->setUint( rr_begin_depth );
-    context["max_depth"]->setInt(max_depth);
+    context["max_depth"]->setUint(max_depth);
+    context["sample_at_once"]->setUint(sample_at_once);
 
     Buffer buffer = sutil::createOutputBuffer( context, RT_FORMAT_FLOAT4, width, height, use_pbo );
     context["output_buffer"]->set( buffer );
@@ -308,7 +309,6 @@ void createContext()
     context->setExceptionProgram( 0, context->createProgramFromPTXString( ptx, "exception" ) );
     context->setMissProgram( 0, context->createProgramFromPTXString( ptx, "envmap_miss" ) );
 
-    context[ "sqrt_num_samples" ]->setUint( sqrt_num_samples );
     context[ "bad_color"        ]->setFloat( 1000000.0f, 0.0f, 1000000.0f ); // Super magenta to make sure it doesn't get averaged out in the progressive rendering.
 
     const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
