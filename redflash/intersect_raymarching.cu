@@ -14,9 +14,7 @@ rtDeclareVariable(float3, center, , );
 rtDeclareVariable(float3, local_scale, , );
 rtDeclareVariable(float3, aabb_min, , );
 rtDeclareVariable(float3, aabb_max, , );
-rtDeclareVariable(int, lgt_instance, , ) = { 0 };
 rtDeclareVariable(float3, texcoord, attribute texcoord, );
-rtDeclareVariable(int, lgt_idx, attribute lgt_idx, );
 
 float dMenger(float3 z0, float3 offset, float scale) {
     float4 z = make_float4(z0, 1.0);
@@ -142,7 +140,6 @@ RT_PROGRAM void intersect(int primIdx)
     {
         shading_normal = geometric_normal = calcNormal(p, map, eps);
         texcoord = make_float3(p.x, p.y, 0);
-        lgt_idx = lgt_instance;
         rtReportIntersection(0);
     }
 }

@@ -2,11 +2,6 @@
 
 using namespace optix;
 
-rtDeclareVariable(float3, center, , );
-rtDeclareVariable(float, radius, , );
-rtDeclareVariable(float3, aabb_min, , );
-rtDeclareVariable(float3, aabb_max, , );
-
 rtDeclareVariable(float3, geometric_normal, attribute geometric_normal, );
 rtDeclareVariable(float3, shading_normal, attribute shading_normal, );
 
@@ -14,6 +9,11 @@ rtDeclareVariable(float3, back_hit_point, attribute back_hit_point, );
 rtDeclareVariable(float3, front_hit_point, attribute front_hit_point, );
 
 rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
+
+rtDeclareVariable(float3, center, , );
+rtDeclareVariable(float, radius, , );
+rtDeclareVariable(float3, aabb_min, , );
+rtDeclareVariable(float3, aabb_max, , );
 
 template<bool use_robust_method>
 static __device__
