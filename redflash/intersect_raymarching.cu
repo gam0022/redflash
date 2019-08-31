@@ -138,7 +138,7 @@ RT_PROGRAM void intersect(int primIdx)
 
     if (t < ray.tmax && rtPotentialIntersection(t))
     {
-        shading_normal = geometric_normal = calcNormal(p, map, eps);
+        shading_normal = geometric_normal = calcNormal(p, map, scene_epsilon);
         texcoord = make_float3(p.x, p.y, 0);
         rtReportIntersection(0);
     }
