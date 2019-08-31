@@ -106,11 +106,11 @@ struct LightSample
     optix::float3 normal;
     optix::float3 emission;
     float pdf;
-
 };
 
 struct State
 {
+    optix::float3 hitpoint;
     optix::float3 normal;
     optix::float3 ffnormal;
 };

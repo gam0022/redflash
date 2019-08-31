@@ -433,7 +433,7 @@ RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
     LightSample lightSample;
 
     // float3 surfacePos = state.fhp;
-    float3 surfacePos = current_prd.origin;
+    float3 surfacePos = state.hitpoint;
     float3 surfaceNormal = state.ffnormal;
 
     // sysLightSample[light.lightType](light, current_prd, lightSample);
@@ -455,16 +455,19 @@ RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
     if (!prd_shadow.inShadow)
     {
         float NdotL = dot(lightSample.normal, -lightDir);
-        float lightPdf = lightDistSq / (light.area * NdotL);
+        if (NdotL > 0.0f)
+        {
+            float lightPdf = lightDistSq / (light.area * NdotL);
+            current_prd.direction = lightDir;
 
-        current_prd.direction = lightDir;
+            // sysBRDFPdf[programId](mat, state, current_prd);
+            Pdf(mat, state, current_prd);
+            // float3 f = sysBRDFEval[programId](mat, state, current_prd);
+            float3 f = Eval(mat, state, current_prd);
 
-        // sysBRDFPdf[programId](mat, state, current_prd);
-        Pdf(mat, state, current_prd);
-        // float3 f = sysBRDFEval[programId](mat, state, current_prd);
-        float3 f = Eval(mat, state, current_prd);
-
-        L = powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
+            // if (NdotL > 0.0f)
+            L = powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
+        }
     }
 
     return L;
@@ -476,13 +479,16 @@ RT_PROGRAM void closest_hit()
     float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
     float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
 
-    float3 hitpoint = ray.origin + t_hit * ray.direction + world_geometric_normal * scene_epsilon;
+    float3 hitpoint = ray.origin + t_hit * ray.direction + ffnormal * scene_epsilon;
 
     State state;
+    state.hitpoint = hitpoint;
     state.normal = world_shading_normal;
     state.ffnormal = ffnormal;
 
     current_prd.wo = -ray.direction;
+
+    // FIXME: Sample‚É‚à‚Á‚Ä‚¢‚­
     current_prd.origin = hitpoint;
     
     current_prd.radiance += emission_color * current_prd.attenuation;
