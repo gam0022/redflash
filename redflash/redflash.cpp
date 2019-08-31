@@ -28,7 +28,7 @@
 
 //-----------------------------------------------------------------------------
 //
-// redflash: simple interactive path tracer
+// redflash: Raymarching x Pathtracer
 //
 //-----------------------------------------------------------------------------
 
@@ -80,8 +80,10 @@ int            sqrt_num_samples = 1;// default: 2
 int            rr_begin_depth = 1;
 Program        pgram_intersection = 0;
 Program        pgram_bounding_box = 0;
-Program        pgram_raymarching_intersection = 0;
-Program        pgram_raymarching_bounding_box = 0;
+Program        pgram_intersection_raymarching = 0;
+Program        pgram_bounding_box_raymarching = 0;
+Program        pgram_intersection_sphere = 0;
+Program        pgram_bounding_box_sphere = 0;
 
 
 // Camera state
@@ -233,8 +235,8 @@ GeometryInstance createRaymrachingObject(const float3& center, const float3& wor
 {
     Geometry raymarching = context->createGeometry();
     raymarching->setPrimitiveCount(1u);
-    raymarching->setIntersectionProgram(pgram_raymarching_intersection);
-    raymarching->setBoundingBoxProgram(pgram_raymarching_bounding_box);
+    raymarching->setIntersectionProgram(pgram_intersection_raymarching);
+    raymarching->setBoundingBoxProgram(pgram_bounding_box_raymarching);
 
     const float3 local_scale = world_scale / unit_scale;
     raymarching["center"]->setFloat(center);
@@ -244,6 +246,23 @@ GeometryInstance createRaymrachingObject(const float3& center, const float3& wor
 
     GeometryInstance gi = context->createGeometryInstance();
     gi->setGeometry(raymarching);
+    return gi;
+}
+
+GeometryInstance createSphereObject(const float3& center, const float radius)
+{
+    Geometry sphere = context->createGeometry();
+    sphere->setPrimitiveCount(1u);
+    sphere->setIntersectionProgram(pgram_intersection_sphere);
+    sphere->setBoundingBoxProgram(pgram_bounding_box_sphere);
+
+    sphere["center"]->setFloat(center);
+    sphere["radius"]->setFloat(radius);
+    sphere["aabb_min"]->setFloat(center - radius);
+    sphere["aabb_max"]->setFloat(center + radius);
+
+    GeometryInstance gi = context->createGeometryInstance();
+    gi->setGeometry(sphere);
     return gi;
 }
 
@@ -332,8 +351,13 @@ GeometryGroup createGeometry()
 
     // Set up Raymarching programs
     ptx = sutil::getPtxString(SAMPLE_NAME, "intersect_raymarching.cu");
-    pgram_raymarching_bounding_box = context->createProgramFromPTXString(ptx, "bounds");
-    pgram_raymarching_intersection = context->createProgramFromPTXString(ptx, "intersect");
+    pgram_bounding_box_raymarching = context->createProgramFromPTXString(ptx, "bounds");
+    pgram_intersection_raymarching = context->createProgramFromPTXString(ptx, "intersect");
+
+    // Set up Sphere programs
+    ptx = sutil::getPtxString(SAMPLE_NAME, "intersect_sphere.cu");
+    pgram_bounding_box_sphere = context->createProgramFromPTXString(ptx, "bounds");
+    pgram_intersection_sphere = context->createProgramFromPTXString(ptx, "sphere_intersect");
 
     // Set up parallelogram programs
     ptx = sutil::getPtxString(SAMPLE_NAME, "parallelogram.cu");
@@ -348,13 +372,17 @@ GeometryGroup createGeometry()
     const float3 green = make_float3( 0.05f, 0.8f, 0.05f );
     const float3 red   = make_float3( 0.8f, 0.05f, 0.05f );
 
-    // Raymarcing Mini
+    // Raymarcing
     gis.push_back(createRaymrachingObject(
         make_float3(0.0f),
         make_float3(300.0f),
         make_float3(4.3f)));
     setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
+    // Sphere
+    gis.push_back(createSphereObject(
+        make_float3(0.0f, 310.0f, 50.0f), 10.0f));
+    setMaterial(gis.back(), diffuse, "diffuse_color", green);
 
     // Create shadow group (no light)
     GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
