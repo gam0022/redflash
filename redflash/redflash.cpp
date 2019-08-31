@@ -331,11 +331,12 @@ GeometryGroup createGeometry()
     diffuse->setAnyHitProgram( 1, diffuse_ah );
 
     // Set up Raymarching programs
+    ptx = sutil::getPtxString(SAMPLE_NAME, "intersect_raymarching.cu");
     pgram_raymarching_bounding_box = context->createProgramFromPTXString(ptx, "bounds");
     pgram_raymarching_intersection = context->createProgramFromPTXString(ptx, "intersect");
 
     // Set up parallelogram programs
-    ptx = sutil::getPtxString( SAMPLE_NAME, "parallelogram.cu" );
+    ptx = sutil::getPtxString(SAMPLE_NAME, "parallelogram.cu");
     pgram_bounding_box = context->createProgramFromPTXString( ptx, "bounds" );
     pgram_intersection = context->createProgramFromPTXString( ptx, "intersect" );
 
