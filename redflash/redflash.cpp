@@ -362,9 +362,9 @@ GeometryGroup createGeometry()
     pgram_intersection_sphere = context->createProgramFromPTXString(ptx, "sphere_intersect");
 
     // Set up parallelogram programs
-    ptx = sutil::getPtxString(SAMPLE_NAME, "parallelogram.cu");
-    pgram_bounding_box = context->createProgramFromPTXString( ptx, "bounds" );
-    pgram_intersection = context->createProgramFromPTXString( ptx, "intersect" );
+    //ptx = sutil::getPtxString(SAMPLE_NAME, "parallelogram.cu");
+    //pgram_bounding_box = context->createProgramFromPTXString( ptx, "bounds" );
+    //pgram_intersection = context->createProgramFromPTXString( ptx, "intersect" );
 
     // create geometry instances
     std::vector<GeometryInstance> gis;
@@ -439,7 +439,7 @@ GeometryGroup createGeometryLight()
         light.lightType = SPHERE;
         light.position = make_float3(0.01f, 166.787f, 190.00f);
         light.radius = 2.0f;
-        light.emission = make_float3(10.0f, 0.01f, 0.01f);
+        light.emission = make_float3(20.0f, 0.05f, 0.05f);
         lightParameters.push_back(light);
     }
 

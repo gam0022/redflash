@@ -1,4 +1,5 @@
 #include <optixu/optixu_math_namespace.h>
+#include "intersection_refinement.h"
 #include "redflash.h"
 #include "random.h"
 #include <optix_world.h>
@@ -8,6 +9,8 @@ using namespace optix;
 rtDeclareVariable(float, scene_epsilon, , );
 rtDeclareVariable(float3, geometric_normal, attribute geometric_normal, );
 rtDeclareVariable(float3, shading_normal, attribute shading_normal, );
+rtDeclareVariable(float3, back_hit_point, attribute back_hit_point, );
+rtDeclareVariable(float3, front_hit_point, attribute front_hit_point, );
 rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
 
 rtDeclareVariable(float3, center, , );
@@ -136,10 +139,11 @@ RT_PROGRAM void intersect(int primIdx)
         }
     }
 
-    if (t < ray.tmax && rtPotentialIntersection(t))
+    if (!isnan(t) && t < ray.tmax && rtPotentialIntersection(t))
     {
-        shading_normal = geometric_normal = calcNormal(p, map, eps);
-        texcoord = make_float3(p.x, p.y, 0);
+        geometric_normal = shading_normal = calcNormal(p, map, scene_epsilon);
+        front_hit_point = back_hit_point = p;
+        texcoord = p;
         rtReportIntersection(0);
     }
 }

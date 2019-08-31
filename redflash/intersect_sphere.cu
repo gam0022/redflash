@@ -1,4 +1,5 @@
 #include <optix_world.h>
+#include "intersection_refinement.h"
 
 using namespace optix;
 

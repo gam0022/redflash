@@ -27,6 +27,7 @@
  */
 
 #include <optixu/optixu_math_namespace.h>
+#include "intersection_refinement.h"
 #include <common.h>
 #include "redflash.h"
 #include "random.h"
@@ -176,6 +177,8 @@ rtDeclareVariable(float3, emission_color, , );
 rtDeclareVariable(float3, albedo_color, , );
 rtDeclareVariable(float3, geometric_normal, attribute geometric_normal, );
 rtDeclareVariable(float3, shading_normal, attribute shading_normal, );
+rtDeclareVariable(float3, back_hit_point, attribute back_hit_point, );
+rtDeclareVariable(float3, front_hit_point, attribute front_hit_point, );
 rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
 rtDeclareVariable(float, t_hit, rtIntersectionDistance, );
 
@@ -503,7 +506,14 @@ RT_PROGRAM void closest_hit()
     float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
     float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
 
-    float3 hitpoint = ray.origin + t_hit * ray.direction + ffnormal * 0.1;
+    float3 hitpoint = ray.origin + t_hit * ray.direction + ffnormal * scene_epsilon * 10.0;
+
+    if (isnan(world_shading_normal.x))
+    {
+        current_prd.radiance = make_float3(1, 0, 1);
+        current_prd.done = true;
+        return;
+    }
 
     State state;
     state.hitpoint = hitpoint;

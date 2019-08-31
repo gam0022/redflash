@@ -327,6 +327,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   <ItemGroup>
     <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\redflash\redflash.h" />
     <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\redflash\random.h" />
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\redflash\intersection_refinement.h" />
     <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\redflash\redflash.cpp"  />
     <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\redflash.cu" />
     <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\intersect_raymarching.cu" />

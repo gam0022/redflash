@@ -42,6 +42,7 @@ if(GLUT_FOUND AND OPENGL_FOUND)
         # These files are common among multiple samples
         parallelogram.cu
         random.h
+        intersection_refinement.h
         )
 else()
     # GLUT or OpenGL not found
