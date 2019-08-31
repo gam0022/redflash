@@ -73,6 +73,7 @@ const char* const SAMPLE_NAME = "redflash";
 Context        context = 0;
 uint32_t       width  = 512;
 uint32_t       height = 512;
+int max_depth = 10;
 bool           use_pbo = true;
 
 int            frame_number = 1;
@@ -296,6 +297,7 @@ void createContext()
 
     context[ "scene_epsilon"                  ]->setFloat( 0.001f );
     context[ "rr_begin_depth"                 ]->setUint( rr_begin_depth );
+    context["max_depth"]->setInt(max_depth);
 
     Buffer buffer = sutil::createOutputBuffer( context, RT_FORMAT_FLOAT4, width, height, use_pbo );
     context["output_buffer"]->set( buffer );
@@ -310,8 +312,8 @@ void createContext()
     context[ "bad_color"        ]->setFloat( 1000000.0f, 0.0f, 1000000.0f ); // Super magenta to make sure it doesn't get averaged out in the progressive rendering.
 
     const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
-    // const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
-    const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Ref.hdr");
+    const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
+    // const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Ref.hdr");
     // const std::string texpath = resolveDataPath("Desert_Highway/Road_to_MonumentValley_Env.hdr");
     context["envmap"]->setTextureSampler(sutil::loadTexture(context, texpath, default_color));
 }
@@ -383,7 +385,7 @@ GeometryGroup createGeometry()
     gis.push_back(createSphereObject(
         make_float3(0.0f, 310.0f, 50.0f), 10.0f));
     setMaterial(gis.back(), diffuse, "albedo_color", green);
-    gis.back()["emission_color"]->setFloat(make_float3(1.0));
+    //gis.back()["emission_color"]->setFloat(make_float3(1.0));
 
     // Create shadow group (no light)
     GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());

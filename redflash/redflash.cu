@@ -77,6 +77,7 @@ rtDeclareVariable(float3,        bad_color, , );
 rtDeclareVariable(unsigned int,  frame_number, , );
 rtDeclareVariable(unsigned int,  sqrt_num_samples, , );
 rtDeclareVariable(unsigned int,  rr_begin_depth, , );
+rtDeclareVariable(int, max_depth, , );
 
 rtBuffer<float4, 2>              output_buffer;
 rtBuffer<ParallelogramLight>     lights;
@@ -116,14 +117,14 @@ RT_PROGRAM void pathtrace_camera()
 
         // Each iteration is a segment of the ray path.  The closest hit will
         // return new segments to be traced here.
-        for(int i = 0; i < 10; i++)
+        for(;;)
         {
             Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, scene_epsilon, RT_DEFAULT_MAX);
+            prd.wo = -ray.direction;
             rtTrace(top_object, ray, prd);
 
-            if(prd.done)
+            if (prd.done || prd.depth >= max_depth)
             {
-                // We have hit the background or a luminaire
                 break;
             }
 
@@ -525,7 +526,7 @@ RT_PROGRAM void closest_hit()
     mat.roughness = 0.05f;
 
     // Direct light Sampling
-    if (true/*!prd.specularBounce && prd.depth < max_depth*/)
+    if (/*!prd.specularBounce && */ current_prd.depth < max_depth)
     {
         current_prd.radiance += DirectLightParallelogram(mat, state);
     }
