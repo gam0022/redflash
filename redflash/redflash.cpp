@@ -424,7 +424,7 @@ GeometryGroup createGeometryLight()
         lightParameters.push_back(light);
     }
 
-    {
+    /*{
         LightParameter light;
         light.lightType = SPHERE;
         
@@ -435,7 +435,7 @@ GeometryGroup createGeometryLight()
         light.radius = 5.0f;
         light.emission = make_float3(20.0f, 20.0f, 30.0f);
         lightParameters.push_back(light);
-    }
+    }*/
 
     int index = 0;
     for (auto light = lightParameters.begin(); light != lightParameters.end(); ++light)

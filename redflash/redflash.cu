@@ -517,8 +517,17 @@ RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
     Pdf(mat, state, current_prd);
     // float3 f = sysBRDFEval[programId](mat, state, current_prd);
     float3 f = Eval(mat, state, current_prd);
+    float3 result = powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
 
-    return powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
+    // FIXME: 根本の原因を解明したい
+    if (isnan(result.x) || isnan(result.y) || isnan(result.z))
+        return make_float3(0.0f);
+
+    // NOTE: 負の輝度のレイを念の為チェック
+    if (result.x < 0.0f || result.y < 0.0f || result.z < 0.0f)
+        return make_float3(0.0f);
+
+    return result;
 }
 
 RT_PROGRAM void closest_hit()
