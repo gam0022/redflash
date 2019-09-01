@@ -124,18 +124,14 @@ RT_PROGRAM void pathtrace_camera()
     size_t2 screen = output_buffer.size();
     float3 result = make_float3(0.0f);
     unsigned int seed = tea<16>(screen.x * launch_index.y + launch_index.x, total_sample);
-
     float distance = (frame_number > 1) ? liner_buffer[launch_index].w : 0.0f;
-    float2 p = make_float2(launch_index) / make_float2(screen) * 2.f - 1.f;
-    float3 dir = normalize(p.x * U + p.y * V + W);
-    float3 forward_eye = eye + dir * distance * 0.95f;
 
     for(int i = 0; i < sample_per_launch; i++)
     {
         float2 subpixel_jitter = make_float2(rnd(seed) - 0.5f, rnd(seed) - 0.5f);
-        float2 d = p + subpixel_jitter / make_float2(screen);
-        float3 ray_origin = forward_eye;
+        float2 d = (make_float2(launch_index) + subpixel_jitter) / make_float2(screen) * 2.f - 1.f;
         float3 ray_direction = normalize(d.x * U + d.y * V + W);
+        float3 ray_origin = eye + ray_direction * distance * 0.95f;
 
         // Initialze per-ray data
         PerRayData_pathtrace prd;
@@ -168,7 +164,7 @@ RT_PROGRAM void pathtrace_camera()
                 prd.attenuation /= pcont;
             }*/
 
-            if (prd.depth == 0)
+            if (frame_number == 1 && prd.depth == 0)
             {
                 distance = prd.distance;
             }
