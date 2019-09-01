@@ -77,7 +77,7 @@ int max_depth = 10;
 
 bool           use_pbo = true;
 
-int sample_per_launch = 3;
+int sample_per_launch = 1;
 int frame_number = 1;
 int total_sample = 0;
 
@@ -266,8 +266,12 @@ void createContext()
     context["sample_per_launch"]->setUint(sample_per_launch);
     context["total_sample"]->setUint(total_sample);
 
-    Buffer buffer = sutil::createOutputBuffer( context, RT_FORMAT_FLOAT4, width, height, use_pbo );
-    context["output_buffer"]->set( buffer );
+    Buffer output_buffer = sutil::createOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
+    context["output_buffer"]->set(output_buffer);
+
+    Buffer liner_buffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL,
+        RT_FORMAT_FLOAT4, width, height);
+    context["liner_buffer"]->set(liner_buffer);
 
     // Setup programs
     const char *ptx = sutil::getPtxString( SAMPLE_NAME, "redflash.cu" );
@@ -278,8 +282,8 @@ void createContext()
     context[ "bad_color"        ]->setFloat( 1000000.0f, 0.0f, 1000000.0f ); // Super magenta to make sure it doesn't get averaged out in the progressive rendering.
 
     const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
-    const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
-    // const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Ref.hdr");
+    //const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
+    const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Ref.hdr");
     // const std::string texpath = resolveDataPath("Desert_Highway/Road_to_MonumentValley_Env.hdr");
     context["envmap"]->setTextureSampler(sutil::loadTexture(context, texpath, default_color));
 }
@@ -386,21 +390,34 @@ GeometryGroup createGeometryLight()
     std::vector<LightParameter> lightParameters;
     std::vector<GeometryInstance> gis;
 
-    {
+    /*{
         LightParameter light;
         light.lightType = SPHERE;
         light.position = make_float3(50, 310, 50);
         light.radius = 10.0f;
         light.emission = make_float3(1.0);
         lightParameters.push_back(light);
-    }
+    }*/
 
     {
         LightParameter light;
         light.lightType = SPHERE;
         light.position = make_float3(0.01f, 166.787f, 190.00f);
         light.radius = 2.0f;
-        light.emission = make_float3(10.0f, 0.01f, 0.01f);
+        light.emission = make_float3(20.0f, 2.00f, 2.00f);
+        lightParameters.push_back(light);
+    }
+
+    {
+        LightParameter light;
+        light.lightType = SPHERE;
+        
+        float3 camera_eye = make_float3(13.91f, 166.787f, 413.00f);
+        float3 camera_lookat = make_float3(-6.59f, 169.94f, -9.11f);
+
+        light.position = camera_eye + 11.0 * normalize(camera_eye - camera_lookat);
+        light.radius = 5.0f;
+        light.emission = make_float3(20.0f, 20.0f, 30.0f);
         lightParameters.push_back(light);
     }
 
@@ -572,7 +589,7 @@ void glutDisplay()
     updateCamera();
     context->launch( 0, width, height );
 
-    sutil::displayBufferGL( getOutputBuffer() );
+    sutil::displayBufferGL(getOutputBuffer(), BUFFER_PIXEL_FORMAT_DEFAULT, true);
 
     {
       static unsigned frame_count = 0;
@@ -698,7 +715,8 @@ void glutResize( int w, int h )
     height = h;
     sutil::ensureMinimumSize(width, height);
 
-    sutil::resizeBuffer( getOutputBuffer(), width, height );
+    sutil::resizeBuffer(getOutputBuffer(), width, height);
+    sutil::resizeBuffer(context["liner_buffer"]->getBuffer(), width, height);
 
     glViewport(0, 0, width, height);                                               
 
@@ -891,7 +909,7 @@ int main( int argc, char** argv )
                 total_sample += sample_per_launch;
             }
 
-            sutil::displayBufferPNG(out_file.c_str(), getOutputBuffer(), false);
+            sutil::displayBufferPNG(out_file.c_str(), getOutputBuffer(), true);
             destroyContext();
 
             double finish_time = sutil::currentTime();

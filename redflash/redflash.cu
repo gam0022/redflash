@@ -87,12 +87,36 @@ rtDeclareVariable(unsigned int,  sample_per_launch, , );
 rtDeclareVariable(unsigned int,  rr_begin_depth, , );
 rtDeclareVariable(unsigned int, max_depth, , );
 
-rtBuffer<float4, 2>              output_buffer;
+rtBuffer<float4, 2> output_buffer;
+rtBuffer<float4, 2> liner_buffer;
 
 rtDeclareVariable(int, sysNumberOfLights, , );
 rtBuffer<LightParameter> sysLightParameters;
 rtDeclareVariable(int, lightMaterialId, , );
 
+__device__ inline float3 linear_to_sRGB(const float3& c)
+{
+    const float kInvGamma = 1.0f / 2.2f;
+    return make_float3(powf(c.x, kInvGamma), powf(c.y, kInvGamma), powf(c.z, kInvGamma));
+}
+
+__device__ inline float3 tonemap_reinhard(const float3& c, float limit)
+{
+    float luminance = 0.3f * c.x + 0.6f * c.y + 0.1f * c.z;
+    float3 col = c * 1.0f / (1.0f + luminance / limit);
+    return make_float3(col.x, col.y, col.z);
+}
+
+// https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
+__device__ inline float3 tonemap_acesFilm(const float3 x)
+{
+    const float a = 2.51;
+    const float b = 0.03;
+    const float c = 2.43;
+    const float d = 0.59;
+    const float e = 0.14;
+    return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
+}
 
 RT_PROGRAM void pathtrace_camera()
 {
@@ -151,17 +175,21 @@ RT_PROGRAM void pathtrace_camera()
     // Update the output buffer
     //
     float3 pixel_color = result / (float)sample_per_launch;
+    float3 liner_val;
 
     if (frame_number > 1)
     {
         float a = static_cast<float>(sample_per_launch) / static_cast<float>(total_sample + sample_per_launch);
-        float3 old_color = make_float3(output_buffer[launch_index]);
-        output_buffer[launch_index] = make_float4( lerp( old_color, pixel_color, a ), 1.0f );
+        liner_val = lerp(make_float3(liner_buffer[launch_index]), pixel_color, a);
     }
     else
     {
-        output_buffer[launch_index] = make_float4(pixel_color, 1.0f);
+        liner_val = pixel_color;
     }
+
+    float3 output_val = linear_to_sRGB(tonemap_acesFilm(liner_val));
+    liner_buffer[launch_index] = make_float4(liner_val, 1.0);
+    output_buffer[launch_index] = make_float4(output_val, 1.0);
 }
 
 
@@ -479,6 +507,9 @@ RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
 
     float NdotL = dot(lightSample.normal, -lightDir);
     float lightPdf = lightDistSq / (light.area * NdotL);
+    // if (lightPdf <= 0.0f)
+    //    return make_float3(0.0f);
+
     current_prd.direction = lightDir;
 
     // sysBRDFPdf[programId](mat, state, current_prd);
