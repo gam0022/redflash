@@ -240,7 +240,9 @@ GeometryInstance createMesh(
     Program closest_hit,
     Program any_hit,
     const float3& center,
-    const float3& scale)
+    const float3& scale,
+    const float3& axis = make_float3(0.0f, 1.0f, 0.0f),
+    const float radians = 0.0f)
 {
     OptiXMesh mesh;
     mesh.context = context;
@@ -249,7 +251,8 @@ GeometryInstance createMesh(
     mesh.material = material;
     mesh.closest_hit = closest_hit;
     mesh.any_hit = any_hit;
-    Matrix4x4 mat =Matrix4x4::translate(center) *  Matrix4x4::scale(scale);// 行優先っぽいので、右から順番に適用される
+    // NOTE: OptiXでは行優先っぽいので、右から順番に適用される
+    Matrix4x4 mat = Matrix4x4::translate(center) * Matrix4x4::rotate(radians, axis) * Matrix4x4::scale(scale);
     loadMesh(filename, mesh, mat);
     return mesh.geom_instance;
 }
@@ -301,17 +304,22 @@ GeometryGroup createGeometryTriangles()
     diffuse->setAnyHitProgram(1, diffuse_ah);
 
     std::vector<GeometryInstance> gis;
-    const float3 color = make_float3(0.6f, 0.6f, 0.95f);
+    const float3 color = make_float3(1.0f, 1.0f, 1.0f);
 
     // Mesh cow
     std::string mesh_file = resolveDataPath("cow.obj");
     gis.push_back(createMesh(mesh_file, diffuse, diffuse_ch, diffuse_ah, make_float3(0.0f, 300.0f, 0.0f), make_float3(500.0f)));
     gis.back()["albedo_color"]->setFloat(color);
+    gis.back()["metallic"]->setFloat(0.8);
 
     // Mesh Lucy100k
-    mesh_file = resolveDataPath("Lucy100k.obj");
-    gis.push_back(createMesh(mesh_file, diffuse, diffuse_ch, diffuse_ah, make_float3(-52.0f, 150.0f, 290.00f), make_float3(40.0f)));
-    gis.back()["albedo_color"]->setFloat(color);
+    mesh_file = resolveDataPath("metallic-lucy-statue-stanford-scan.obj");
+    gis.push_back(createMesh(mesh_file, diffuse, diffuse_ch, diffuse_ah, 
+        make_float3(0.0f, 145.5f, 204.0f), 
+        make_float3(0.05f), 
+        make_float3(0.0f, 1.0f, 0.0), M_PIf));
+    gis.back()["albedo_color"]->setFloat(make_float3(1.0f, 1.0f, 1.0f));
+    gis.back()["metallic"]->setFloat(0.0);
 
     GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
     shadow_group->setAcceleration(context->createAcceleration("Trbvh"));
@@ -352,11 +360,12 @@ GeometryGroup createGeometry()
         make_float3(300.0f),
         make_float3(4.3f)));
     setMaterial(gis.back(), diffuse, "albedo_color", white);
+    gis.back()["metallic"]->setFloat(0.8);
 
     // Sphere
-    gis.push_back(createSphereObject(
-        make_float3(0.0f, 310.0f, 50.0f), 10.0f));
-    setMaterial(gis.back(), diffuse, "albedo_color", green);
+    //gis.push_back(createSphereObject(
+    //    make_float3(0.0f, 310.0f, 50.0f), 10.0f));
+    //setMaterial(gis.back(), diffuse, "albedo_color", green);
     //gis.back()["emission_color"]->setFloat(make_float3(1.0));
 
     // Create shadow group (no light)
@@ -486,9 +495,13 @@ void setupCamera()
     camera_eye = make_float3(50.4f, 338.1f, -66.82f);
     camera_lookat = make_float3(48.49f, 311.32f, 21.44f);
 
-    // look at center
+    // 少し遠景
     camera_eye = make_float3(13.91f, 166.787f, 413.00f);
     camera_lookat = make_float3(-6.59f, 169.94f, -9.11f);
+
+    // 近づいたカット
+    camera_eye = make_float3(1.65f, 196.01f, 287.97f);
+    camera_lookat = make_float3(-7.06f, 76.34f, 26.96f);
 
     camera_rotate  = Matrix4x4::identity();
 }

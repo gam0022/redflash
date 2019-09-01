@@ -201,6 +201,7 @@ RT_PROGRAM void pathtrace_camera()
 
 rtDeclareVariable(float3, emission_color, , );
 rtDeclareVariable(float3, albedo_color, , );
+rtDeclareVariable(float, metallic, , );
 rtDeclareVariable(float3, geometric_normal, attribute geometric_normal, );
 rtDeclareVariable(float3, shading_normal, attribute shading_normal, );
 rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
@@ -543,7 +544,7 @@ RT_PROGRAM void closest_hit()
     // FIXME: ê›íËÇì¶Ç∑
     MaterialParameter mat;
     mat.albedo = albedo_color;
-    mat.metallic = 0.8f;
+    mat.metallic = metallic;
     mat.roughness = 0.05f;
 
     // FIXME: bsdfId Ç©ÇÁîªíË
