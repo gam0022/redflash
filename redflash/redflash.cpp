@@ -81,6 +81,7 @@ int sample_per_launch = 1;
 int frame_number = 1;
 int total_sample = 0;
 bool auto_set_sample_per_launch = false;
+double auto_set_sample_per_launch_scale = 0.95;
 
 int            rr_begin_depth = 1;
 Program        pgram_intersection = 0;
@@ -827,9 +828,15 @@ int main( int argc, char** argv )
             }
             sample_per_launch = atoi(argv[++i]);
         }
-        else if (arg == "-A" || arg == "--auto_set_sample_per_launch")
+        else if (arg == "-A" || arg == "--auto_sample_per_launch")
         {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
             auto_set_sample_per_launch = true;
+            auto_set_sample_per_launch_scale = atof(argv[++i]);
             sample_per_launch = 1;
         }
         else
@@ -867,6 +874,8 @@ int main( int argc, char** argv )
             std::cout << "[info] resolution: " << width << "x" << height << " px" << std::endl;
             std::cout << "[info] time_limit: " << time_limit << " sec." << std::endl;
             std::cout << "[info] sample_per_launch: " << sample_per_launch << std::endl;
+            std::cout << "[info] auto_set_sample_per_launch: " << auto_set_sample_per_launch << std::endl;
+            std::cout << "[info] auto_set_sample_per_launch_scale: " << auto_set_sample_per_launch_scale << std::endl;
 
             if (use_time_limit)
             {
@@ -892,7 +901,7 @@ int main( int argc, char** argv )
 
                 if (auto_set_sample_per_launch && i == 1)
                 {
-                    sample_per_launch = (int)(remain_time / delta_time * 0.95);
+                    sample_per_launch = (int)(remain_time / delta_time * auto_set_sample_per_launch_scale);
                     std::cout << "[info] chnage sample_per_launch: 1 to " << sample_per_launch << std::endl;
                 }
 
