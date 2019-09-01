@@ -80,6 +80,8 @@ bool           use_pbo = true;
 int sample_per_launch = 1;
 int frame_number = 1;
 int total_sample = 0;
+bool auto_set_sample_per_launch = false;
+double auto_set_sample_per_launch_scale = 0.95;
 
 int            rr_begin_depth = 1;
 Program        pgram_intersection = 0;
@@ -826,6 +828,16 @@ int main( int argc, char** argv )
             }
             sample_per_launch = atoi(argv[++i]);
         }
+        else if (arg == "-A" || arg == "--auto_sample_per_launch")
+        {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            auto_set_sample_per_launch = true;
+            auto_set_sample_per_launch_scale = atof(argv[++i]);
+        }
         else
         {
             std::cerr << "Unknown option '" << arg << "'\n";
@@ -858,17 +870,19 @@ int main( int argc, char** argv )
             updateCamera();
 
             // print config
-            std::cout << "resolution: " << width << "x" << height << " px" << std::endl;
-            std::cout << "time_limit: " << time_limit << " sec." << std::endl;
-            std::cout << "sample_per_launch: " << sample_per_launch << std::endl;
+            std::cout << "[info] resolution: " << width << "x" << height << " px" << std::endl;
+            std::cout << "[info] time_limit: " << time_limit << " sec." << std::endl;
+            std::cout << "[info] sample_per_launch: " << sample_per_launch << std::endl;
+            std::cout << "[info] auto_set_sample_per_launch: " << auto_set_sample_per_launch << std::endl;
+            std::cout << "[info] auto_set_sample_per_launch_scale: " << auto_set_sample_per_launch_scale << std::endl;
 
             if (use_time_limit)
             {
-                std::cout << "sample: INF(" << sample << ")" << std::endl;
+                std::cout << "[info] sample: INF(" << sample << ")" << std::endl;
             }
             else
             {
-                std::cout << "sample: " << sample << std::endl;
+                std::cout << "[info] sample: " << sample << std::endl;
             }
 
             double last_time = sutil::currentTime();
@@ -879,22 +893,28 @@ int main( int argc, char** argv )
                 double now = sutil::currentTime();
                 double used_time = now - launch_time;
                 double delta_time = now - last_time;
+                double remain_time = time_limit - used_time;
                 last_time = now;
 
-                std::cout << "progress used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << " sec. sample: "
-                    << total_sample << ". frame_number: " << frame_number << std::endl;
+                std::cout << "loop:" << i << "\tdelta_time:" << delta_time << "\tused_time:" << used_time << "\tremain_time:" << remain_time << "\tsample:" << total_sample << "\tframe_number:" << frame_number << std::endl;
+
+                if (auto_set_sample_per_launch && i == 1)
+                {
+                    sample_per_launch = (int)(remain_time / delta_time * auto_set_sample_per_launch_scale * sample_per_launch);
+                    std::cout << "[info] chnage sample_per_launch: " << sample_per_launch << " to " << sample_per_launch << std::endl;
+                }
 
                 // NOTE: 前フレームの所要時間から次のフレームが制限時間内に終るかを予測する。時間超過を防ぐために1.1倍に見積もる
                 if (used_time + delta_time * 1.1 > time_limit)
                 {
                     if (sample_per_launch == 1)
                     {
-                        std::cout << "reached time limit! used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << " sec." << std::endl;
+                        std::cout << "[info] reached time limit! used_time: " << used_time << " sec. remain_time: " << remain_time << " sec." << std::endl;
                         break;
                     }
                     else
                     {
-                        std::cout << "chnage sample_per_launch: " << sample_per_launch << " to 1" << std::endl;
+                        std::cout << "[info] chnage sample_per_launch: " << sample_per_launch << " to 1" << std::endl;
                         sample_per_launch = 1;
                     }
                 }
@@ -914,8 +934,8 @@ int main( int argc, char** argv )
 
             double finish_time = sutil::currentTime();
             double total_time = finish_time - launch_time;
-            std::cout << "total_time: " << total_time << " sec." << std::endl;
-            std::cout << "total_sample: " << total_sample  << std::endl;
+            std::cout << "[info] total_time: " << total_time << " sec." << std::endl;
+            std::cout << "[info] total_sample: " << total_sample  << std::endl;
         }
 
         return 0;
