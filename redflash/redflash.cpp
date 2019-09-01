@@ -301,11 +301,16 @@ GeometryGroup createGeometryTriangles()
     diffuse->setAnyHitProgram(1, diffuse_ah);
 
     std::vector<GeometryInstance> gis;
-    const float3 color = make_float3(0.9f, 0.1f, 0.1f);
+    const float3 color = make_float3(0.6f, 0.6f, 0.95f);
 
-    // Mesh
+    // Mesh cow
     std::string mesh_file = resolveDataPath("cow.obj");
     gis.push_back(createMesh(mesh_file, diffuse, diffuse_ch, diffuse_ah, make_float3(0.0f, 300.0f, 0.0f), make_float3(500.0f)));
+    gis.back()["albedo_color"]->setFloat(color);
+
+    // Mesh Lucy100k
+    mesh_file = resolveDataPath("Lucy100k.obj");
+    gis.push_back(createMesh(mesh_file, diffuse, diffuse_ch, diffuse_ah, make_float3(-52.0f, 150.0f, 290.00f), make_float3(40.0f)));
     gis.back()["albedo_color"]->setFloat(color);
 
     GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
