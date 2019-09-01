@@ -893,7 +893,7 @@ int main( int argc, char** argv )
 
                 if (auto_set_sample_per_launch && i == 1)
                 {
-                    sample_per_launch = (int)(remain_time / delta_time * 0.9);
+                    sample_per_launch = (int)(remain_time / delta_time * 0.95);
                     std::cout << "chnage sample_per_launch: 1 to " << sample_per_launch << std::endl;
                 }
 
