@@ -122,7 +122,7 @@ RT_PROGRAM void intersect(int primIdx)
 {
     float eps;
     float t = ray.tmin, d = 0.0;
-    float3 p = ray.origin;
+    float3 p;
 
     for (int i = 0; i < 300; i++)
     {

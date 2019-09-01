@@ -131,7 +131,7 @@ RT_PROGRAM void pathtrace_camera()
         float2 subpixel_jitter = make_float2(rnd(seed) - 0.5f, rnd(seed) - 0.5f);
         float2 d = (make_float2(launch_index) + subpixel_jitter) / make_float2(screen) * 2.f - 1.f;
         float3 ray_direction = normalize(d.x * U + d.y * V + W);
-        float3 ray_origin = eye + ray_direction * distance * 0.95f;
+        float3 ray_origin = eye;
 
         // Initialze per-ray data
         PerRayData_pathtrace prd;
@@ -146,7 +146,8 @@ RT_PROGRAM void pathtrace_camera()
         // return new segments to be traced here.
         for(;;)
         {
-            Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, scene_epsilon, RT_DEFAULT_MAX);
+            float t_min = (prd.depth == 0) ? distance * 0.95f + scene_epsilon : scene_epsilon;
+            Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, t_min, RT_DEFAULT_MAX);
             prd.wo = -ray.direction;
             rtTrace(top_object, ray, prd);
 
@@ -198,6 +199,7 @@ RT_PROGRAM void pathtrace_camera()
     float3 output_val = linear_to_sRGB(tonemap_acesFilm(liner_val));
     liner_buffer[launch_index] = make_float4(liner_val, distance);
     output_buffer[launch_index] = make_float4(output_val, 1.0);
+    // output_buffer[launch_index] = make_float4(distance * 0.01);
 }
 
 
