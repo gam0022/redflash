@@ -864,17 +864,17 @@ int main( int argc, char** argv )
             updateCamera();
 
             // print config
-            std::cout << "resolution: " << width << "x" << height << " px" << std::endl;
-            std::cout << "time_limit: " << time_limit << " sec." << std::endl;
-            std::cout << "sample_per_launch: " << sample_per_launch << std::endl;
+            std::cout << "[info] resolution: " << width << "x" << height << " px" << std::endl;
+            std::cout << "[info] time_limit: " << time_limit << " sec." << std::endl;
+            std::cout << "[info] sample_per_launch: " << sample_per_launch << std::endl;
 
             if (use_time_limit)
             {
-                std::cout << "sample: INF(" << sample << ")" << std::endl;
+                std::cout << "[info] sample: INF(" << sample << ")" << std::endl;
             }
             else
             {
-                std::cout << "sample: " << sample << std::endl;
+                std::cout << "[info] sample: " << sample << std::endl;
             }
 
             double last_time = sutil::currentTime();
@@ -888,13 +888,12 @@ int main( int argc, char** argv )
                 double remain_time = time_limit - used_time;
                 last_time = now;
 
-                std::cout << "progress used_time: " << used_time << " sec. remain_time: " << remain_time << " sec. sample: "
-                    << total_sample << ". frame_number: " << frame_number << std::endl;
+                std::cout << "loop:" << i << "\tdelta_time:" << delta_time << "\tused_time:" << used_time << "\tremain_time:" << remain_time << "\tsample:" << total_sample << "\tframe_number:" << frame_number << std::endl;
 
                 if (auto_set_sample_per_launch && i == 1)
                 {
                     sample_per_launch = (int)(remain_time / delta_time * 0.95);
-                    std::cout << "chnage sample_per_launch: 1 to " << sample_per_launch << std::endl;
+                    std::cout << "[info] chnage sample_per_launch: 1 to " << sample_per_launch << std::endl;
                 }
 
                 // NOTE: 前フレームの所要時間から次のフレームが制限時間内に終るかを予測する。時間超過を防ぐために1.1倍に見積もる
@@ -902,12 +901,12 @@ int main( int argc, char** argv )
                 {
                     if (sample_per_launch == 1)
                     {
-                        std::cout << "reached time limit! used_time: " << used_time << " sec. remain_time: " << remain_time << " sec." << std::endl;
+                        std::cout << "[info] reached time limit! used_time: " << used_time << " sec. remain_time: " << remain_time << " sec." << std::endl;
                         break;
                     }
                     else
                     {
-                        std::cout << "chnage sample_per_launch: " << sample_per_launch << " to 1" << std::endl;
+                        std::cout << "[info] chnage sample_per_launch: " << sample_per_launch << " to 1" << std::endl;
                         sample_per_launch = 1;
                     }
                 }
@@ -927,8 +926,8 @@ int main( int argc, char** argv )
 
             double finish_time = sutil::currentTime();
             double total_time = finish_time - launch_time;
-            std::cout << "total_time: " << total_time << " sec." << std::endl;
-            std::cout << "total_sample: " << total_sample  << std::endl;
+            std::cout << "[info] total_time: " << total_time << " sec." << std::endl;
+            std::cout << "[info] total_sample: " << total_sample  << std::endl;
         }
 
         return 0;
