@@ -282,8 +282,8 @@ void createContext()
     context[ "bad_color"        ]->setFloat( 1000000.0f, 0.0f, 1000000.0f ); // Super magenta to make sure it doesn't get averaged out in the progressive rendering.
 
     const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
-    const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
-    // const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Ref.hdr");
+    //const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
+    const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Ref.hdr");
     // const std::string texpath = resolveDataPath("Desert_Highway/Road_to_MonumentValley_Env.hdr");
     context["envmap"]->setTextureSampler(sutil::loadTexture(context, texpath, default_color));
 }
@@ -405,6 +405,19 @@ GeometryGroup createGeometryLight()
         light.position = make_float3(0.01f, 166.787f, 190.00f);
         light.radius = 2.0f;
         light.emission = make_float3(20.0f, 2.00f, 2.00f);
+        lightParameters.push_back(light);
+    }
+
+    {
+        LightParameter light;
+        light.lightType = SPHERE;
+        
+        float3 camera_eye = make_float3(13.91f, 166.787f, 413.00f);
+        float3 camera_lookat = make_float3(-6.59f, 169.94f, -9.11f);
+
+        light.position = camera_eye + 11.0 * normalize(camera_eye - camera_lookat);
+        light.radius = 5.0f;
+        light.emission = make_float3(20.0f, 20.0f, 30.0f);
         lightParameters.push_back(light);
     }
 
