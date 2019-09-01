@@ -496,6 +496,9 @@ RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
 
     float NdotL = dot(lightSample.normal, -lightDir);
     float lightPdf = lightDistSq / (light.area * NdotL);
+    // if (lightPdf <= 0.0f)
+    //    return make_float3(0.0f);
+
     current_prd.direction = lightDir;
 
     // sysBRDFPdf[programId](mat, state, current_prd);
