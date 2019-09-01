@@ -77,7 +77,7 @@ int max_depth = 10;
 
 bool           use_pbo = true;
 
-int sample_per_launch = 3;
+int sample_per_launch = 1;
 int frame_number = 1;
 int total_sample = 0;
 
@@ -266,8 +266,12 @@ void createContext()
     context["sample_per_launch"]->setUint(sample_per_launch);
     context["total_sample"]->setUint(total_sample);
 
-    Buffer buffer = sutil::createOutputBuffer( context, RT_FORMAT_FLOAT4, width, height, use_pbo );
-    context["output_buffer"]->set( buffer );
+    Buffer output_buffer = sutil::createOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
+    context["output_buffer"]->set(output_buffer);
+
+    Buffer liner_buffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL,
+        RT_FORMAT_FLOAT4, width, height);
+    context["liner_buffer"]->set(liner_buffer);
 
     // Setup programs
     const char *ptx = sutil::getPtxString( SAMPLE_NAME, "redflash.cu" );
@@ -400,7 +404,7 @@ GeometryGroup createGeometryLight()
         light.lightType = SPHERE;
         light.position = make_float3(0.01f, 166.787f, 190.00f);
         light.radius = 2.0f;
-        light.emission = make_float3(10.0f, 0.01f, 0.01f);
+        light.emission = make_float3(20.0f, 2.00f, 2.00f);
         lightParameters.push_back(light);
     }
 
@@ -572,7 +576,7 @@ void glutDisplay()
     updateCamera();
     context->launch( 0, width, height );
 
-    sutil::displayBufferGL( getOutputBuffer() );
+    sutil::displayBufferGL(getOutputBuffer(), BUFFER_PIXEL_FORMAT_DEFAULT, true);
 
     {
       static unsigned frame_count = 0;
@@ -698,7 +702,8 @@ void glutResize( int w, int h )
     height = h;
     sutil::ensureMinimumSize(width, height);
 
-    sutil::resizeBuffer( getOutputBuffer(), width, height );
+    sutil::resizeBuffer(getOutputBuffer(), width, height);
+    sutil::resizeBuffer(context["liner_buffer"]->getBuffer(), width, height);
 
     glViewport(0, 0, width, height);                                               
 
@@ -891,7 +896,7 @@ int main( int argc, char** argv )
                 total_sample += sample_per_launch;
             }
 
-            sutil::displayBufferPNG(out_file.c_str(), getOutputBuffer(), false);
+            sutil::displayBufferPNG(out_file.c_str(), getOutputBuffer(), true);
             destroyContext();
 
             double finish_time = sutil::currentTime();

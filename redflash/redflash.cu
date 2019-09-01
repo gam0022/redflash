@@ -87,12 +87,25 @@ rtDeclareVariable(unsigned int,  sample_per_launch, , );
 rtDeclareVariable(unsigned int,  rr_begin_depth, , );
 rtDeclareVariable(unsigned int, max_depth, , );
 
-rtBuffer<float4, 2>              output_buffer;
+rtBuffer<float4, 2> output_buffer;
+rtBuffer<float4, 2> liner_buffer;
 
 rtDeclareVariable(int, sysNumberOfLights, , );
 rtBuffer<LightParameter> sysLightParameters;
 rtDeclareVariable(int, lightMaterialId, , );
 
+__device__ inline float4 ToneMap(const float4& c, float limit)
+{
+    float luminance = 0.3f * c.x + 0.6f * c.y + 0.1f * c.z;
+    float4 col = c * 1.0f / (1.0f + luminance / limit);
+    return make_float4(col.x, col.y, col.z, 1.0f);
+}
+
+__device__ inline float4 LinearToSrgb(const float4& c)
+{
+    const float kInvGamma = 1.0f / 2.2f;
+    return make_float4(powf(c.x, kInvGamma), powf(c.y, kInvGamma), powf(c.z, kInvGamma), c.w);
+}
 
 RT_PROGRAM void pathtrace_camera()
 {
@@ -151,17 +164,22 @@ RT_PROGRAM void pathtrace_camera()
     // Update the output buffer
     //
     float3 pixel_color = result / (float)sample_per_launch;
+    float3 liner_val;
 
     if (frame_number > 1)
     {
+        liner_val = make_float3(liner_buffer[launch_index]);
         float a = static_cast<float>(sample_per_launch) / static_cast<float>(total_sample + sample_per_launch);
-        float3 old_color = make_float3(output_buffer[launch_index]);
-        output_buffer[launch_index] = make_float4( lerp( old_color, pixel_color, a ), 1.0f );
+        liner_val = lerp(liner_val, pixel_color, a);
     }
     else
     {
-        output_buffer[launch_index] = make_float4(pixel_color, 1.0f);
+        liner_val = pixel_color;
     }
+
+    float4 output_val = LinearToSrgb(ToneMap(make_float4(liner_val, 1.0), 1.0));
+    liner_buffer[launch_index] = make_float4(liner_val, 1.0);
+    output_buffer[launch_index] = output_val;
 }
 
 
