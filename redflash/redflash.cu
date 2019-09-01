@@ -98,10 +98,10 @@ RT_PROGRAM void pathtrace_camera()
 {
     size_t2 screen = output_buffer.size();
     float3 result = make_float3(0.0f);
+    unsigned int seed = tea<16>(screen.x * launch_index.y + launch_index.x, total_sample);
 
     for(int i = 0; i < sample_per_launch; i++)
     {
-        unsigned int seed = tea<16>(screen.x * launch_index.y + launch_index.x, total_sample + i);
         float2 subpixel_jitter = make_float2(rnd(seed) - 0.5f, rnd(seed) - 0.5f);
         float2 d = (make_float2(launch_index) + subpixel_jitter) / make_float2(screen) * 2.f - 1.f;
         float3 ray_origin = eye;
@@ -154,7 +154,7 @@ RT_PROGRAM void pathtrace_camera()
 
     if (frame_number > 1)
     {
-        float a = 1.0f / static_cast<float>(total_sample + 1);
+        float a = static_cast<float>(sample_per_launch) / static_cast<float>(total_sample + sample_per_launch);
         float3 old_color = make_float3(output_buffer[launch_index]);
         output_buffer[launch_index] = make_float4( lerp( old_color, pixel_color, a ), 1.0f );
     }
