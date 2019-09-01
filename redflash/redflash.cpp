@@ -74,10 +74,13 @@ Context        context = 0;
 uint32_t       width  = 1920 / 4;
 uint32_t       height = 1080 / 4;
 int max_depth = 10;
-int sample_at_once = 2;
+
 bool           use_pbo = true;
 
-int            frame_number = 1;
+int sample_per_launch = 3;
+int frame_number = 1;
+int total_sample = 0;
+
 int            rr_begin_depth = 1;
 Program        pgram_intersection = 0;
 Program        pgram_bounding_box = 0;
@@ -260,7 +263,8 @@ void createContext()
     context[ "scene_epsilon"                  ]->setFloat( 0.001f );
     context[ "rr_begin_depth"                 ]->setUint( rr_begin_depth );
     context["max_depth"]->setUint(max_depth);
-    context["sample_at_once"]->setUint(sample_at_once);
+    context["sample_per_launch"]->setUint(sample_per_launch);
+    context["total_sample"]->setUint(total_sample);
 
     Buffer buffer = sutil::createOutputBuffer( context, RT_FORMAT_FLOAT4, width, height, use_pbo );
     context["output_buffer"]->set( buffer );
@@ -495,11 +499,20 @@ void updateCamera()
 
     camera_rotate = Matrix4x4::identity();
 
-    if( camera_changed ) // reset accumulation
+    frame_number++;
+    total_sample += sample_per_launch;
+
+    if (camera_changed) // reset accumulation
+    {
         frame_number = 1;
+        total_sample = 0;
+    }
+
     camera_changed = false;
 
-    context[ "frame_number" ]->setUint( frame_number++ );
+    context[ "frame_number" ]->setUint(frame_number);
+    context[ "total_sample" ]->setUint(total_sample);
+
     context[ "eye"]->setFloat( camera_eye );
     context[ "U"  ]->setFloat( camera_u );
     context[ "V"  ]->setFloat( camera_v );
@@ -569,7 +582,13 @@ void glutDisplay()
     {
         static char frame_number_text[32];
         sprintf(frame_number_text, "frame_number:   %d", frame_number);
-        sutil::displayText(frame_number_text, 10, 80);
+        sutil::displayText(frame_number_text, 10, 100);
+    }
+
+    {
+        static char total_sample_text[32];
+        sprintf(total_sample_text, "total_sample:   %d", total_sample);
+        sutil::displayText(total_sample_text, 10, 80);
     }
 
     {
@@ -780,6 +799,15 @@ int main( int argc, char** argv )
             }
             height = atoi(argv[++i]);
         }
+        else if (arg == "-S" || arg == "--sample_per_launch")
+        {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            sample_per_launch = atoi(argv[++i]);
+        }
         else
         {
             std::cerr << "Unknown option '" << arg << "'\n";
@@ -814,6 +842,7 @@ int main( int argc, char** argv )
             // print config
             std::cout << "resolution: " << width << "x" << height << " px" << std::endl;
             std::cout << "time_limit: " << time_limit << " sec." << std::endl;
+            std::cout << "sample_per_launch: " << sample_per_launch << std::endl;
 
             if (use_time_limit)
             {
@@ -834,16 +863,32 @@ int main( int argc, char** argv )
                 double delta_time = now - last_time;
                 last_time = now;
 
+                std::cout << "progress used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << " sec. sample: "
+                    << total_sample << ". frame_number: " << frame_number << std::endl;
+
                 // NOTE: 前フレームの所要時間から次のフレームが制限時間内に終るかを予測する。時間超過を防ぐために1.1倍に見積もる
                 if (used_time + delta_time * 1.1 > time_limit)
                 {
-                    std::cout << "reached time limit! used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << " sec." << std::endl;
-                    std::cout << "sampled: " << i << std::endl;
-                    break;
+                    if (sample_per_launch == 1)
+                    {
+                        std::cout << "reached time limit! used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << " sec." << std::endl;
+                        break;
+                    }
+                    else
+                    {
+                        std::cout << "chnage sample_per_launch: " << sample_per_launch << " to 1" << std::endl;
+                        sample_per_launch = 1;
+                    }
                 }
 
+                context["sample_per_launch"]->setUint(sample_per_launch);
+                context["frame_number"]->setUint(frame_number);
+                context["total_sample"]->setUint(total_sample);
+
                 context->launch(0, width, height);
-                context["frame_number"]->setUint(frame_number++);
+
+                frame_number++;
+                total_sample += sample_per_launch;
             }
 
             sutil::displayBufferPNG(out_file.c_str(), getOutputBuffer(), false);
@@ -852,6 +897,7 @@ int main( int argc, char** argv )
             double finish_time = sutil::currentTime();
             double total_time = finish_time - launch_time;
             std::cout << "total_time: " << total_time << " sec." << std::endl;
+            std::cout << "total_sample: " << total_sample  << std::endl;
         }
 
         return 0;
