@@ -80,6 +80,7 @@ bool           use_pbo = true;
 int sample_per_launch = 1;
 int frame_number = 1;
 int total_sample = 0;
+bool auto_set_sample_per_launch = false;
 
 int            rr_begin_depth = 1;
 Program        pgram_intersection = 0;
@@ -826,6 +827,11 @@ int main( int argc, char** argv )
             }
             sample_per_launch = atoi(argv[++i]);
         }
+        else if (arg == "-A" || arg == "--auto_set_sample_per_launch")
+        {
+            auto_set_sample_per_launch = true;
+            sample_per_launch = 1;
+        }
         else
         {
             std::cerr << "Unknown option '" << arg << "'\n";
@@ -879,17 +885,24 @@ int main( int argc, char** argv )
                 double now = sutil::currentTime();
                 double used_time = now - launch_time;
                 double delta_time = now - last_time;
+                double remain_time = time_limit - used_time;
                 last_time = now;
 
-                std::cout << "progress used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << " sec. sample: "
+                std::cout << "progress used_time: " << used_time << " sec. remain_time: " << remain_time << " sec. sample: "
                     << total_sample << ". frame_number: " << frame_number << std::endl;
+
+                if (auto_set_sample_per_launch && i == 1)
+                {
+                    sample_per_launch = (int)(remain_time / delta_time * 0.9);
+                    std::cout << "chnage sample_per_launch: 1 to " << sample_per_launch << std::endl;
+                }
 
                 // NOTE: 前フレームの所要時間から次のフレームが制限時間内に終るかを予測する。時間超過を防ぐために1.1倍に見積もる
                 if (used_time + delta_time * 1.1 > time_limit)
                 {
                     if (sample_per_launch == 1)
                     {
-                        std::cout << "reached time limit! used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << " sec." << std::endl;
+                        std::cout << "reached time limit! used_time: " << used_time << " sec. remain_time: " << remain_time << " sec." << std::endl;
                         break;
                     }
                     else
