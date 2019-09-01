@@ -837,7 +837,6 @@ int main( int argc, char** argv )
             }
             auto_set_sample_per_launch = true;
             auto_set_sample_per_launch_scale = atof(argv[++i]);
-            sample_per_launch = 1;
         }
         else
         {
@@ -901,8 +900,8 @@ int main( int argc, char** argv )
 
                 if (auto_set_sample_per_launch && i == 1)
                 {
-                    sample_per_launch = (int)(remain_time / delta_time * auto_set_sample_per_launch_scale);
-                    std::cout << "[info] chnage sample_per_launch: 1 to " << sample_per_launch << std::endl;
+                    sample_per_launch = (int)(remain_time / delta_time * auto_set_sample_per_launch_scale * sample_per_launch);
+                    std::cout << "[info] chnage sample_per_launch: " << sample_per_launch << " to " << sample_per_launch << std::endl;
                 }
 
                 // NOTE: 前フレームの所要時間から次のフレームが制限時間内に終るかを予測する。時間超過を防ぐために1.1倍に見積もる
