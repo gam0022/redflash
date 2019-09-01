@@ -94,13 +94,13 @@ rtDeclareVariable(int, sysNumberOfLights, , );
 rtBuffer<LightParameter> sysLightParameters;
 rtDeclareVariable(int, lightMaterialId, , );
 
-__device__ inline float3 LinearToSrgb(const float3& c)
+__device__ inline float3 linear_to_sRGB(const float3& c)
 {
     const float kInvGamma = 1.0f / 2.2f;
     return make_float3(powf(c.x, kInvGamma), powf(c.y, kInvGamma), powf(c.z, kInvGamma));
 }
 
-__device__ inline float3 ToneMap(const float3& c, float limit)
+__device__ inline float3 tonemap_reinhard(const float3& c, float limit)
 {
     float luminance = 0.3f * c.x + 0.6f * c.y + 0.1f * c.z;
     float3 col = c * 1.0f / (1.0f + luminance / limit);
@@ -108,7 +108,7 @@ __device__ inline float3 ToneMap(const float3& c, float limit)
 }
 
 // https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
-float3 acesFilm(const float3 x)
+__device__ inline float3 tonemap_acesFilm(const float3 x)
 {
     const float a = 2.51;
     const float b = 0.03;
@@ -187,7 +187,7 @@ RT_PROGRAM void pathtrace_camera()
         liner_val = pixel_color;
     }
 
-    float3 output_val = LinearToSrgb(acesFilm(liner_val));
+    float3 output_val = linear_to_sRGB(tonemap_acesFilm(liner_val));
     liner_buffer[launch_index] = make_float4(liner_val, 1.0);
     output_buffer[launch_index] = make_float4(output_val, 1.0);
 }
