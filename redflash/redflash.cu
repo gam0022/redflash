@@ -146,7 +146,7 @@ RT_PROGRAM void pathtrace_camera()
         // return new segments to be traced here.
         for(;;)
         {
-            float t_min = (prd.depth == 0) ? distance * 0.95f + scene_epsilon : scene_epsilon;
+            float t_min = (prd.depth == 0 && frame_number > 1) ? distance * 0.98 : scene_epsilon;
             Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, t_min, RT_DEFAULT_MAX);
             prd.wo = -ray.direction;
             rtTrace(top_object, ray, prd);

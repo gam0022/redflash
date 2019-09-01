@@ -120,16 +120,17 @@ float3 calcNormalBasic(float3 p, float eps)
 
 RT_PROGRAM void intersect(int primIdx)
 {
-    float eps;
     float t = ray.tmin, d = 0.0;
     float3 p;
+
+    // int loop_max = ray.tmin > scene_epsilon * 10.0f ? 10 : 300;
 
     for (int i = 0; i < 300; i++)
     {
         p = ray.origin + t * ray.direction;
         d = map(p);
         t += d;
-        eps = scene_epsilon * t;
+        float eps = scene_epsilon * t;
         if (abs(d) < eps || t > ray.tmax)
         {
             break;
