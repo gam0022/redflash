@@ -872,7 +872,6 @@ int main( int argc, char** argv )
                     if (sample_per_launch == 1)
                     {
                         std::cout << "reached time limit! used_time: " << used_time << " sec. remain_time: " << (time_limit - used_time) << " sec." << std::endl;
-                        std::cout << "sampled: " << i << std::endl;
                         break;
                     }
                     else
