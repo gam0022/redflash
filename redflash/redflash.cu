@@ -64,6 +64,7 @@ rtDeclareVariable(unsigned int, sample_per_launch, , );
 rtDeclareVariable(unsigned int, rr_begin_depth, , );
 rtDeclareVariable(unsigned int, max_depth, , );
 rtDeclareVariable(unsigned int, use_post_tonemap, , );
+rtDeclareVariable(float, tonemap_exposure, , );
 
 rtBuffer<float4, 2> output_buffer;
 rtBuffer<float4, 2> liner_buffer;
@@ -175,7 +176,7 @@ RT_PROGRAM void pathtrace_camera()
         // pixel_normal = lerp(make_float3(input_normal_buffer[launch_index]), pixel_normal, a);
     }
 
-    float3 pixel_output = use_post_tonemap ? pixel_liner : linear_to_sRGB(tonemap_acesFilm(pixel_liner));
+    float3 pixel_output = use_post_tonemap ? pixel_liner : linear_to_sRGB(tonemap_acesFilm(pixel_liner * tonemap_exposure));
 
     // Save to buffer
     liner_buffer[launch_index] = make_float4(pixel_liner, 1.0);
