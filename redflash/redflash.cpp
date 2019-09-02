@@ -95,6 +95,9 @@ Buffer denoisedBuffer;
 Buffer emptyBuffer;
 Buffer trainingDataBuffer;
 
+// Rendering
+float tonemap_exposure = 1.5f;
+
 // Postprocessing‚ÌTonemap‚ð—LŒø‚É‚·‚é‚©‚Ç‚¤‚©
 bool use_post_tonemap = false;
 
@@ -363,6 +366,7 @@ void createContext()
     context["sample_per_launch"]->setUint(sample_per_launch);
     context["total_sample"]->setUint(total_sample);
     context["usePostTonemap"]->setUint(use_post_tonemap);
+    context["tonemap_exposure"]->setFloat(tonemap_exposure);
 
     Buffer output_buffer = sutil::createOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
     context["output_buffer"]->set(output_buffer);
@@ -451,7 +455,7 @@ void setupPostprocessing()
             tonemapStage = context->createBuiltinPostProcessingStage("TonemapperSimple");
             tonemapStage->declareVariable("input_buffer")->set(getOutputBuffer());
             tonemapStage->declareVariable("output_buffer")->set(getTonemappedBuffer());
-            tonemapStage->declareVariable("exposure")->setFloat(2.00f);
+            tonemapStage->declareVariable("exposure")->setFloat(tonemap_exposure);
             tonemapStage->declareVariable("gamma")->setFloat(2.2f);
         }
 
@@ -1340,6 +1344,15 @@ int main(int argc, char** argv)
             }
             auto_set_sample_per_launch = true;
             auto_set_sample_per_launch_scale = atof(argv[++i]);
+        }
+        else if (arg == "--tonemap_exposure")
+        {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            tonemap_exposure = atof(argv[++i]);
         }
         else if (arg.find("-d") == 0 || arg.find("--dim") == 0)
         {
