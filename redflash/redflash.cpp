@@ -30,6 +30,13 @@
 #include <stdint.h>
 #include <filesystem>
 
+#include <string>
+#include <fstream>
+#include <cmath>
+#include <stdio.h>
+#include <cstdlib>
+#include <iomanip>
+
 namespace fs = std::experimental::filesystem;
 
 using namespace optix;
@@ -43,9 +50,10 @@ const char* const SAMPLE_NAME = "redflash";
 //------------------------------------------------------------------------------
 
 Context context = 0;
-uint32_t width  = 1920 / 4;
-uint32_t height = 1080 / 4;
+int width  = 1920 / 4;
+int height = 1080 / 4;
 bool use_pbo = true;
+bool flag_debug = false;
 
 // sampling
 int max_depth = 10;
@@ -78,12 +86,59 @@ Program light_closest_hit = 0;
 Material light_material = 0;
 optix::Buffer m_bufferLightParameters;
 
+// Post-processing
+CommandList commandListWithDenoiser;
+CommandList commandListWithoutDenoiser;
+PostprocessingStage tonemapStage;
+PostprocessingStage denoiserStage;
+Buffer denoisedBuffer;
+Buffer emptyBuffer;
+Buffer trainingDataBuffer;
+
+// PostprocessingのTonemapを有効にするかどうか
+bool use_post_tonemap = false;
+
+bool denoiser_perf_mode = false;
+int denoiser_perf_iter = 1;
+
+// number of frames that show the original image before switching on denoising
+int numNonDenoisedFrames = 4;
+
+// Defines the amount of the original image that is blended with the denoised result
+// ranging from 0.0 to 1.0
+float denoiseBlend = 0.f;
+
+// Defines which buffer to show.
+// 0 - denoised 1 - original, 2 - tonemapped, 3 - albedo, 4 - normal
+int showBuffer = 0;
+
+// The denoiser mode.
+// 0 - RGB only, 1 - RGB + albedo, 2 - RGB + albedo + normals
+int denoiseMode = 0;
+
+// The path to the training data file set with -t or empty
+std::string training_file;
+
+// The path to the second training data file set with -t2 or empty
+std::string training_file_2;
+
+// Toggles between using custom training data (if set) or the built in training data.
+bool useCustomTrainingData = true;
+
+// Toggles the custom data between the one specified with -t1 and -t2, if available.
+bool useFirstTrainingDataPath = true;
+
+// Contains info for the currently shown buffer
+std::string bufferInfo;
+
+
 // Camera state
 float3         camera_up;
 float3         camera_lookat;
 float3         camera_eye;
 Matrix4x4      camera_rotate;
 bool           camera_changed = true;
+bool           postprocessing_needs_init = true;
 sutil::Arcball arcball;
 
 Matrix4x4 frame;
@@ -148,9 +203,69 @@ std::string resolveDataPath(const char* filename)
     throw Exception("Couldn't open source file " + std::string(filename));
 }
 
+void loadTrainingFile(const std::string& path)
+{
+    if (path.length() == 0)
+    {
+        trainingDataBuffer->setSize(0);
+        return;
+    }
+
+    using namespace std;
+    ifstream fin(path.c_str(), ios::in | ios::ate | ios::binary);
+    if (fin.fail())
+    {
+        fprintf(stderr, "Failed to load training file %s\n", path.c_str());
+        return;
+    }
+    size_t size = static_cast<size_t>(fin.tellg());
+
+    FILE* fp = fopen(path.c_str(), "rb");
+    if (!fp)
+    {
+        fprintf(stderr, "Failed to load training file %s\n", path.c_str());
+        return;
+    }
+
+    trainingDataBuffer->setSize(size);
+
+    char* data = reinterpret_cast<char*>(trainingDataBuffer->map());
+
+    const bool ok = fread(data, 1, size, fp) == size;
+    fclose(fp);
+
+    trainingDataBuffer->unmap();
+
+    if (!ok)
+    {
+        fprintf(stderr, "Failed to load training file %s\n", path.c_str());
+        trainingDataBuffer->setSize(0);
+    }
+}
+
 Buffer getOutputBuffer()
 {
     return context[ "output_buffer" ]->getBuffer();
+}
+
+Buffer getLinerBuffer()
+{
+    return context["liner_buffer"]->getBuffer();
+}
+
+Buffer getTonemappedBuffer()
+{
+    return context["tonemapped_buffer"]->getBuffer();
+}
+
+Buffer getAlbedoBuffer()
+{
+    return context["input_albedo_buffer"]->getBuffer();
+}
+
+Buffer getNormalBuffer()
+{
+    return context["input_normal_buffer"]->getBuffer();
 }
 
 
@@ -247,13 +362,46 @@ void createContext()
     context["max_depth"]->setUint(max_depth);
     context["sample_per_launch"]->setUint(sample_per_launch);
     context["total_sample"]->setUint(total_sample);
+    context["usePostTonemap"]->setUint(use_post_tonemap);
 
     Buffer output_buffer = sutil::createOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
     context["output_buffer"]->set(output_buffer);
 
-    Buffer liner_buffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL,
-        RT_FORMAT_FLOAT4, width, height);
-    context["liner_buffer"]->set(liner_buffer);
+    if (use_pbo)
+    {
+        Buffer liner_buffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
+        context["liner_buffer"]->set(liner_buffer);
+
+        Buffer tonemappedBuffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
+        context["tonemapped_buffer"]->set(tonemappedBuffer);
+
+        Buffer albedoBuffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
+        context["input_albedo_buffer"]->set(albedoBuffer);
+
+        // The normal buffer use float4 for performance reasons, the fourth channel will be ignored.
+        Buffer normalBuffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
+        context["input_normal_buffer"]->set(normalBuffer);
+    }
+    else
+    {
+        // NOTE: RT_BUFFER_GPU_LOCALの方ががパフォーマンスが向上するので、ウィンドウ出さないならこっちを使う
+        Buffer liner_buffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT4, width, height);
+        context["liner_buffer"]->set(liner_buffer);
+
+        Buffer tonemappedBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT4, width, height);
+        context["tonemapped_buffer"]->set(tonemappedBuffer);
+
+        Buffer albedoBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT4, width, height);
+        context["input_albedo_buffer"]->set(albedoBuffer);
+
+        // The normal buffer use float4 for performance reasons, the fourth channel will be ignored.
+        Buffer normalBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT4, width, height);
+        context["input_normal_buffer"]->set(normalBuffer);
+    }
+
+    denoisedBuffer = sutil::createOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
+    emptyBuffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, 0, 0);
+    trainingDataBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_BYTE, 0);
 
     // Setup programs
     const char *ptx = sutil::getPtxString( SAMPLE_NAME, "redflash.cu" );
@@ -283,6 +431,61 @@ void createContext()
     ptx = sutil::getPtxString(SAMPLE_NAME, "intersect_sphere.cu");
     pgram_bounding_box_sphere = context->createProgramFromPTXString(ptx, "bounds");
     pgram_intersection_sphere = context->createProgramFromPTXString(ptx, "sphere_intersect");
+}
+
+void setupPostprocessing()
+{
+    if (!tonemapStage)
+    {
+        // create stages only once: they will be reused in several command lists without being re-created
+        denoiserStage = context->createBuiltinPostProcessingStage("DLDenoiser");
+
+        if (trainingDataBuffer)
+        {
+            Variable trainingBuff = denoiserStage->declareVariable("training_data_buffer");
+            trainingBuff->set(trainingDataBuffer);
+        }
+
+        if (use_post_tonemap)
+        {
+            tonemapStage = context->createBuiltinPostProcessingStage("TonemapperSimple");
+            tonemapStage->declareVariable("input_buffer")->set(getOutputBuffer());
+            tonemapStage->declareVariable("output_buffer")->set(getTonemappedBuffer());
+            tonemapStage->declareVariable("exposure")->setFloat(2.00f);
+            tonemapStage->declareVariable("gamma")->setFloat(2.2f);
+        }
+
+        denoiserStage->declareVariable("input_buffer")->set(use_post_tonemap ? getTonemappedBuffer() : getOutputBuffer());
+        denoiserStage->declareVariable("output_buffer")->set(denoisedBuffer);
+        denoiserStage->declareVariable("blend")->setFloat(denoiseBlend);
+        denoiserStage->declareVariable("input_albedo_buffer");
+        denoiserStage->declareVariable("input_normal_buffer");
+    }
+
+    if (commandListWithDenoiser)
+    {
+        commandListWithDenoiser->destroy();
+        commandListWithoutDenoiser->destroy();
+    }
+
+    // Create two command lists with two postprocessing topologies we want:
+    // One with the denoiser stage, one without. Note that both share the same
+    // tonemap stage.
+
+    commandListWithDenoiser = context->createCommandList();
+    commandListWithDenoiser->appendLaunch(0, width, height);
+    if (use_post_tonemap)
+        commandListWithDenoiser->appendPostprocessingStage(tonemapStage, width, height);
+    commandListWithDenoiser->appendPostprocessingStage(denoiserStage, width, height);
+    commandListWithDenoiser->finalize();
+
+    commandListWithoutDenoiser = context->createCommandList();
+    commandListWithoutDenoiser->appendLaunch(0, width, height);
+    if (use_post_tonemap)
+        commandListWithoutDenoiser->appendPostprocessingStage(tonemapStage, width, height);
+    commandListWithoutDenoiser->finalize();
+
+    postprocessing_needs_init = false;
 }
 
 void registerMaterial(GeometryInstance& gi, MaterialParameter& mat, bool isLight = false)
@@ -559,6 +762,13 @@ void updateCamera()
     context[ "V"  ]->setFloat( camera_v );
     context[ "W"  ]->setFloat( camera_w );
 
+    const Matrix4x4 current_frame_inv = Matrix4x4::fromBasis(
+        normalize(camera_u),
+        normalize(camera_v),
+        normalize(-camera_w),
+        camera_lookat).inverse();
+    Matrix3x3 normal_matrix = make_matrix3x3(current_frame_inv);
+    context["normal_matrix"]->setMatrix3x3fv(false, normal_matrix.getData());
 }
 
 
@@ -611,26 +821,123 @@ void glutRun()
 void glutDisplay()
 {
     updateCamera();
-    context->launch( 0, width, height );
 
-    sutil::displayBufferGL(getOutputBuffer(), BUFFER_PIXEL_FORMAT_DEFAULT, true);
-
+    if (postprocessing_needs_init)
     {
-      static unsigned frame_count = 0;
-      sutil::displayFps( frame_count++ );
+        setupPostprocessing();
+    }
+
+    Variable(denoiserStage->queryVariable("blend"))->setFloat(denoiseBlend);
+
+    bool isEarlyFrame = (frame_number <= numNonDenoisedFrames);
+    if (isEarlyFrame)
+    {
+        // NOTE: commandList を使わない場合
+        // context->launch( 0, width, height );
+
+        commandListWithoutDenoiser->execute();
+    }
+    else
+    {
+        commandListWithDenoiser->execute();
+    }
+
+    switch (showBuffer)
+    {
+    case 1:
+    {
+        bufferInfo = "Original";
+        sutil::displayBufferGL(use_post_tonemap ? getOutputBuffer() : getLinerBuffer());
+        break;
+    }
+    case 2:
+    {
+        bufferInfo = "Tonemapped";
+        // gamma correction already applied by tone mapper, avoid doing it twice
+        sutil::displayBufferGL(use_post_tonemap ? getTonemappedBuffer() : getOutputBuffer(), BUFFER_PIXEL_FORMAT_DEFAULT, true);
+        break;
+    }
+    case 3:
+    {
+        bufferInfo = "Albedo";
+        sutil::displayBufferGL(getAlbedoBuffer());
+        break;
+    }
+    case 4:
+    {
+        bufferInfo = "Normals";
+        Buffer normalBuffer = getNormalBuffer();
+        sutil::displayBufferGL(normalBuffer);
+        break;
+    }
+    default:
+        switch (denoiseMode)
+        {
+        case 0:
+        {
+            bufferInfo = "Denoised";
+            break;
+        }
+        case 1:
+        {
+            bufferInfo = "Denoised (albedo)";
+            break;
+        }
+        case 2:
+        {
+            bufferInfo = "Denoised (albedo+normals)";
+            break;
+        }
+        }
+        if (isEarlyFrame)
+        {
+            bufferInfo = "Tonemapped (early frame non-denoised)";
+            // gamma correction already applied by tone mapper, avoid doing it twice
+            if (use_post_tonemap)
+            {
+                sutil::displayBufferGL(getTonemappedBuffer(), BUFFER_PIXEL_FORMAT_DEFAULT, true);
+            }
+            else
+            {
+                sutil::displayBufferGL(getOutputBuffer(), BUFFER_PIXEL_FORMAT_DEFAULT, true);
+            }
+        }
+        else
+        {
+            RTsize trainingSize = 0;
+            trainingDataBuffer->getSize(trainingSize);
+            if (useCustomTrainingData && trainingSize > 0)
+            {
+                if (useFirstTrainingDataPath)
+                    bufferInfo += " Custom data";
+                else
+                    bufferInfo += " Custom data 2";
+            }
+
+            // gamma correction already applied by tone mapper, avoid doing it twice
+            sutil::displayBufferGL(denoisedBuffer, BUFFER_PIXEL_FORMAT_DEFAULT, true);
+        }
     }
 
     {
-        static char frame_number_text[32];
-        sprintf(frame_number_text, "frame_number:   %d", frame_number);
-        sutil::displayText(frame_number_text, 10, 100);
+        sutil::displayText(bufferInfo.c_str(), 140, 10);
+        char str[64];
+        sprintf(str, "#%d", frame_number);
+        sutil::displayText(str, (float)width - 60, (float)height - 20);
     }
 
+    {
+        static unsigned frame_count = 0;
+        sutil::displayFps(frame_count++);
+    }
+
+    /*
     {
         static char total_sample_text[32];
         sprintf(total_sample_text, "total_sample:   %d", total_sample);
         sutil::displayText(total_sample_text, 10, 80);
     }
+    */
 
     {
         static char camera_eye_text[32];
@@ -661,10 +968,179 @@ void glutKeyboardPress( unsigned char k, int x, int y )
         }
         case( 's' ):
         {
+            Buffer buff;
+            bool disableSrgbConversion = true;
+            switch (showBuffer)
+            {
+                case 0:
+                {
+                    buff = denoisedBuffer;
+                    break;
+                }
+                case 1:
+                {
+                    disableSrgbConversion = false;
+                    buff = getOutputBuffer();
+                    break;
+                }
+                case 2:
+                {
+                    buff = getTonemappedBuffer();
+                    break;
+                }
+                case 3:
+                {
+                    disableSrgbConversion = false;
+                    buff = getAlbedoBuffer();
+                    break;
+                }
+                case 4:
+                {
+                    disableSrgbConversion = false;
+                    buff = getNormalBuffer();
+                    break;
+                }
+            }
+
             const std::string outputImage = std::string(SAMPLE_NAME) + ".png";
             std::cerr << "Saving current frame to '" << outputImage << "'\n";
             sutil::displayBufferPNG( outputImage.c_str(), getOutputBuffer(), false );
             break;
+        }
+        case('d'):
+        {
+            showBuffer = 0;
+            break;
+        }
+        case('o'):
+        {
+            showBuffer = 1;
+            break;
+        }
+        case('t'):
+        {
+            showBuffer = 2;
+            break;
+        }
+        case('a'):
+        {
+            showBuffer = 3;
+            break;
+        }
+        case('n'):
+        {
+            showBuffer = 4;
+            break;
+        }
+        case('m'):
+        {
+            ++denoiseMode;
+            if (denoiseMode > 2) denoiseMode = 0;
+            switch (denoiseMode)
+            {
+            case 0:
+            {
+                Variable albedoBuffer = denoiserStage->queryVariable("input_albedo_buffer");
+                albedoBuffer->set(emptyBuffer);
+                Variable normalBuffer = denoiserStage->queryVariable("input_normal_buffer");
+                normalBuffer->set(emptyBuffer);
+                break;
+            }
+            case 1:
+            {
+                Variable albedoBuffer = denoiserStage->queryVariable("input_albedo_buffer");
+                albedoBuffer->set(getAlbedoBuffer());
+                break;
+            }
+            case 2:
+            {
+                Variable normalBuffer = denoiserStage->queryVariable("input_normal_buffer");
+                normalBuffer->set(getNormalBuffer());
+                break;
+            }
+            }
+            break;
+        }
+        case('0'):
+        {
+            denoiseBlend = 0.f;
+            break;
+        }
+        case('1'):
+        {
+            denoiseBlend = 0.1f;
+            break;
+        }
+        case('2'):
+        {
+            denoiseBlend = 0.2f;
+            break;
+        }
+        case('3'):
+        {
+            denoiseBlend = 0.3f;
+            break;
+        }
+        case('4'):
+        {
+            denoiseBlend = 0.4f;
+            break;
+        }
+        case('5'):
+        {
+            denoiseBlend = 0.5f;
+            break;
+        }
+        case('6'):
+        {
+            denoiseBlend = 0.6f;
+            break;
+        }
+        case('7'):
+        {
+            denoiseBlend = 0.7f;
+            break;
+        }
+        case('8'):
+        {
+            denoiseBlend = 0.8f;
+            break;
+        }
+        case('9'):
+        {
+            denoiseBlend = 0.9f;
+            break;
+        }
+        case('c'):
+        {
+            useCustomTrainingData = !useCustomTrainingData;
+            Variable trainingBuff = denoiserStage->queryVariable("training_data_buffer");
+            if (trainingBuff)
+            {
+                if (useCustomTrainingData)
+                    trainingBuff->setBuffer(trainingDataBuffer);
+                else
+                    trainingBuff->setBuffer(emptyBuffer);
+            }
+            break;
+        }
+        case('z'):
+        {
+            useFirstTrainingDataPath = !useFirstTrainingDataPath;
+            if (useFirstTrainingDataPath)
+            {
+                if (training_file.length() == 0)
+                    useFirstTrainingDataPath = false;
+                else
+                    loadTrainingFile(training_file);
+            }
+            else
+            {
+                if (training_file_2.length() == 0)
+                    useFirstTrainingDataPath = true;
+                else
+                    loadTrainingFile(training_file_2);
+            }
         }
     }
 }
@@ -740,7 +1216,12 @@ void glutResize( int w, int h )
     sutil::ensureMinimumSize(width, height);
 
     sutil::resizeBuffer(getOutputBuffer(), width, height);
-    sutil::resizeBuffer(context["liner_buffer"]->getBuffer(), width, height);
+    sutil::resizeBuffer(getLinerBuffer(), width, height);
+    sutil::resizeBuffer(getTonemappedBuffer(), width, height);
+    sutil::resizeBuffer(getAlbedoBuffer(), width, height);
+    sutil::resizeBuffer(getNormalBuffer(), width, height);
+    sutil::resizeBuffer(denoisedBuffer, width, height);
+    postprocessing_needs_init = true;
 
     glViewport(0, 0, width, height);                                               
 
@@ -778,7 +1259,7 @@ int main( int argc, char** argv )
     double launch_time = sutil::currentTime();
 
     std::string out_file;
-    int sample = 20;
+    int sampleMax = 20;
     double time_limit = 60 * 60;// 1 hour
     bool use_time_limit = false;
 
@@ -811,7 +1292,7 @@ int main( int argc, char** argv )
                 std::cerr << "Option '" << arg << "' requires additional argument.\n";
                 printUsageAndExit(argv[0]);
             }
-            sample = atoi(argv[++i]);
+            sampleMax = atoi(argv[++i]);
         }
         else if (arg == "-t" || arg == "--time")
         {
@@ -860,6 +1341,83 @@ int main( int argc, char** argv )
             auto_set_sample_per_launch = true;
             auto_set_sample_per_launch_scale = atof(argv[++i]);
         }
+        else if (arg.find("-d") == 0 || arg.find("--dim") == 0)
+        {
+            size_t index = arg.find_first_of('=');
+            if (index == std::string::npos)
+            {
+                std::cerr << "Option '" << arg << " is malformed. Please use the syntax -d | --dim=<width>x<height>.\n";
+                printUsageAndExit(argv[0]);
+            }
+            std::string dim = arg.substr(index + 1);
+            try
+            {
+                sutil::parseDimensions(dim.c_str(), width, height);
+            }
+            catch (Exception e)
+            {
+                std::cerr << "Option '" << arg << " is malformed. Please use the syntax -d | --dim=<width>x<height>.\n";
+                printUsageAndExit(argv[0]);
+            }
+        }
+        else if (arg == "--blend")
+        {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            int denoiseBlendPercent = atoi(argv[++i]);
+            if (denoiseBlendPercent < 0) denoiseBlendPercent = 0;
+            if (denoiseBlendPercent > 100) denoiseBlendPercent = 100;
+            denoiseBlend = denoiseBlendPercent / 100.f;
+        }
+        else if (arg == "--denoise_mode")
+        {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            denoiseMode = atoi(argv[++i]);
+            if (denoiseMode < 0 || denoiseMode > 2)
+            {
+                std::cerr << "Option '" << arg << "' must be 0, 1, or 2.\n";
+                printUsageAndExit(argv[0]);
+            }
+        }
+        else if (arg == "--perf")
+        {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            denoiser_perf_mode = true;
+            denoiser_perf_iter = atoi(argv[++i]);
+        }
+        else if (arg == "--training_file")
+        {
+            if( i == argc-1 )
+            {
+                std::cerr << "Option '" << argv[i] << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            training_file = argv[++i];
+        }
+        else if(arg == "--training_file2" )
+        {
+            if( i == argc-1 )
+            {
+                std::cerr << "Option '" << argv[i] << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            training_file_2 = argv[++i];
+        }
+        else if (arg == "--debug")
+        {
+            flag_debug = true;
+        }
         else
         {
             std::cerr << "Unknown option '" << arg << "'\n";
@@ -878,6 +1436,15 @@ int main( int argc, char** argv )
         }
 
         createContext();
+
+        if (training_file.length() == 0 && training_file_2.length() != 0)
+            useFirstTrainingDataPath = false;
+
+        if (useFirstTrainingDataPath)
+            loadTrainingFile(training_file);
+        else
+            loadTrainingFile(training_file_2);
+
         setupCamera();
         setupScene();
 
@@ -889,7 +1456,9 @@ int main( int argc, char** argv )
         }
         else
         {
+            setupPostprocessing();
             updateCamera();
+            Variable(denoiserStage->queryVariable("blend"))->setFloat(denoiseBlend);
 
             // print config
             std::cout << "[info] resolution: " << width << "x" << height << " px" << std::endl;
@@ -900,25 +1469,30 @@ int main( int argc, char** argv )
 
             if (use_time_limit)
             {
-                std::cout << "[info] sample: INF(" << sample << ")" << std::endl;
+                std::cout << "[info] sample: INF(" << sampleMax << ")" << std::endl;
             }
             else
             {
-                std::cout << "[info] sample: " << sample << std::endl;
+                std::cout << "[info] sample: " << sampleMax << std::endl;
             }
 
             double last_time = sutil::currentTime();
 
+            bool finalFrame = false;
+
             // NOTE: time_limit が指定されていたら、サンプル数は無制限にする
-            for (int i = 0; i < sample || use_time_limit; ++i)
+            for (int i = 0; total_sample < sampleMax || use_time_limit; ++i)
             {
+                // TODO: 動作確認
+                finalFrame |= (!use_time_limit && i == sampleMax - 1);
+
                 double now = sutil::currentTime();
                 double used_time = now - launch_time;
                 double delta_time = now - last_time;
                 double remain_time = time_limit - used_time;
                 last_time = now;
 
-                std::cout << "loop:" << i << "\tdelta_time:" << delta_time << "\tused_time:" << used_time << "\tremain_time:" << remain_time << "\tsample:" << total_sample << "\tframe_number:" << frame_number << std::endl;
+                std::cout << "loop:" << i << "sample_per_launch\t:" << sample_per_launch << "\tdelta_time:" << delta_time << "\tdelta_time_per_sample:" << delta_time / sample_per_launch << "\tused_time:" << used_time << "\tremain_time:" << remain_time << "\tsample:" << total_sample << "\tframe_number:" << frame_number << std::endl;
 
                 if (auto_set_sample_per_launch && i == 1)
                 {
@@ -932,7 +1506,7 @@ int main( int argc, char** argv )
                     if (sample_per_launch == 1)
                     {
                         std::cout << "[info] reached time limit! used_time: " << used_time << " sec. remain_time: " << remain_time << " sec." << std::endl;
-                        break;
+                        finalFrame = true;
                     }
                     else
                     {
@@ -945,13 +1519,29 @@ int main( int argc, char** argv )
                 context["frame_number"]->setUint(frame_number);
                 context["total_sample"]->setUint(total_sample);
 
-                context->launch(0, width, height);
+                if (finalFrame)
+                {
+                    commandListWithDenoiser->execute();
+                    break;
+                }
+                else
+                {
+                    commandListWithoutDenoiser->execute();
+                }
 
                 frame_number++;
                 total_sample += sample_per_launch;
             }
 
-            sutil::displayBufferPNG(out_file.c_str(), getOutputBuffer(), true);
+            sutil::displayBufferPNG(out_file.c_str(), denoisedBuffer, true);
+
+            if (flag_debug)
+            {
+                sutil::displayBufferPNG((out_file + "_original.png").c_str(), getOutputBuffer(), true);
+                sutil::displayBufferPNG((out_file + "_albedo.png").c_str(), getAlbedoBuffer(), true);
+                sutil::displayBufferPNG((out_file + "_normal.png").c_str(), getNormalBuffer(), true);
+            }
+            
             destroyContext();
 
             double finish_time = sutil::currentTime();

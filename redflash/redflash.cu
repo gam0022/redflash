@@ -1,4 +1,5 @@
 #include <optixu/optixu_math_namespace.h>
+#include <optixu/optixu_matrix_namespace.h>
 #include <common.h>
 #include "redflash.h"
 #include "random.h"
@@ -15,6 +16,9 @@ struct PerRayData_pathtrace
 {
     float3 radiance;
     float3 attenuation;
+
+    float3 albedo;
+    float3 normal;
 
     float3 origin;
     float3 direction;
@@ -52,15 +56,19 @@ rtDeclareVariable(float3,        eye, , );
 rtDeclareVariable(float3,        U, , );
 rtDeclareVariable(float3,        V, , );
 rtDeclareVariable(float3,        W, , );
+rtDeclareVariable(Matrix3x3, normal_matrix, , );
 rtDeclareVariable(float3,        bad_color, , );
 rtDeclareVariable(unsigned int,  frame_number, , );
 rtDeclareVariable(unsigned int,  total_sample, , );
 rtDeclareVariable(unsigned int,  sample_per_launch, , );
 rtDeclareVariable(unsigned int,  rr_begin_depth, , );
 rtDeclareVariable(unsigned int, max_depth, , );
+rtDeclareVariable(unsigned int, use_post_tonemap, , );
 
 rtBuffer<float4, 2> output_buffer;
 rtBuffer<float4, 2> liner_buffer;
+rtBuffer<float4, 2> input_albedo_buffer;
+rtBuffer<float4, 2> input_normal_buffer;
 
 __device__ inline float3 linear_to_sRGB(const float3& c)
 {
@@ -90,6 +98,8 @@ RT_PROGRAM void pathtrace_camera()
 {
     size_t2 screen = output_buffer.size();
     float3 result = make_float3(0.0f);
+    float3 albedo = make_float3(0.0f);
+    float3 normal = make_float3(0.0f);
     unsigned int seed = tea<16>(screen.x * launch_index.y + launch_index.x, total_sample);
 
     for(int i = 0; i < sample_per_launch; i++)
@@ -129,11 +139,17 @@ RT_PROGRAM void pathtrace_camera()
                 prd.attenuation /= pcont;
             }*/
 
-            prd.depth++;
+            if (prd.depth == 0)
+            {
+                albedo += prd.albedo;
+                normal += prd.normal;
+            }
 
             // Update ray data for the next path segment
             ray_origin = prd.origin;
             ray_direction = prd.direction;
+
+            prd.depth++;
         }
 
         result += prd.radiance;
@@ -142,22 +158,36 @@ RT_PROGRAM void pathtrace_camera()
     //
     // Update the output buffer
     //
-    float3 pixel_color = result / (float)sample_per_launch;
-    float3 liner_val;
+    float3 normal_eyespace = (length(normal) > 0.0f) ? normalize(normal_matrix * normal) : make_float3(0.0, 0.0, 1.0);
+
+    float inv_sample_per_launch = 1.0f / static_cast<float>(sample_per_launch);
+    float3 pixel_liner = result * inv_sample_per_launch;
+    float3 pixel_albedo = albedo * inv_sample_per_launch;
+    float3 pixel_normal = normal_eyespace;
 
     if (frame_number > 1)
     {
         float a = static_cast<float>(sample_per_launch) / static_cast<float>(total_sample + sample_per_launch);
-        liner_val = lerp(make_float3(liner_buffer[launch_index]), pixel_color, a);
-    }
-    else
-    {
-        liner_val = pixel_color;
+        pixel_liner = lerp(make_float3(liner_buffer[launch_index]), pixel_liner, a);
+
+        // NOTE: ノイズ用の情報は1フレーム目しか更新しない
+        // pixel_albedo = lerp(make_float3(input_albedo_buffer[launch_index]), pixel_albedo, a);
+        // pixel_normal = lerp(make_float3(input_normal_buffer[launch_index]), pixel_normal, a);
     }
 
-    float3 output_val = linear_to_sRGB(tonemap_acesFilm(liner_val));
-    liner_buffer[launch_index] = make_float4(liner_val, 1.0);
-    output_buffer[launch_index] = make_float4(output_val, 1.0);
+    float3 pixel_output = use_post_tonemap ? pixel_liner : linear_to_sRGB(tonemap_acesFilm(pixel_liner));
+
+    // Save to buffer
+    liner_buffer[launch_index] = make_float4(pixel_liner, 1.0);
+    output_buffer[launch_index] = make_float4(pixel_output, 1.0);
+
+    // NOTE: デノイズ用の情報は1フレーム目しか更新しない
+    // NOTE: DOFとかモーションブラーなら毎フレーム更新した方がいいのかもしれない
+    if (frame_number == 1)
+    {
+        input_albedo_buffer[launch_index] = make_float4(pixel_albedo, 1.0f);
+        input_normal_buffer[launch_index] = make_float4(pixel_normal, 1.0f);
+    }
 }
 
 
@@ -185,6 +215,9 @@ RT_PROGRAM void light_closest_hit()
     const float3 world_shading_normal = normalize(rtTransformNormal(RT_OBJECT_TO_WORLD, shading_normal));
     const float3 world_geometric_normal = normalize(rtTransformNormal(RT_OBJECT_TO_WORLD, geometric_normal));
     const float3 ffnormal = faceforward(world_shading_normal, -ray.direction, world_geometric_normal);
+
+    current_prd.albedo = make_float3(0.0f);
+    current_prd.normal = ffnormal;
 
     LightParameter light = sysLightParameters[lightMaterialId];
     float cosTheta = dot(-ray.direction, light.normal);
@@ -509,15 +542,16 @@ RT_PROGRAM void closest_hit()
     state.normal = world_shading_normal;
     state.ffnormal = ffnormal;
 
-    current_prd.wo = -ray.direction;
-
-    // FIXME: Sampleにもっていく
-    current_prd.origin = hitpoint;
-
     // FIXME: materialCustomProgramId みたいな名前で関数ポインタを渡して、パラメータをプロシージャルにセットしたい
     MaterialParameter mat = sysMaterialParameters[materialId];
 
     current_prd.radiance += mat.emission * current_prd.attenuation;
+    current_prd.wo = -ray.direction;
+    current_prd.albedo = mat.albedo;
+    current_prd.normal = ffnormal;
+
+    // FIXME: Sampleにもっていく
+    current_prd.origin = hitpoint;
 
     // FIXME: bsdfId から判定
     current_prd.specularBounce = false;
@@ -585,5 +619,7 @@ RT_PROGRAM void envmap_miss()
     float u = (theta + M_PIf) * (0.5f * M_1_PIf);
     float v = 0.5f * (1.0f + sin(phi));
     current_prd.radiance += make_float3(tex2D(envmap, u, v)) * current_prd.attenuation;
+    current_prd.albedo = make_float3(0.0f);
+    current_prd.normal = -ray.direction;
     current_prd.done = true;
 }
