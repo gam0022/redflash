@@ -127,7 +127,7 @@ bool useFirstTrainingDataPath = true;
 // Contains info for the currently shown buffer
 std::string bufferInfo;
 
-bool usePostTonemap = false;
+bool use_post_tonemap = false;
 
 
 // Camera state
@@ -355,7 +355,7 @@ void createContext()
     context["max_depth"]->setUint(max_depth);
     context["sample_per_launch"]->setUint(sample_per_launch);
     context["total_sample"]->setUint(total_sample);
-    context["usePostTonemap"]->setUint(usePostTonemap);
+    context["usePostTonemap"]->setUint(use_post_tonemap);
 
     Buffer output_buffer = sutil::createOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
     context["output_buffer"]->set(output_buffer);
@@ -423,7 +423,7 @@ void setupPostprocessing()
             trainingBuff->set(trainingDataBuffer);
         }
 
-        if (usePostTonemap)
+        if (use_post_tonemap)
         {
             tonemapStage->declareVariable("input_buffer")->set(getOutputBuffer());
             tonemapStage->declareVariable("output_buffer")->set(getTonemappedBuffer());
@@ -431,7 +431,7 @@ void setupPostprocessing()
             tonemapStage->declareVariable("gamma")->setFloat(2.2f);
         }
 
-        denoiserStage->declareVariable("input_buffer")->set(usePostTonemap ? getTonemappedBuffer() : getOutputBuffer());
+        denoiserStage->declareVariable("input_buffer")->set(use_post_tonemap ? getTonemappedBuffer() : getOutputBuffer());
         denoiserStage->declareVariable("output_buffer")->set(denoisedBuffer);
         denoiserStage->declareVariable("blend")->setFloat(denoiseBlend);
         denoiserStage->declareVariable("input_albedo_buffer");
@@ -450,14 +450,14 @@ void setupPostprocessing()
 
     commandListWithDenoiser = context->createCommandList();
     commandListWithDenoiser->appendLaunch(0, width, height);
-    if (usePostTonemap)
+    if (use_post_tonemap)
         commandListWithDenoiser->appendPostprocessingStage(tonemapStage, width, height);
     commandListWithDenoiser->appendPostprocessingStage(denoiserStage, width, height);
     commandListWithDenoiser->finalize();
 
     commandListWithoutDenoiser = context->createCommandList();
     commandListWithoutDenoiser->appendLaunch(0, width, height);
-    if (usePostTonemap)
+    if (use_post_tonemap)
         commandListWithoutDenoiser->appendPostprocessingStage(tonemapStage, width, height);
     commandListWithoutDenoiser->finalize();
 
@@ -869,7 +869,7 @@ void glutDisplay()
         {
             bufferInfo = "Tonemapped (early frame non-denoised)";
             // gamma correction already applied by tone mapper, avoid doing it twice
-            if (usePostTonemap)
+            if (use_post_tonemap)
             {
                 sutil::displayBufferGL(getTonemappedBuffer(), BUFFER_PIXEL_FORMAT_DEFAULT, true);
             }
