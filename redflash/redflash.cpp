@@ -117,7 +117,7 @@ int showBuffer = 0;
 
 // The denoiser mode.
 // 0 - RGB only, 1 - RGB + albedo, 2 - RGB + albedo + normals
-int denoiseMode = 0;
+int denoiseMode = 2;
 
 // The path to the training data file set with -t or empty
 std::string training_file;
@@ -1473,6 +1473,18 @@ int main(int argc, char** argv)
             updateCamera();
             Variable(denoiserStage->queryVariable("blend"))->setFloat(denoiseBlend);
 
+            if (denoiseMode > 0)
+            {
+                Variable albedoBuffer = denoiserStage->queryVariable("input_albedo_buffer");
+                albedoBuffer->set(getAlbedoBuffer());
+            }
+
+            if (denoiseMode > 1)
+            {
+                Variable normalBuffer = denoiserStage->queryVariable("input_normal_buffer");
+                normalBuffer->set(getNormalBuffer());
+            }
+
             // print config
             std::cout << "[info] resolution: " << width << "x" << height << " px" << std::endl;
             std::cout << "[info] time_limit: " << time_limit << " sec." << std::endl;
@@ -1534,7 +1546,17 @@ int main(int argc, char** argv)
 
                 if (finalFrame)
                 {
-                    commandListWithDenoiser->execute();
+                    if (denoiser_perf_mode)
+                    {
+                        for (int i = 0; i < denoiser_perf_iter; i++)
+                        {
+                            commandListWithDenoiser->execute();
+                        }
+                    }
+                    else
+                    {
+                        commandListWithDenoiser->execute();
+                    }
                     break;
                 }
                 else
