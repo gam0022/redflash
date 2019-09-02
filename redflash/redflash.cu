@@ -152,17 +152,17 @@ RT_PROGRAM void pathtrace_camera()
         }
 
         result += prd.radiance;
-        float3 normal_eyespace = (length(prd.normal) > 0.f) ? normalize(normal_matrix * prd.normal) : make_float3(0., 0., 1.);
-        normal = normal_eyespace;
     }
 
     //
     // Update the output buffer
     //
+    float3 normal_eyespace = (length(normal) > 0.f) ? normalize(normal_matrix * normal) : make_float3(0., 0., 1.);
+
     float inv_sample_per_launch = 1.0f / static_cast<float>(sample_per_launch);
     float3 pixel_color = result * inv_sample_per_launch;
     float3 pixel_albedo = albedo * inv_sample_per_launch;
-    float3 pixel_normal = normal * inv_sample_per_launch;
+    float3 pixel_normal = normal_eyespace;
 
     // FIXME: pixel_liner ‚É‚µ‚½‚¢
     float3 liner_val = pixel_color;
