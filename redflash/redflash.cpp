@@ -1461,10 +1461,10 @@ int main( int argc, char** argv )
             bool finalFrame = false;
 
             // NOTE: time_limit が指定されていたら、サンプル数は無制限にする
-            for (int i = 0; i < sampleMax || use_time_limit; ++i)
+            for (int i = 0; total_sample < sampleMax || use_time_limit; ++i)
             {
                 // TODO: 動作確認
-                finalFrame |= (i == sampleMax - 1);
+                finalFrame |= (!use_time_limit && i == sampleMax - 1);
 
                 double now = sutil::currentTime();
                 double used_time = now - launch_time;
@@ -1472,7 +1472,7 @@ int main( int argc, char** argv )
                 double remain_time = time_limit - used_time;
                 last_time = now;
 
-                std::cout << "loop:" << i << "\tdelta_time:" << delta_time << "\tused_time:" << used_time << "\tremain_time:" << remain_time << "\tsample:" << total_sample << "\tframe_number:" << frame_number << std::endl;
+                std::cout << "loop:" << i << "sample_per_launch\t:" << sample_per_launch << "\tdelta_time:" << delta_time << "\tdelta_time_per_sample:" << delta_time / sample_per_launch << "\tused_time:" << used_time << "\tremain_time:" << remain_time << "\tsample:" << total_sample << "\tframe_number:" << frame_number << std::endl;
 
                 if (auto_set_sample_per_launch && i == 1)
                 {
