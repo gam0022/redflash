@@ -550,7 +550,6 @@ GeometryGroup createGeometryTriangles()
     // Mesh cow
     std::string mesh_file = resolveDataPath("cow.obj");
     gis.push_back(createMesh(mesh_file, make_float3(0.0f, 300.0f, 0.0f), make_float3(500.0f)));
-
     mat.albedo = make_float3(1.0f, 1.0f, 1.0f);
     mat.metallic = 0.8f;
     mat.roughness = 0.05f;
@@ -562,10 +561,13 @@ GeometryGroup createGeometryTriangles()
         make_float3(0.0f, 145.5f, 204.0f),
         make_float3(0.05f),
         make_float3(0.0f, 1.0f, 0.0), M_PIf));
-
     mat.albedo = make_float3(1.0f, 1.0f, 1.0f);
-    mat.metallic = 0.0f;
+    // mat.emission = make_float3(0.2f, 0.05f, 0.05f);
+    mat.metallic = 0.01f;
     mat.roughness = 0.05f;
+    //mat.clearcoat = 0.0f;
+    //mat.clearcoatGloss = 0.0f;
+    //mat.specularTint = 0.0;
     registerMaterial(gis.back(), mat);
 
     GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
@@ -616,7 +618,7 @@ GeometryGroup createGeometryLight()
         light.lightType = SPHERE;
         light.position = make_float3(0.01f, 166.787f, 190.00f);
         light.radius = 2.0f;
-        light.emission = make_float3(20.0f, 2.00f, 2.00f);
+        light.emission = make_float3(30.0f, 2.00f, 2.00f);
         lightParameters.push_back(light);
     }
 
@@ -624,12 +626,12 @@ GeometryGroup createGeometryLight()
         LightParameter light;
         light.lightType = SPHERE;
 
-        float3 camera_eye = make_float3(13.91f, 166.787f, 413.00f);
-        float3 camera_lookat = make_float3(-6.59f, 169.94f, -9.11f);
+        float3 camera_eye = make_float3(1.65f, 176.01f, 287.97f);
+        float3 camera_lookat = make_float3(-7.06f, 76.34f, 26.96f);
 
-        light.position = camera_eye + 11.0 * normalize(camera_eye - camera_lookat);
-        light.radius = 5.0f;
-        light.emission = make_float3(20.0f, 20.0f, 30.0f);
+        light.position = camera_eye + 3.1 * normalize(camera_eye - camera_lookat);
+        light.radius = 3.0f;
+        light.emission = make_float3(30.0f, 2.00f, 2.00f);
         lightParameters.push_back(light);
     }*/
 
