@@ -903,6 +903,13 @@ void glutDisplay()
     }
 
     {
+        sutil::displayText(bufferInfo.c_str(), 140, 10);
+        char str[64];
+        sprintf(str, "#%d", frame_number);
+        sutil::displayText(str, (float)width - 50, (float)height - 20);
+    }
+
+    {
         static unsigned frame_count = 0;
         sutil::displayFps(frame_count++);
     }
@@ -1196,9 +1203,7 @@ void glutResize( int w, int h )
     sutil::ensureMinimumSize(width, height);
 
     sutil::resizeBuffer(getOutputBuffer(), width, height);
-    sutil::resizeBuffer(context["liner_buffer"]->getBuffer(), width, height);
-
-    // Post processing
+    sutil::resizeBuffer(getLinerBuffer(), width, height);
     sutil::resizeBuffer(getTonemappedBuffer(), width, height);
     sutil::resizeBuffer(getAlbedoBuffer(), width, height);
     sutil::resizeBuffer(getNormalBuffer(), width, height);
