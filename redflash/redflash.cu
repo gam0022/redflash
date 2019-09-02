@@ -169,8 +169,10 @@ RT_PROGRAM void pathtrace_camera()
     {
         float a = static_cast<float>(sample_per_launch) / static_cast<float>(total_sample + sample_per_launch);
         pixel_liner = lerp(make_float3(liner_buffer[launch_index]), pixel_liner, a);
-        pixel_albedo = lerp(make_float3(input_albedo_buffer[launch_index]), pixel_albedo, a);
-        pixel_normal = lerp(make_float3(input_normal_buffer[launch_index]), pixel_normal, a);
+
+        // NOTE: ノイズ用の情報は1フレーム目しか更新しない
+        // pixel_albedo = lerp(make_float3(input_albedo_buffer[launch_index]), pixel_albedo, a);
+        // pixel_normal = lerp(make_float3(input_normal_buffer[launch_index]), pixel_normal, a);
     }
 
     float3 pixel_output = use_post_tonemap ? pixel_liner : linear_to_sRGB(tonemap_acesFilm(pixel_liner));
@@ -178,8 +180,14 @@ RT_PROGRAM void pathtrace_camera()
     // Save to buffer
     liner_buffer[launch_index] = make_float4(pixel_liner, 1.0);
     output_buffer[launch_index] = make_float4(pixel_output, 1.0);
-    input_albedo_buffer[launch_index] = make_float4(pixel_albedo, 1.0f);
-    input_normal_buffer[launch_index] = make_float4(pixel_normal, 1.0f);
+
+    // NOTE: デノイズ用の情報は1フレーム目しか更新しない
+    // NOTE: DOFとかモーションブラーなら毎フレーム更新した方がいいのかもしれない
+    if (frame_number == 1)
+    {
+        input_albedo_buffer[launch_index] = make_float4(pixel_albedo, 1.0f);
+        input_normal_buffer[launch_index] = make_float4(pixel_normal, 1.0f);
+    }
 }
 
 
