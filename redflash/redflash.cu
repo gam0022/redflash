@@ -49,6 +49,7 @@ struct PerRayData_pathtrace
 
     float pdf;
     float3 wo;
+    float distance;
 
     unsigned int seed;
     int depth;
@@ -123,13 +124,14 @@ RT_PROGRAM void pathtrace_camera()
     size_t2 screen = output_buffer.size();
     float3 result = make_float3(0.0f);
     unsigned int seed = tea<16>(screen.x * launch_index.y + launch_index.x, total_sample);
+    float distance = (frame_number > 1) ? liner_buffer[launch_index].w : 0.0f;
 
     for(int i = 0; i < sample_per_launch; i++)
     {
         float2 subpixel_jitter = make_float2(rnd(seed) - 0.5f, rnd(seed) - 0.5f);
         float2 d = (make_float2(launch_index) + subpixel_jitter) / make_float2(screen) * 2.f - 1.f;
+        float3 ray_direction = normalize(d.x * U + d.y * V + W);
         float3 ray_origin = eye;
-        float3 ray_direction = normalize(d.x*U + d.y*V + W);
 
         // Initialze per-ray data
         PerRayData_pathtrace prd;
@@ -138,12 +140,14 @@ RT_PROGRAM void pathtrace_camera()
         prd.done = false;
         prd.seed = seed;
         prd.depth = 0;
+        prd.distance = 0.0f;
 
         // Each iteration is a segment of the ray path.  The closest hit will
         // return new segments to be traced here.
         for(;;)
         {
-            Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, scene_epsilon, RT_DEFAULT_MAX);
+            float t_min = (prd.depth == 0 && frame_number > 1) ? distance * 0.98 : scene_epsilon;
+            Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, t_min, RT_DEFAULT_MAX);
             prd.wo = -ray.direction;
             rtTrace(top_object, ray, prd);
 
@@ -160,6 +164,11 @@ RT_PROGRAM void pathtrace_camera()
                     break;
                 prd.attenuation /= pcont;
             }*/
+
+            if (frame_number == 1 && prd.depth == 0)
+            {
+                distance = prd.distance;
+            }
 
             prd.depth++;
 
@@ -188,8 +197,9 @@ RT_PROGRAM void pathtrace_camera()
     }
 
     float3 output_val = linear_to_sRGB(tonemap_acesFilm(liner_val));
-    liner_buffer[launch_index] = make_float4(liner_val, 1.0);
+    liner_buffer[launch_index] = make_float4(liner_val, distance);
     output_buffer[launch_index] = make_float4(output_val, 1.0);
+    // output_buffer[launch_index] = make_float4(distance * 0.01);
 }
 
 
@@ -544,6 +554,7 @@ RT_PROGRAM void closest_hit()
     state.ffnormal = ffnormal;
 
     current_prd.wo = -ray.direction;
+    current_prd.distance = t_hit;
 
     // FIXME: Sample‚É‚à‚Á‚Ä‚¢‚­
     current_prd.origin = hitpoint;
