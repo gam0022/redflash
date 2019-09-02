@@ -897,14 +897,13 @@ void glutDisplay()
             // gamma correction already applied by tone mapper, avoid doing it twice
             sutil::displayBufferGL(denoisedBuffer, BUFFER_PIXEL_FORMAT_DEFAULT, true);
         }
-
     }
 
     {
         sutil::displayText(bufferInfo.c_str(), 140, 10);
         char str[64];
         sprintf(str, "#%d", frame_number);
-        sutil::displayText(str, (float)width - 50, (float)height - 20);
+        sutil::displayText(str, (float)width - 60, (float)height - 20);
     }
 
     {
@@ -912,17 +911,13 @@ void glutDisplay()
         sutil::displayFps(frame_count++);
     }
 
-    {
-        static char frame_number_text[32];
-        sprintf(frame_number_text, "frame_number:   %d", frame_number);
-        sutil::displayText(frame_number_text, 10, 100);
-    }
-
+    /*
     {
         static char total_sample_text[32];
         sprintf(total_sample_text, "total_sample:   %d", total_sample);
         sutil::displayText(total_sample_text, 10, 80);
     }
+    */
 
     {
         static char camera_eye_text[32];
