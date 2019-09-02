@@ -69,9 +69,14 @@ Program common_closest_hit = 0;
 Program common_any_hit = 0;
 Material common_material = 0;
 
+int materialCount = 0;
+optix::Buffer m_bufferMaterialParameters;
+std::vector<MaterialParameter> materialParameters;
+
 // Light Material
 Program light_closest_hit = 0;
 Material light_material = 0;
+optix::Buffer m_bufferLightParameters;
 
 // Camera state
 float3         camera_up;
@@ -215,11 +220,16 @@ GeometryInstance createMesh(
     mesh.context = context;
     mesh.use_tri_api = true;
     mesh.ignore_mats = false;
+
+    // NOTE: registerMaterial で上書きするので、この指定は意味がない
     mesh.material = common_material;
+
     mesh.closest_hit = common_closest_hit;
     mesh.any_hit = common_any_hit;
+
     // NOTE: OptiXでは行優先っぽいので、右から順番に適用される
     Matrix4x4 mat = Matrix4x4::translate(center) * Matrix4x4::rotate(radians, axis) * Matrix4x4::scale(scale);
+
     loadMesh(filename, mesh, mat);
     return mesh.geom_instance;
 }
@@ -275,64 +285,37 @@ void createContext()
     pgram_intersection_sphere = context->createProgramFromPTXString(ptx, "sphere_intersect");
 }
 
-GeometryGroup createGeometryTriangles()
+void registerMaterial(GeometryInstance& gi, MaterialParameter& mat, bool isLight = false)
 {
-    std::vector<GeometryInstance> gis;
-    const float3 color = make_float3(1.0f, 1.0f, 1.0f);
-
-    // Mesh cow
-    std::string mesh_file = resolveDataPath("cow.obj");
-    gis.push_back(createMesh(mesh_file, make_float3(0.0f, 300.0f, 0.0f), make_float3(500.0f)));
-    gis.back()["albedo_color"]->setFloat(color);
-    gis.back()["metallic"]->setFloat(0.8);
-
-    // Mesh Lucy100k
-    mesh_file = resolveDataPath("metallic-lucy-statue-stanford-scan.obj");
-    gis.push_back(createMesh(mesh_file,
-        make_float3(0.0f, 145.5f, 204.0f), 
-        make_float3(0.05f), 
-        make_float3(0.0f, 1.0f, 0.0), M_PIf));
-    gis.back()["albedo_color"]->setFloat(make_float3(1.0f, 1.0f, 1.0f));
-    gis.back()["metallic"]->setFloat(0.0);
-
-    GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
-    shadow_group->setAcceleration(context->createAcceleration("Trbvh"));
-    return shadow_group;
+    materialParameters.push_back(mat);
+    gi->setMaterialCount(1);
+    gi->setMaterial(0, isLight ? light_material : common_material);
+    gi["materialId"]->setInt(materialCount++);
 }
 
-GeometryGroup createGeometry()
+void updateMaterialParameters()
 {
-    // create geometry instances
-    std::vector<GeometryInstance> gis;
+    MaterialParameter* dst = static_cast<MaterialParameter*>(m_bufferMaterialParameters->map(0, RT_BUFFER_MAP_WRITE_DISCARD));
+    for (size_t i = 0; i < materialParameters.size(); ++i, ++dst) {
+        MaterialParameter mat = materialParameters[i];
 
-    const float3 white = make_float3( 0.8f, 0.8f, 0.8f );
-    const float3 gray  = make_float3( 0.3f, 0.3f, 0.3f );
-    const float3 green = make_float3( 0.05f, 0.8f, 0.05f );
-    const float3 red   = make_float3( 0.8f, 0.05f, 0.05f );
-
-    // Raymarcing
-    gis.push_back(createRaymrachingObject(
-        make_float3(0.0f),
-        make_float3(300.0f),
-        make_float3(4.3f)));
-    gis.back()->addMaterial(common_material);
-    gis.back()["albedo_color"]->setFloat(white);
-    gis.back()["metallic"]->setFloat(0.8);
-
-    // Sphere
-    //gis.push_back(createSphereObject(
-    //    make_float3(0.0f, 310.0f, 50.0f), 10.0f));
-    //gis.back()->addMaterial(common_material);
-    //gis.back()["albedo_color"]->setFloat(green);
-    //gis.back()["emission_color"]->setFloat(make_float3(1.0));
-
-    // Create shadow group (no light)
-    GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
-    shadow_group->setAcceleration( context->createAcceleration( "Trbvh" ) );
-    return shadow_group;
+        dst->albedo = mat.albedo;
+        dst->emission = mat.emission;
+        dst->metallic = mat.metallic;
+        dst->subsurface = mat.subsurface;
+        dst->specular = mat.specular;
+        dst->specularTint = mat.specularTint;
+        dst->roughness = mat.roughness;
+        dst->anisotropic = mat.anisotropic;
+        dst->sheen = mat.sheen;
+        dst->sheenTint = mat.sheenTint;
+        dst->clearcoat = mat.clearcoat;
+        dst->clearcoatGloss = mat.clearcoatGloss;
+        dst->brdf = mat.brdf;
+        dst->albedoID = mat.albedoID;
+    }
+    m_bufferMaterialParameters->unmap();
 }
-
-optix::Buffer m_bufferLightParameters;
 
 void updateLightParameters(const std::vector<LightParameter> &lightParameters)
 {
@@ -350,6 +333,60 @@ void updateLightParameters(const std::vector<LightParameter> &lightParameters)
         dst->lightType = mat.lightType;
     }
     m_bufferLightParameters->unmap();
+}
+
+GeometryGroup createGeometryTriangles()
+{
+    MaterialParameter mat;
+    std::vector<GeometryInstance> gis;
+
+    // Mesh cow
+    std::string mesh_file = resolveDataPath("cow.obj");
+    gis.push_back(createMesh(mesh_file, make_float3(0.0f, 300.0f, 0.0f), make_float3(500.0f)));
+
+    mat.albedo = make_float3(1.0f, 1.0f, 1.0f);
+    mat.metallic = 0.8f;
+    mat.roughness = 0.05f;
+    registerMaterial(gis.back(), mat);
+
+    // Mesh Lucy100k
+    mesh_file = resolveDataPath("metallic-lucy-statue-stanford-scan.obj");
+    gis.push_back(createMesh(mesh_file,
+        make_float3(0.0f, 145.5f, 204.0f), 
+        make_float3(0.05f), 
+        make_float3(0.0f, 1.0f, 0.0), M_PIf));
+
+    mat.albedo = make_float3(1.0f, 1.0f, 1.0f);
+    mat.metallic = 0.0f;
+    mat.roughness = 0.05f;
+    registerMaterial(gis.back(), mat);
+
+    GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
+    shadow_group->setAcceleration(context->createAcceleration("Trbvh"));
+    return shadow_group;
+}
+
+GeometryGroup createGeometry()
+{
+    MaterialParameter mat;
+
+    // create geometry instances
+    std::vector<GeometryInstance> gis;
+
+    // Raymarcing
+    gis.push_back(createRaymrachingObject(
+        make_float3(0.0f),
+        make_float3(300.0f),
+        make_float3(4.3f)));
+    mat.albedo = make_float3(0.8f, 0.8f, 0.8f);
+    mat.metallic = 0.8f;
+    mat.roughness = 0.05f;
+    registerMaterial(gis.back(), mat);
+
+    // Create shadow group (no light)
+    GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
+    shadow_group->setAcceleration( context->createAcceleration( "Trbvh" ) );
+    return shadow_group;
 }
 
 GeometryGroup createGeometryLight()
@@ -396,9 +433,12 @@ GeometryGroup createGeometryLight()
         light->normal = optix::normalize(light->normal);
 
         gis.push_back(createSphereObject(light->position, light->radius));
-        gis.back()->addMaterial(light_material);
-        gis.back()["emission_color"]->setFloat(light->emission);
         gis.back()["lightMaterialId"]->setInt(index);
+
+        MaterialParameter mat;
+        mat.emission = light->emission;
+        registerMaterial(gis.back(), mat, true);
+        
         ++index;
     }
 
@@ -442,6 +482,13 @@ void setupScene()
     const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Ref.hdr");
     // const std::string texpath = resolveDataPath("Desert_Highway/Road_to_MonumentValley_Env.hdr");
     context["envmap"]->setTextureSampler(sutil::loadTexture(context, texpath, default_color));
+
+    // Material Parameters
+    m_bufferMaterialParameters = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_USER);
+    m_bufferMaterialParameters->setElementSize(sizeof(MaterialParameter));
+    m_bufferMaterialParameters->setSize(materialParameters.size());
+    updateMaterialParameters();
+    context["sysMaterialParameters"]->setBuffer(m_bufferMaterialParameters);
 }
 
 void setupCamera()

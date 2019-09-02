@@ -1,31 +1,3 @@
-/* 
- * Copyright (c) 2018, NVIDIA CORPORATION. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *  * Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *  * Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *  * Neither the name of NVIDIA CORPORATION nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
- * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 #include <optixu/optixu_math_namespace.h>
 #include <common.h>
 #include "redflash.h"
@@ -89,10 +61,6 @@ rtDeclareVariable(unsigned int, max_depth, , );
 
 rtBuffer<float4, 2> output_buffer;
 rtBuffer<float4, 2> liner_buffer;
-
-rtDeclareVariable(int, sysNumberOfLights, , );
-rtBuffer<LightParameter> sysLightParameters;
-rtDeclareVariable(int, lightMaterialId, , );
 
 __device__ inline float3 linear_to_sRGB(const float3& c)
 {
@@ -199,19 +167,18 @@ RT_PROGRAM void pathtrace_camera()
 //
 //-----------------------------------------------------------------------------
 
-rtDeclareVariable(float3, emission_color, , );
-rtDeclareVariable(float3, albedo_color, , );
-rtDeclareVariable(float, metallic, , );
 rtDeclareVariable(float3, geometric_normal, attribute geometric_normal, );
 rtDeclareVariable(float3, shading_normal, attribute shading_normal, );
 rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
 rtDeclareVariable(float, t_hit, rtIntersectionDistance, );
 
-/*RT_PROGRAM void light_closest_hit()
-{
-    current_prd.radiance += emission_color * current_prd.attenuation;
-    current_prd.done = true;
-}*/
+rtBuffer<MaterialParameter> sysMaterialParameters;
+rtDeclareVariable(int, materialId, , );
+rtDeclareVariable(int, programId, , );// unused
+
+rtDeclareVariable(int, sysNumberOfLights, , );
+rtBuffer<LightParameter> sysLightParameters;
+rtDeclareVariable(int, lightMaterialId, , );
 
 RT_PROGRAM void light_closest_hit()
 {
@@ -251,7 +218,6 @@ RT_CALLABLE_PROGRAM void diffuse_Pdf(MaterialParameter &mat, State &state, PerRa
     float pdfDiff = abs(dot(L, n))* (1.0f / M_PIf);
 
     prd.pdf = pdfDiff;
-
 }
 
 RT_CALLABLE_PROGRAM void diffuse_Sample(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)
@@ -547,14 +513,11 @@ RT_PROGRAM void closest_hit()
 
     // FIXME: Sampleにもっていく
     current_prd.origin = hitpoint;
-    
-    current_prd.radiance += emission_color * current_prd.attenuation;
 
-    // FIXME: 設定を逃す
-    MaterialParameter mat;
-    mat.albedo = albedo_color;
-    mat.metallic = metallic;
-    mat.roughness = 0.05f;
+    // FIXME: materialCustomProgramId みたいな名前で関数ポインタを渡して、パラメータをプロシージャルにセットしたい
+    MaterialParameter mat = sysMaterialParameters[materialId];
+
+    current_prd.radiance += mat.emission * current_prd.attenuation;
 
     // FIXME: bsdfId から判定
     current_prd.specularBounce = false;
