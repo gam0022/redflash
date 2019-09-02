@@ -220,11 +220,16 @@ GeometryInstance createMesh(
     mesh.context = context;
     mesh.use_tri_api = true;
     mesh.ignore_mats = false;
+
+    // NOTE: registerMaterial で上書きするので、この指定は意味がない
     mesh.material = common_material;
+
     mesh.closest_hit = common_closest_hit;
     mesh.any_hit = common_any_hit;
+
     // NOTE: OptiXでは行優先っぽいので、右から順番に適用される
     Matrix4x4 mat = Matrix4x4::translate(center) * Matrix4x4::rotate(radians, axis) * Matrix4x4::scale(scale);
+
     loadMesh(filename, mesh, mat);
     return mesh.geom_instance;
 }
@@ -280,9 +285,11 @@ void createContext()
     pgram_intersection_sphere = context->createProgramFromPTXString(ptx, "sphere_intersect");
 }
 
-void registerMaterial(GeometryInstance& gi, MaterialParameter& mat)
+void registerMaterial(GeometryInstance& gi, MaterialParameter& mat, bool isLight = false)
 {
     materialParameters.push_back(mat);
+    gi->setMaterialCount(1);
+    gi->setMaterial(0, isLight ? light_material : common_material);
     gi["materialId"]->setInt(materialCount++);
 }
 
@@ -371,7 +378,6 @@ GeometryGroup createGeometry()
         make_float3(0.0f),
         make_float3(300.0f),
         make_float3(4.3f)));
-    gis.back()->addMaterial(common_material);
     mat.albedo = make_float3(0.8f, 0.8f, 0.8f);
     mat.metallic = 0.8f;
     mat.roughness = 0.05f;
@@ -427,12 +433,11 @@ GeometryGroup createGeometryLight()
         light->normal = optix::normalize(light->normal);
 
         gis.push_back(createSphereObject(light->position, light->radius));
-        gis.back()->addMaterial(light_material);
         gis.back()["lightMaterialId"]->setInt(index);
 
         MaterialParameter mat;
         mat.emission = light->emission;
-        registerMaterial(gis.back(), mat);
+        registerMaterial(gis.back(), mat, true);
         
         ++index;
     }
