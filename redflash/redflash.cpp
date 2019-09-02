@@ -822,8 +822,6 @@ void glutDisplay()
 {
     updateCamera();
 
-    //context->launch( 0, width, height );
-
     if (postprocessing_needs_init)
     {
         setupPostprocessing();
@@ -834,6 +832,9 @@ void glutDisplay()
     bool isEarlyFrame = (frame_number <= numNonDenoisedFrames);
     if (isEarlyFrame)
     {
+        // NOTE: commandList ‚ðŽg‚í‚È‚¢ê‡
+        // context->launch( 0, width, height );
+
         commandListWithoutDenoiser->execute();
     }
     else
