@@ -173,8 +173,8 @@ RT_PROGRAM void pathtrace_camera()
     }
 
     // NOTE: ˆêŽž“I‚É Tonemaping ‚ðOFF
-    // float3 pixel_output = linear_to_sRGB(tonemap_acesFilm(pixel_liner));
-    float3 pixel_output = pixel_liner;
+    float3 pixel_output = linear_to_sRGB(tonemap_acesFilm(pixel_liner));
+    // float3 pixel_output = pixel_liner;
 
     // Save to buffer
     liner_buffer[launch_index] = make_float4(pixel_liner, 1.0);
