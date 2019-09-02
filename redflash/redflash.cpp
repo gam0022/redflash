@@ -367,8 +367,17 @@ void createContext()
     Buffer output_buffer = sutil::createOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
     context["output_buffer"]->set(output_buffer);
 
-    Buffer liner_buffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
-    context["liner_buffer"]->set(liner_buffer);
+    if (use_pbo)
+    {
+        Buffer liner_buffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
+        context["liner_buffer"]->set(liner_buffer);
+    }
+    else
+    {
+        // NOTE: この方がパフォーマンスが向上するので、ウィンドウ出さないならこっちを使う
+        Buffer liner_buffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT4, width, height);
+        context["liner_buffer"]->set(liner_buffer);
+    }
 
     Buffer tonemappedBuffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
     context["tonemapped_buffer"]->set(tonemappedBuffer);
