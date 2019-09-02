@@ -62,10 +62,6 @@ rtDeclareVariable(unsigned int, max_depth, , );
 rtBuffer<float4, 2> output_buffer;
 rtBuffer<float4, 2> liner_buffer;
 
-rtDeclareVariable(int, sysNumberOfLights, , );
-rtBuffer<LightParameter> sysLightParameters;
-rtDeclareVariable(int, lightMaterialId, , );
-
 __device__ inline float3 linear_to_sRGB(const float3& c)
 {
     const float kInvGamma = 1.0f / 2.2f;
@@ -171,13 +167,22 @@ RT_PROGRAM void pathtrace_camera()
 //
 //-----------------------------------------------------------------------------
 
-rtDeclareVariable(float3, emission_color, , );
-rtDeclareVariable(float3, albedo_color, , );
-rtDeclareVariable(float, metallic, , );
 rtDeclareVariable(float3, geometric_normal, attribute geometric_normal, );
 rtDeclareVariable(float3, shading_normal, attribute shading_normal, );
 rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
 rtDeclareVariable(float, t_hit, rtIntersectionDistance, );
+
+rtBuffer<MaterialParameter> sysMaterialParameters;
+rtDeclareVariable(int, materialId, , );
+rtDeclareVariable(int, programId, , );// unused
+
+rtDeclareVariable(float3, emission_color, , );
+rtDeclareVariable(float3, albedo_color, , );
+rtDeclareVariable(float, metallic, , );
+
+rtDeclareVariable(int, sysNumberOfLights, , );
+rtBuffer<LightParameter> sysLightParameters;
+rtDeclareVariable(int, lightMaterialId, , );
 
 /*RT_PROGRAM void light_closest_hit()
 {
@@ -521,11 +526,11 @@ RT_PROGRAM void closest_hit()
     
     current_prd.radiance += emission_color * current_prd.attenuation;
 
-    // FIXME: 設定を逃す
-    MaterialParameter mat;
-    mat.albedo = albedo_color;
-    mat.metallic = metallic;
-    mat.roughness = 0.05f;
+    // FIXME: materialCustomProgramId みたいな名前で関数ポインタを渡して、パラメータをプロシージャルセットしたい
+    MaterialParameter mat = sysMaterialParameters[materialId];
+    //mat.albedo = albedo_color;
+    //mat.metallic = metallic;
+    //mat.roughness = 0.05f;
 
     // FIXME: bsdfId から判定
     current_prd.specularBounce = false;
