@@ -94,6 +94,9 @@ Buffer denoisedBuffer;
 Buffer emptyBuffer;
 Buffer trainingDataBuffer;
 
+// Postprocessing‚ÌTonemap‚ð—LŒø‚É‚·‚é‚©‚Ç‚¤‚©
+bool use_post_tonemap = false;
+
 bool denoiser_perf_mode = false;
 int denoiser_perf_iter = 1;
 
@@ -126,8 +129,6 @@ bool useFirstTrainingDataPath = true;
 
 // Contains info for the currently shown buffer
 std::string bufferInfo;
-
-bool use_post_tonemap = false;
 
 
 // Camera state
@@ -244,6 +245,11 @@ void loadTrainingFile(const std::string& path)
 Buffer getOutputBuffer()
 {
     return context[ "output_buffer" ]->getBuffer();
+}
+
+Buffer getLinerBuffer()
+{
+    return context["liner_buffer"]->getBuffer();
 }
 
 Buffer getTonemappedBuffer()
@@ -822,14 +828,28 @@ void glutDisplay()
     case 1:
     {
         bufferInfo = "Original";
-        sutil::displayBufferGL(getOutputBuffer());
+        if (use_post_tonemap)
+        {
+            sutil::displayBufferGL(getOutputBuffer());
+        }
+        else
+        {
+            sutil::displayBufferGL(getLinerBuffer());
+        }
         break;
     }
     case 2:
     {
         bufferInfo = "Tonemapped";
         // gamma correction already applied by tone mapper, avoid doing it twice
-        sutil::displayBufferGL(getTonemappedBuffer(), BUFFER_PIXEL_FORMAT_DEFAULT, true);
+        if (use_post_tonemap)
+        {
+            sutil::displayBufferGL(getTonemappedBuffer(), BUFFER_PIXEL_FORMAT_DEFAULT, true);
+        }
+        else
+        {
+            sutil::displayBufferGL(getOutputBuffer(), BUFFER_PIXEL_FORMAT_DEFAULT, true);
+        }
         break;
     }
     case 3:
