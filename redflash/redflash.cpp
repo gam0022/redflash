@@ -421,7 +421,6 @@ void setupPostprocessing()
     if (!tonemapStage)
     {
         // create stages only once: they will be reused in several command lists without being re-created
-        tonemapStage = context->createBuiltinPostProcessingStage("TonemapperSimple");
         denoiserStage = context->createBuiltinPostProcessingStage("DLDenoiser");
 
         if (trainingDataBuffer)
@@ -432,6 +431,7 @@ void setupPostprocessing()
 
         if (use_post_tonemap)
         {
+            tonemapStage = context->createBuiltinPostProcessingStage("TonemapperSimple");
             tonemapStage->declareVariable("input_buffer")->set(getOutputBuffer());
             tonemapStage->declareVariable("output_buffer")->set(getTonemappedBuffer());
             tonemapStage->declareVariable("exposure")->setFloat(2.00f);
@@ -829,28 +829,14 @@ void glutDisplay()
     case 1:
     {
         bufferInfo = "Original";
-        if (use_post_tonemap)
-        {
-            sutil::displayBufferGL(getOutputBuffer());
-        }
-        else
-        {
-            sutil::displayBufferGL(getLinerBuffer());
-        }
+        sutil::displayBufferGL(use_post_tonemap ? getOutputBuffer() : getLinerBuffer());
         break;
     }
     case 2:
     {
         bufferInfo = "Tonemapped";
         // gamma correction already applied by tone mapper, avoid doing it twice
-        if (use_post_tonemap)
-        {
-            sutil::displayBufferGL(getTonemappedBuffer(), BUFFER_PIXEL_FORMAT_DEFAULT, true);
-        }
-        else
-        {
-            sutil::displayBufferGL(getOutputBuffer(), BUFFER_PIXEL_FORMAT_DEFAULT, true);
-        }
+        sutil::displayBufferGL(use_post_tonemap ? getTonemappedBuffer() : getOutputBuffer(), BUFFER_PIXEL_FORMAT_DEFAULT, true);
         break;
     }
     case 3:
