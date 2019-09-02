@@ -157,28 +157,28 @@ RT_PROGRAM void pathtrace_camera()
     //
     // Update the output buffer
     //
-    float3 normal_eyespace = (length(normal) > 0.f) ? normalize(normal_matrix * normal) : make_float3(0., 0., 1.);
+    float3 normal_eyespace = (length(normal) > 0.0f) ? normalize(normal_matrix * normal) : make_float3(0.0, 0.0, 1.0);
 
     float inv_sample_per_launch = 1.0f / static_cast<float>(sample_per_launch);
-    float3 pixel_color = result * inv_sample_per_launch;
+    float3 pixel_liner = result * inv_sample_per_launch;
     float3 pixel_albedo = albedo * inv_sample_per_launch;
     float3 pixel_normal = normal_eyespace;
-
-    // FIXME: pixel_liner ‚É‚µ‚½‚¢
-    float3 liner_val = pixel_color;
 
     if (frame_number > 1)
     {
         float a = static_cast<float>(sample_per_launch) / static_cast<float>(total_sample + sample_per_launch);
-        liner_val = lerp(make_float3(liner_buffer[launch_index]), pixel_color, a);
+        pixel_liner = lerp(make_float3(liner_buffer[launch_index]), pixel_liner, a);
         pixel_albedo = lerp(make_float3(input_albedo_buffer[launch_index]), pixel_albedo, a);
         pixel_normal = lerp(make_float3(input_normal_buffer[launch_index]), pixel_normal, a);
     }
 
-    // float3 output_val = linear_to_sRGB(tonemap_acesFilm(liner_val));
-    float3 output_val = liner_val;
-    liner_buffer[launch_index] = make_float4(liner_val, 1.0);
-    output_buffer[launch_index] = make_float4(output_val, 1.0);
+    // NOTE: ˆêŽž“I‚É Tonemaping ‚ðOFF
+    // float3 pixel_output = linear_to_sRGB(tonemap_acesFilm(pixel_liner));
+    float3 pixel_output = pixel_liner;
+
+    // Save to buffer
+    liner_buffer[launch_index] = make_float4(pixel_liner, 1.0);
+    output_buffer[launch_index] = make_float4(pixel_output, 1.0);
     input_albedo_buffer[launch_index] = make_float4(pixel_albedo, 1.0f);
     input_normal_buffer[launch_index] = make_float4(pixel_normal, 1.0f);
 }
