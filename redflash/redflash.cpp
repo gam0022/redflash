@@ -50,7 +50,7 @@ const char* const SAMPLE_NAME = "redflash";
 //------------------------------------------------------------------------------
 
 Context context = 0;
-int width  = 1920 / 4;
+int width = 1920 / 4;
 int height = 1080 / 4;
 bool use_pbo = true;
 bool flag_debug = false;
@@ -162,14 +162,14 @@ void createContext();
 void loadGeometry();
 void setupCamera();
 void updateCamera();
-void glutInitialize( int* argc, char** argv );
+void glutInitialize(int* argc, char** argv);
 void glutRun();
 
 void glutDisplay();
-void glutKeyboardPress( unsigned char k, int x, int y );
-void glutMousePress( int button, int state, int x, int y );
-void glutMouseMotion( int x, int y);
-void glutResize( int w, int h );
+void glutKeyboardPress(unsigned char k, int x, int y);
+void glutMousePress(int button, int state, int x, int y);
+void glutMouseMotion(int x, int y);
+void glutResize(int w, int h);
 
 
 //------------------------------------------------------------------------------
@@ -245,7 +245,7 @@ void loadTrainingFile(const std::string& path)
 
 Buffer getOutputBuffer()
 {
-    return context[ "output_buffer" ]->getBuffer();
+    return context["output_buffer"]->getBuffer();
 }
 
 Buffer getLinerBuffer()
@@ -271,7 +271,7 @@ Buffer getNormalBuffer()
 
 void destroyContext()
 {
-    if( context )
+    if (context)
     {
         context->destroy();
         context = 0;
@@ -283,9 +283,9 @@ void registerExitHandler()
 {
     // register shutdown handler
 #ifdef _WIN32
-    glutCloseFunc( destroyContext );  // this function is freeglut-only
+    glutCloseFunc(destroyContext);  // this function is freeglut-only
 #else
-    atexit( destroyContext );
+    atexit(destroyContext);
 #endif
 }
 
@@ -352,12 +352,12 @@ GeometryInstance createMesh(
 void createContext()
 {
     context = Context::create();
-    context->setRayTypeCount( 2 );
-    context->setEntryPointCount( 1 );
-    context->setStackSize( 1800 );
-    context->setMaxTraceDepth( 2 );
+    context->setRayTypeCount(2);
+    context->setEntryPointCount(1);
+    context->setStackSize(1800);
+    context->setMaxTraceDepth(2);
 
-    context["scene_epsilon"]->setFloat( 0.001f );
+    context["scene_epsilon"]->setFloat(0.001f);
     // context["rr_begin_depth"]->setUint( rr_begin_depth );
     context["max_depth"]->setUint(max_depth);
     context["sample_per_launch"]->setUint(sample_per_launch);
@@ -404,11 +404,11 @@ void createContext()
     trainingDataBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_BYTE, 0);
 
     // Setup programs
-    const char *ptx = sutil::getPtxString( SAMPLE_NAME, "redflash.cu" );
-    context->setRayGenerationProgram( 0, context->createProgramFromPTXString( ptx, "pathtrace_camera" ) );
-    context->setExceptionProgram( 0, context->createProgramFromPTXString( ptx, "exception" ) );
-    context->setMissProgram( 0, context->createProgramFromPTXString( ptx, "envmap_miss" ) );
-    context[ "bad_color"        ]->setFloat( 1000000.0f, 0.0f, 1000000.0f ); // Super magenta to make sure it doesn't get averaged out in the progressive rendering.
+    const char *ptx = sutil::getPtxString(SAMPLE_NAME, "redflash.cu");
+    context->setRayGenerationProgram(0, context->createProgramFromPTXString(ptx, "pathtrace_camera"));
+    context->setExceptionProgram(0, context->createProgramFromPTXString(ptx, "exception"));
+    context->setMissProgram(0, context->createProgramFromPTXString(ptx, "envmap_miss"));
+    context["bad_color"]->setFloat(1000000.0f, 0.0f, 1000000.0f); // Super magenta to make sure it doesn't get averaged out in the progressive rendering.
 
     // Common Materials
     common_material = context->createMaterial();
@@ -555,8 +555,8 @@ GeometryGroup createGeometryTriangles()
     // Mesh Lucy100k
     mesh_file = resolveDataPath("metallic-lucy-statue-stanford-scan.obj");
     gis.push_back(createMesh(mesh_file,
-        make_float3(0.0f, 145.5f, 204.0f), 
-        make_float3(0.05f), 
+        make_float3(0.0f, 145.5f, 204.0f),
+        make_float3(0.05f),
         make_float3(0.0f, 1.0f, 0.0), M_PIf));
 
     mat.albedo = make_float3(1.0f, 1.0f, 1.0f);
@@ -588,7 +588,7 @@ GeometryGroup createGeometry()
 
     // Create shadow group (no light)
     GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
-    shadow_group->setAcceleration( context->createAcceleration( "Trbvh" ) );
+    shadow_group->setAcceleration(context->createAcceleration("Trbvh"));
     return shadow_group;
 }
 
@@ -619,7 +619,7 @@ GeometryGroup createGeometryLight()
     /*{
         LightParameter light;
         light.lightType = SPHERE;
-        
+
         float3 camera_eye = make_float3(13.91f, 166.787f, 413.00f);
         float3 camera_lookat = make_float3(-6.59f, 169.94f, -9.11f);
 
@@ -641,7 +641,7 @@ GeometryGroup createGeometryLight()
         MaterialParameter mat;
         mat.emission = light->emission;
         registerMaterial(gis.back(), mat, true);
-        
+
         ++index;
     }
 
@@ -710,36 +710,36 @@ void setupCamera()
     camera_eye = make_float3(1.65f, 196.01f, 287.97f);
     camera_lookat = make_float3(-7.06f, 76.34f, 26.96f);
 
-    camera_rotate  = Matrix4x4::identity();
+    camera_rotate = Matrix4x4::identity();
 }
 
 
 void updateCamera()
 {
-    const float fov  = 35.0f;
+    const float fov = 35.0f;
     const float aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
-    
+
     float3 camera_u, camera_v, camera_w;
     sutil::calculateCameraVariables(
-            camera_eye, camera_lookat, camera_up, fov, aspect_ratio,
-            camera_u, camera_v, camera_w, /*fov_is_vertical*/ true );
+        camera_eye, camera_lookat, camera_up, fov, aspect_ratio,
+        camera_u, camera_v, camera_w, /*fov_is_vertical*/ true);
 
     frame = Matrix4x4::fromBasis(
-            normalize( camera_u ),
-            normalize( camera_v ),
-            normalize( -camera_w ),
-            camera_lookat);
+        normalize(camera_u),
+        normalize(camera_v),
+        normalize(-camera_w),
+        camera_lookat);
     frame_inv = frame.inverse();
     // Apply camera rotation twice to match old SDK behavior
-    const Matrix4x4 trans     = frame*camera_rotate*camera_rotate*frame_inv; 
+    const Matrix4x4 trans = frame * camera_rotate*camera_rotate*frame_inv;
 
-    camera_eye    = make_float3( trans*make_float4( camera_eye,    1.0f ) );
-    camera_lookat = make_float3( trans*make_float4( camera_lookat, 1.0f ) );
+    camera_eye = make_float3(trans*make_float4(camera_eye, 1.0f));
+    camera_lookat = make_float3(trans*make_float4(camera_lookat, 1.0f));
     // camera_up     = make_float3( trans*make_float4( camera_up,     0.0f ) );
 
     sutil::calculateCameraVariables(
-            camera_eye, camera_lookat, camera_up, fov, aspect_ratio,
-            camera_u, camera_v, camera_w, true );
+        camera_eye, camera_lookat, camera_up, fov, aspect_ratio,
+        camera_u, camera_v, camera_w, true);
 
     camera_rotate = Matrix4x4::identity();
 
@@ -754,13 +754,13 @@ void updateCamera()
 
     camera_changed = false;
 
-    context[ "frame_number" ]->setUint(frame_number);
-    context[ "total_sample" ]->setUint(total_sample);
+    context["frame_number"]->setUint(frame_number);
+    context["total_sample"]->setUint(total_sample);
 
-    context[ "eye"]->setFloat( camera_eye );
-    context[ "U"  ]->setFloat( camera_u );
-    context[ "V"  ]->setFloat( camera_v );
-    context[ "W"  ]->setFloat( camera_w );
+    context["eye"]->setFloat(camera_eye);
+    context["U"]->setFloat(camera_u);
+    context["V"]->setFloat(camera_v);
+    context["W"]->setFloat(camera_w);
 
     const Matrix4x4 current_frame_inv = Matrix4x4::fromBasis(
         normalize(camera_u),
@@ -772,39 +772,39 @@ void updateCamera()
 }
 
 
-void glutInitialize( int* argc, char** argv )
+void glutInitialize(int* argc, char** argv)
 {
-    glutInit( argc, argv );
-    glutInitDisplayMode( GLUT_RGB | GLUT_ALPHA | GLUT_DEPTH | GLUT_DOUBLE );
-    glutInitWindowSize( width, height );
-    glutInitWindowPosition( 100, 100 );                                               
-    glutCreateWindow( SAMPLE_NAME );
-    glutHideWindow();                                                              
+    glutInit(argc, argv);
+    glutInitDisplayMode(GLUT_RGB | GLUT_ALPHA | GLUT_DEPTH | GLUT_DOUBLE);
+    glutInitWindowSize(width, height);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow(SAMPLE_NAME);
+    glutHideWindow();
 }
 
 
 void glutRun()
 {
     // Initialize GL state                                                            
-    glMatrixMode(GL_PROJECTION);                                                   
-    glLoadIdentity();                                                              
-    glOrtho(0, 1, 0, 1, -1, 1 );                                                   
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, 1, 0, 1, -1, 1);
 
-    glMatrixMode(GL_MODELVIEW);                                                    
-    glLoadIdentity();                                                              
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
-    glViewport(0, 0, width, height);                                 
+    glViewport(0, 0, width, height);
 
-    glutShowWindow();                                                              
-    glutReshapeWindow( width, height);
+    glutShowWindow();
+    glutReshapeWindow(width, height);
 
     // register glut callbacks
-    glutDisplayFunc( glutDisplay );
-    glutIdleFunc( glutDisplay );
-    glutReshapeFunc( glutResize );
-    glutKeyboardFunc( glutKeyboardPress );
-    glutMouseFunc( glutMousePress );
-    glutMotionFunc( glutMouseMotion );
+    glutDisplayFunc(glutDisplay);
+    glutIdleFunc(glutDisplay);
+    glutReshapeFunc(glutResize);
+    glutKeyboardFunc(glutKeyboardPress);
+    glutMouseFunc(glutMousePress);
+    glutMotionFunc(glutMouseMotion);
 
     registerExitHandler();
 
@@ -955,203 +955,203 @@ void glutDisplay()
 }
 
 
-void glutKeyboardPress( unsigned char k, int x, int y )
+void glutKeyboardPress(unsigned char k, int x, int y)
 {
 
-    switch( k )
+    switch (k)
     {
-        case( 'q' ):
-        case( 27 ): // ESC
+    case('q'):
+    case(27): // ESC
+    {
+        destroyContext();
+        exit(0);
+    }
+    case('s'):
+    {
+        Buffer buff;
+        bool disableSrgbConversion = true;
+        switch (showBuffer)
         {
-            destroyContext();
-            exit(0);
+        case 0:
+        {
+            buff = denoisedBuffer;
+            break;
         }
-        case( 's' ):
+        case 1:
         {
-            Buffer buff;
-            bool disableSrgbConversion = true;
-            switch (showBuffer)
-            {
-                case 0:
-                {
-                    buff = denoisedBuffer;
-                    break;
-                }
-                case 1:
-                {
-                    disableSrgbConversion = false;
-                    buff = getOutputBuffer();
-                    break;
-                }
-                case 2:
-                {
-                    buff = getTonemappedBuffer();
-                    break;
-                }
-                case 3:
-                {
-                    disableSrgbConversion = false;
-                    buff = getAlbedoBuffer();
-                    break;
-                }
-                case 4:
-                {
-                    disableSrgbConversion = false;
-                    buff = getNormalBuffer();
-                    break;
-                }
-            }
+            disableSrgbConversion = false;
+            buff = getOutputBuffer();
+            break;
+        }
+        case 2:
+        {
+            buff = getTonemappedBuffer();
+            break;
+        }
+        case 3:
+        {
+            disableSrgbConversion = false;
+            buff = getAlbedoBuffer();
+            break;
+        }
+        case 4:
+        {
+            disableSrgbConversion = false;
+            buff = getNormalBuffer();
+            break;
+        }
+        }
 
-            const std::string outputImage = std::string(SAMPLE_NAME) + ".png";
-            std::cerr << "Saving current frame to '" << outputImage << "'\n";
-            sutil::displayBufferPNG( outputImage.c_str(), getOutputBuffer(), false );
+        const std::string outputImage = std::string(SAMPLE_NAME) + ".png";
+        std::cerr << "Saving current frame to '" << outputImage << "'\n";
+        sutil::displayBufferPNG(outputImage.c_str(), getOutputBuffer(), false);
+        break;
+    }
+    case('d'):
+    {
+        showBuffer = 0;
+        break;
+    }
+    case('o'):
+    {
+        showBuffer = 1;
+        break;
+    }
+    case('t'):
+    {
+        showBuffer = 2;
+        break;
+    }
+    case('a'):
+    {
+        showBuffer = 3;
+        break;
+    }
+    case('n'):
+    {
+        showBuffer = 4;
+        break;
+    }
+    case('m'):
+    {
+        ++denoiseMode;
+        if (denoiseMode > 2) denoiseMode = 0;
+        switch (denoiseMode)
+        {
+        case 0:
+        {
+            Variable albedoBuffer = denoiserStage->queryVariable("input_albedo_buffer");
+            albedoBuffer->set(emptyBuffer);
+            Variable normalBuffer = denoiserStage->queryVariable("input_normal_buffer");
+            normalBuffer->set(emptyBuffer);
             break;
         }
-        case('d'):
+        case 1:
         {
-            showBuffer = 0;
+            Variable albedoBuffer = denoiserStage->queryVariable("input_albedo_buffer");
+            albedoBuffer->set(getAlbedoBuffer());
             break;
         }
-        case('o'):
+        case 2:
         {
-            showBuffer = 1;
+            Variable normalBuffer = denoiserStage->queryVariable("input_normal_buffer");
+            normalBuffer->set(getNormalBuffer());
             break;
         }
-        case('t'):
-        {
-            showBuffer = 2;
-            break;
         }
-        case('a'):
+        break;
+    }
+    case('0'):
+    {
+        denoiseBlend = 0.f;
+        break;
+    }
+    case('1'):
+    {
+        denoiseBlend = 0.1f;
+        break;
+    }
+    case('2'):
+    {
+        denoiseBlend = 0.2f;
+        break;
+    }
+    case('3'):
+    {
+        denoiseBlend = 0.3f;
+        break;
+    }
+    case('4'):
+    {
+        denoiseBlend = 0.4f;
+        break;
+    }
+    case('5'):
+    {
+        denoiseBlend = 0.5f;
+        break;
+    }
+    case('6'):
+    {
+        denoiseBlend = 0.6f;
+        break;
+    }
+    case('7'):
+    {
+        denoiseBlend = 0.7f;
+        break;
+    }
+    case('8'):
+    {
+        denoiseBlend = 0.8f;
+        break;
+    }
+    case('9'):
+    {
+        denoiseBlend = 0.9f;
+        break;
+    }
+    case('c'):
+    {
+        useCustomTrainingData = !useCustomTrainingData;
+        Variable trainingBuff = denoiserStage->queryVariable("training_data_buffer");
+        if (trainingBuff)
         {
-            showBuffer = 3;
-            break;
-        }
-        case('n'):
-        {
-            showBuffer = 4;
-            break;
-        }
-        case('m'):
-        {
-            ++denoiseMode;
-            if (denoiseMode > 2) denoiseMode = 0;
-            switch (denoiseMode)
-            {
-            case 0:
-            {
-                Variable albedoBuffer = denoiserStage->queryVariable("input_albedo_buffer");
-                albedoBuffer->set(emptyBuffer);
-                Variable normalBuffer = denoiserStage->queryVariable("input_normal_buffer");
-                normalBuffer->set(emptyBuffer);
-                break;
-            }
-            case 1:
-            {
-                Variable albedoBuffer = denoiserStage->queryVariable("input_albedo_buffer");
-                albedoBuffer->set(getAlbedoBuffer());
-                break;
-            }
-            case 2:
-            {
-                Variable normalBuffer = denoiserStage->queryVariable("input_normal_buffer");
-                normalBuffer->set(getNormalBuffer());
-                break;
-            }
-            }
-            break;
-        }
-        case('0'):
-        {
-            denoiseBlend = 0.f;
-            break;
-        }
-        case('1'):
-        {
-            denoiseBlend = 0.1f;
-            break;
-        }
-        case('2'):
-        {
-            denoiseBlend = 0.2f;
-            break;
-        }
-        case('3'):
-        {
-            denoiseBlend = 0.3f;
-            break;
-        }
-        case('4'):
-        {
-            denoiseBlend = 0.4f;
-            break;
-        }
-        case('5'):
-        {
-            denoiseBlend = 0.5f;
-            break;
-        }
-        case('6'):
-        {
-            denoiseBlend = 0.6f;
-            break;
-        }
-        case('7'):
-        {
-            denoiseBlend = 0.7f;
-            break;
-        }
-        case('8'):
-        {
-            denoiseBlend = 0.8f;
-            break;
-        }
-        case('9'):
-        {
-            denoiseBlend = 0.9f;
-            break;
-        }
-        case('c'):
-        {
-            useCustomTrainingData = !useCustomTrainingData;
-            Variable trainingBuff = denoiserStage->queryVariable("training_data_buffer");
-            if (trainingBuff)
-            {
-                if (useCustomTrainingData)
-                    trainingBuff->setBuffer(trainingDataBuffer);
-                else
-                    trainingBuff->setBuffer(emptyBuffer);
-            }
-            break;
-        }
-        case('z'):
-        {
-            useFirstTrainingDataPath = !useFirstTrainingDataPath;
-            if (useFirstTrainingDataPath)
-            {
-                if (training_file.length() == 0)
-                    useFirstTrainingDataPath = false;
-                else
-                    loadTrainingFile(training_file);
-            }
+            if (useCustomTrainingData)
+                trainingBuff->setBuffer(trainingDataBuffer);
             else
-            {
-                if (training_file_2.length() == 0)
-                    useFirstTrainingDataPath = true;
-                else
-                    loadTrainingFile(training_file_2);
-            }
+                trainingBuff->setBuffer(emptyBuffer);
         }
+        break;
+    }
+    case('z'):
+    {
+        useFirstTrainingDataPath = !useFirstTrainingDataPath;
+        if (useFirstTrainingDataPath)
+        {
+            if (training_file.length() == 0)
+                useFirstTrainingDataPath = false;
+            else
+                loadTrainingFile(training_file);
+        }
+        else
+        {
+            if (training_file_2.length() == 0)
+                useFirstTrainingDataPath = true;
+            else
+                loadTrainingFile(training_file_2);
+        }
+    }
     }
 }
 
 
-void glutMousePress( int button, int state, int x, int y )
+void glutMousePress(int button, int state, int x, int y)
 {
-    if( state == GLUT_DOWN )
+    if (state == GLUT_DOWN)
     {
         mouse_button = button;
-        mouse_prev_pos = make_int2( x, y );
+        mouse_prev_pos = make_int2(x, y);
     }
     else
     {
@@ -1160,30 +1160,30 @@ void glutMousePress( int button, int state, int x, int y )
 }
 
 
-void glutMouseMotion( int x, int y)
+void glutMouseMotion(int x, int y)
 {
-    if( mouse_button == GLUT_RIGHT_BUTTON )
+    if (mouse_button == GLUT_RIGHT_BUTTON)
     {
-        const float dx = static_cast<float>( x - mouse_prev_pos.x ) /
-                         static_cast<float>( width );
-        const float dy = static_cast<float>( y - mouse_prev_pos.y ) /
-                         static_cast<float>( height );
-        const float dmax = fabsf( dx ) > fabs( dy ) ? dx : dy;
-        const float scale = std::min<float>( dmax, 0.9f );
+        const float dx = static_cast<float>(x - mouse_prev_pos.x) /
+            static_cast<float>(width);
+        const float dy = static_cast<float>(y - mouse_prev_pos.y) /
+            static_cast<float>(height);
+        const float dmax = fabsf(dx) > fabs(dy) ? dx : dy;
+        const float scale = std::min<float>(dmax, 0.9f);
         camera_eye = camera_eye + (camera_lookat - camera_eye)*scale;
         camera_changed = true;
     }
-    else if( mouse_button == GLUT_LEFT_BUTTON )
+    else if (mouse_button == GLUT_LEFT_BUTTON)
     {
         const float2 from = { static_cast<float>(mouse_prev_pos.x),
                               static_cast<float>(mouse_prev_pos.y) };
-        const float2 to   = { static_cast<float>(x),
+        const float2 to = { static_cast<float>(x),
                               static_cast<float>(y) };
 
         const float2 a = { from.x / width, from.y / height };
-        const float2 b = { to.x   / width, to.y   / height };
+        const float2 b = { to.x / width, to.y / height };
 
-        camera_rotate = arcball.rotate( b, a );
+        camera_rotate = arcball.rotate(b, a);
         camera_changed = true;
     }
     else if (mouse_button == GLUT_MIDDLE_BUTTON)
@@ -1201,17 +1201,17 @@ void glutMouseMotion( int x, int y)
         camera_changed = true;
     }
 
-    mouse_prev_pos = make_int2( x, y );
+    mouse_prev_pos = make_int2(x, y);
 }
 
 
-void glutResize( int w, int h )
+void glutResize(int w, int h)
 {
-    if ( w == (int)width && h == (int)height ) return;
+    if (w == (int)width && h == (int)height) return;
 
     camera_changed = true;
 
-    width  = w;
+    width = w;
     height = h;
     sutil::ensureMinimumSize(width, height);
 
@@ -1223,7 +1223,7 @@ void glutResize( int w, int h )
     sutil::resizeBuffer(denoisedBuffer, width, height);
     postprocessing_needs_init = true;
 
-    glViewport(0, 0, width, height);                                               
+    glViewport(0, 0, width, height);
 
     glutPostRedisplay();
 }
@@ -1235,7 +1235,7 @@ void glutResize( int w, int h )
 //
 //------------------------------------------------------------------------------
 
-void printUsageAndExit( const std::string& argv0 )
+void printUsageAndExit(const std::string& argv0)
 {
     std::cerr << "\nUsage: " << argv0 << " [options]\n";
     std::cerr <<
@@ -1246,7 +1246,7 @@ void printUsageAndExit( const std::string& argv0 )
         "  -s | --sample             Sample number.\n"
         "  -t | --time               Time limit(ssc).\n"
         "App Keystrokes:\n"
-        "  q  Quit\n" 
+        "  q  Quit\n"
         "  s  Save image to '" << SAMPLE_NAME << ".png'\n"
         << std::endl;
 
@@ -1254,8 +1254,8 @@ void printUsageAndExit( const std::string& argv0 )
 }
 
 
-int main( int argc, char** argv )
- {
+int main(int argc, char** argv)
+{
     double launch_time = sutil::currentTime();
 
     std::string out_file;
@@ -1263,25 +1263,25 @@ int main( int argc, char** argv )
     double time_limit = 60 * 60;// 1 hour
     bool use_time_limit = false;
 
-    for( int i=1; i<argc; ++i )
+    for (int i = 1; i < argc; ++i)
     {
-        const std::string arg( argv[i] );
+        const std::string arg(argv[i]);
 
-        if( arg == "-h" || arg == "--help" )
+        if (arg == "-h" || arg == "--help")
         {
-            printUsageAndExit( argv[0] );
+            printUsageAndExit(argv[0]);
         }
-        else if( arg == "-f" || arg == "--file"  )
+        else if (arg == "-f" || arg == "--file")
         {
-            if( i == argc-1 )
+            if (i == argc - 1)
             {
                 std::cerr << "Option '" << arg << "' requires additional argument.\n";
-                printUsageAndExit( argv[0] );
+                printUsageAndExit(argv[0]);
             }
             out_file = argv[++i];
             use_pbo = false;
         }
-        else if( arg == "-n" || arg == "--nopbo"  )
+        else if (arg == "-n" || arg == "--nopbo")
         {
             use_pbo = false;
         }
@@ -1398,16 +1398,16 @@ int main( int argc, char** argv )
         }
         else if (arg == "--training_file")
         {
-            if( i == argc-1 )
+            if (i == argc - 1)
             {
                 std::cerr << "Option '" << argv[i] << "' requires additional argument.\n";
                 printUsageAndExit(argv[0]);
             }
             training_file = argv[++i];
         }
-        else if(arg == "--training_file2" )
+        else if (arg == "--training_file2")
         {
-            if( i == argc-1 )
+            if (i == argc - 1)
             {
                 std::cerr << "Option '" << argv[i] << "' requires additional argument.\n";
                 printUsageAndExit(argv[0]);
@@ -1421,13 +1421,13 @@ int main( int argc, char** argv )
         else
         {
             std::cerr << "Unknown option '" << arg << "'\n";
-            printUsageAndExit( argv[0] );
+            printUsageAndExit(argv[0]);
         }
     }
 
     try
     {
-        if ( use_pbo && out_file.empty() ) {
+        if (use_pbo && out_file.empty()) {
             glutInitialize(&argc, argv);
 
 #ifndef __APPLE__
@@ -1450,7 +1450,7 @@ int main( int argc, char** argv )
 
         context->validate();
 
-        if ( out_file.empty() )
+        if (out_file.empty())
         {
             glutRun();
         }
@@ -1541,16 +1541,16 @@ int main( int argc, char** argv )
                 sutil::displayBufferPNG((out_file + "_albedo.png").c_str(), getAlbedoBuffer(), true);
                 sutil::displayBufferPNG((out_file + "_normal.png").c_str(), getNormalBuffer(), true);
             }
-            
+
             destroyContext();
 
             double finish_time = sutil::currentTime();
             double total_time = finish_time - launch_time;
             std::cout << "[info] total_time: " << total_time << " sec." << std::endl;
-            std::cout << "[info] total_sample: " << total_sample  << std::endl;
+            std::cout << "[info] total_sample: " << total_sample << std::endl;
         }
 
         return 0;
     }
-    SUTIL_CATCH( context->get() )
+    SUTIL_CATCH(context->get())
 }
