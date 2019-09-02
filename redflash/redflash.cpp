@@ -280,7 +280,7 @@ void createContext()
     pgram_intersection_sphere = context->createProgramFromPTXString(ptx, "sphere_intersect");
 }
 
-void registerMaterial(GeometryInstance& gi, MaterialParameter mat)// NOTE: &mat ‚Å‚às‚¯‚éH
+void registerMaterial(GeometryInstance& gi, MaterialParameter& mat)
 {
     materialParameters.push_back(mat);
     gi["materialId"]->setInt(materialCount++);
