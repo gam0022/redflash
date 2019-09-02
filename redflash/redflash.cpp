@@ -1,31 +1,3 @@
-/* 
- * Copyright (c) 2018, NVIDIA CORPORATION. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *  * Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *  * Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *  * Neither the name of NVIDIA CORPORATION nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
- * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 //-----------------------------------------------------------------------------
 //
 // redflash: Raymarching x Pathtracer
@@ -70,27 +42,36 @@ const char* const SAMPLE_NAME = "redflash";
 //
 //------------------------------------------------------------------------------
 
-Context        context = 0;
-uint32_t       width  = 1920 / 4;
-uint32_t       height = 1080 / 4;
+Context context = 0;
+uint32_t width  = 1920 / 4;
+uint32_t height = 1080 / 4;
+bool use_pbo = true;
+
+// sampling
 int max_depth = 10;
-
-bool           use_pbo = true;
-
+int rr_begin_depth = 1;// unused
 int sample_per_launch = 1;
 int frame_number = 1;
 int total_sample = 0;
 bool auto_set_sample_per_launch = false;
 double auto_set_sample_per_launch_scale = 0.95;
 
-int            rr_begin_depth = 1;
-Program        pgram_intersection = 0;
-Program        pgram_bounding_box = 0;
-Program        pgram_intersection_raymarching = 0;
-Program        pgram_bounding_box_raymarching = 0;
-Program        pgram_intersection_sphere = 0;
-Program        pgram_bounding_box_sphere = 0;
+// Intersect Programs
+Program pgram_intersection = 0;
+Program pgram_bounding_box = 0;
+Program pgram_intersection_raymarching = 0;
+Program pgram_bounding_box_raymarching = 0;
+Program pgram_intersection_sphere = 0;
+Program pgram_bounding_box_sphere = 0;
 
+// Hit Programs
+Program common_closest_hit = 0;
+Program common_any_hit = 0;
+Program light_closest_hit = 0;
+Program light_any_hit = 0;
+
+// Materials
+Material common_material;
 
 // Camera state
 float3         camera_up;
@@ -188,17 +169,6 @@ void registerExitHandler()
 #endif
 }
 
-
-void setMaterial(
-        GeometryInstance& gi,
-        Material material,
-        const std::string& color_name,
-        const float3& color)
-{
-    gi->addMaterial(material);
-    gi[color_name]->setFloat(color);
-}
-
 GeometryInstance createRaymrachingObject(const float3& center, const float3& world_scale, const float3& unit_scale)
 {
     Geometry raymarching = context->createGeometry();
@@ -236,9 +206,6 @@ GeometryInstance createSphereObject(const float3& center, const float radius)
 
 GeometryInstance createMesh(
     const std::string& filename,
-    Material material,
-    Program closest_hit,
-    Program any_hit,
     const float3& center,
     const float3& scale,
     const float3& axis = make_float3(0.0f, 1.0f, 0.0f),
@@ -248,9 +215,9 @@ GeometryInstance createMesh(
     mesh.context = context;
     mesh.use_tri_api = true;
     mesh.ignore_mats = false;
-    mesh.material = material;
-    mesh.closest_hit = closest_hit;
-    mesh.any_hit = any_hit;
+    mesh.material = common_material;
+    mesh.closest_hit = common_closest_hit;
+    mesh.any_hit = common_any_hit;
     // NOTE: OptiXでは行優先っぽいので、右から順番に適用される
     Matrix4x4 mat = Matrix4x4::translate(center) * Matrix4x4::rotate(radians, axis) * Matrix4x4::scale(scale);
     loadMesh(filename, mesh, mat);
@@ -265,8 +232,8 @@ void createContext()
     context->setStackSize( 1800 );
     context->setMaxTraceDepth( 2 );
 
-    context[ "scene_epsilon"                  ]->setFloat( 0.001f );
-    context[ "rr_begin_depth"                 ]->setUint( rr_begin_depth );
+    context["scene_epsilon"]->setFloat( 0.001f );
+    // context["rr_begin_depth"]->setUint( rr_begin_depth );
     context["max_depth"]->setUint(max_depth);
     context["sample_per_launch"]->setUint(sample_per_launch);
     context["total_sample"]->setUint(total_sample);
@@ -283,38 +250,40 @@ void createContext()
     context->setRayGenerationProgram( 0, context->createProgramFromPTXString( ptx, "pathtrace_camera" ) );
     context->setExceptionProgram( 0, context->createProgramFromPTXString( ptx, "exception" ) );
     context->setMissProgram( 0, context->createProgramFromPTXString( ptx, "envmap_miss" ) );
-
     context[ "bad_color"        ]->setFloat( 1000000.0f, 0.0f, 1000000.0f ); // Super magenta to make sure it doesn't get averaged out in the progressive rendering.
 
-    const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
-    //const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
-    const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Ref.hdr");
-    // const std::string texpath = resolveDataPath("Desert_Highway/Road_to_MonumentValley_Env.hdr");
-    context["envmap"]->setTextureSampler(sutil::loadTexture(context, texpath, default_color));
+    // Common Materials
+    common_closest_hit = context->createProgramFromPTXString(ptx, "closest_hit");
+    common_any_hit = context->createProgramFromPTXString(ptx, "shadow");
+    common_material = context->createMaterial();
+    common_material->setClosestHitProgram(0, common_closest_hit);
+    common_material->setAnyHitProgram(1, common_any_hit);
+
+        // Raymarching programs
+    ptx = sutil::getPtxString(SAMPLE_NAME, "intersect_raymarching.cu");
+    pgram_bounding_box_raymarching = context->createProgramFromPTXString(ptx, "bounds");
+    pgram_intersection_raymarching = context->createProgramFromPTXString(ptx, "intersect");
+
+    // Sphere programs
+    ptx = sutil::getPtxString(SAMPLE_NAME, "intersect_sphere.cu");
+    pgram_bounding_box_sphere = context->createProgramFromPTXString(ptx, "bounds");
+    pgram_intersection_sphere = context->createProgramFromPTXString(ptx, "sphere_intersect");
 }
 
 GeometryGroup createGeometryTriangles()
 {
-    // Set up material
-    Material diffuse = context->createMaterial();
-    const char *ptx = sutil::getPtxString(SAMPLE_NAME, "redflash.cu");
-    Program diffuse_ch = context->createProgramFromPTXString(ptx, "closest_hit");
-    Program diffuse_ah = context->createProgramFromPTXString(ptx, "shadow");
-    diffuse->setClosestHitProgram(0, diffuse_ch);
-    diffuse->setAnyHitProgram(1, diffuse_ah);
-
     std::vector<GeometryInstance> gis;
     const float3 color = make_float3(1.0f, 1.0f, 1.0f);
 
     // Mesh cow
     std::string mesh_file = resolveDataPath("cow.obj");
-    gis.push_back(createMesh(mesh_file, diffuse, diffuse_ch, diffuse_ah, make_float3(0.0f, 300.0f, 0.0f), make_float3(500.0f)));
+    gis.push_back(createMesh(mesh_file, make_float3(0.0f, 300.0f, 0.0f), make_float3(500.0f)));
     gis.back()["albedo_color"]->setFloat(color);
     gis.back()["metallic"]->setFloat(0.8);
 
     // Mesh Lucy100k
     mesh_file = resolveDataPath("metallic-lucy-statue-stanford-scan.obj");
-    gis.push_back(createMesh(mesh_file, diffuse, diffuse_ch, diffuse_ah, 
+    gis.push_back(createMesh(mesh_file,
         make_float3(0.0f, 145.5f, 204.0f), 
         make_float3(0.05f), 
         make_float3(0.0f, 1.0f, 0.0), M_PIf));
@@ -328,24 +297,6 @@ GeometryGroup createGeometryTriangles()
 
 GeometryGroup createGeometry()
 {
-    // Set up material
-    Material diffuse = context->createMaterial();
-    const char *ptx = sutil::getPtxString( SAMPLE_NAME, "redflash.cu" );
-    Program diffuse_ch = context->createProgramFromPTXString( ptx, "closest_hit" );
-    Program diffuse_ah = context->createProgramFromPTXString( ptx, "shadow" );
-    diffuse->setClosestHitProgram( 0, diffuse_ch );
-    diffuse->setAnyHitProgram( 1, diffuse_ah );
-
-    // Set up Raymarching programs
-    ptx = sutil::getPtxString(SAMPLE_NAME, "intersect_raymarching.cu");
-    pgram_bounding_box_raymarching = context->createProgramFromPTXString(ptx, "bounds");
-    pgram_intersection_raymarching = context->createProgramFromPTXString(ptx, "intersect");
-
-    // Set up Sphere programs
-    ptx = sutil::getPtxString(SAMPLE_NAME, "intersect_sphere.cu");
-    pgram_bounding_box_sphere = context->createProgramFromPTXString(ptx, "bounds");
-    pgram_intersection_sphere = context->createProgramFromPTXString(ptx, "sphere_intersect");
-
     // create geometry instances
     std::vector<GeometryInstance> gis;
 
@@ -359,13 +310,15 @@ GeometryGroup createGeometry()
         make_float3(0.0f),
         make_float3(300.0f),
         make_float3(4.3f)));
-    setMaterial(gis.back(), diffuse, "albedo_color", white);
+    gis.back()->addMaterial(common_material);
+    gis.back()["albedo_color"]->setFloat(white);
     gis.back()["metallic"]->setFloat(0.8);
 
     // Sphere
     //gis.push_back(createSphereObject(
     //    make_float3(0.0f, 310.0f, 50.0f), 10.0f));
-    //setMaterial(gis.back(), diffuse, "albedo_color", green);
+    //gis.back()->addMaterial(common_material);
+    //gis.back()["albedo_color"]->setFloat(green);
     //gis.back()["emission_color"]->setFloat(make_float3(1.0));
 
     // Create shadow group (no light)
@@ -444,7 +397,8 @@ GeometryGroup createGeometryLight()
         light->normal = optix::normalize(light->normal);
 
         gis.push_back(createSphereObject(light->position, light->radius));
-        setMaterial(gis.back(), diffuse_light, "emission_color", light->emission);
+        gis.back()->addMaterial(diffuse_light);
+        gis.back()["emission_color"]->setFloat(light->emission);
         gis.back()["lightMaterialId"]->setInt(index);
         ++index;
     }
@@ -485,6 +439,13 @@ void setupScene()
     top_group_light->addChild(tri_gg);
     top_group_light->addChild(light_gg);
     context["top_object"]->set(top_group_light);
+
+    // Envmap
+    const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
+    //const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
+    const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Ref.hdr");
+    // const std::string texpath = resolveDataPath("Desert_Highway/Road_to_MonumentValley_Env.hdr");
+    context["envmap"]->setTextureSampler(sutil::loadTexture(context, texpath, default_color));
 }
 
 void setupCamera()
