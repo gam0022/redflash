@@ -862,7 +862,6 @@ void glutDisplay()
     {
         bufferInfo = "Normals";
         Buffer normalBuffer = getNormalBuffer();
-        //convertNormalsToColors(normalBuffer);
         sutil::displayBufferGL(normalBuffer);
         break;
     }
