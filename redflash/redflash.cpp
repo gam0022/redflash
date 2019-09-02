@@ -1235,7 +1235,7 @@ int main( int argc, char** argv )
     double launch_time = sutil::currentTime();
 
     std::string out_file;
-    int sample = 20;
+    int sampleMax = 20;
     double time_limit = 60 * 60;// 1 hour
     bool use_time_limit = false;
 
@@ -1268,7 +1268,7 @@ int main( int argc, char** argv )
                 std::cerr << "Option '" << arg << "' requires additional argument.\n";
                 printUsageAndExit(argv[0]);
             }
-            sample = atoi(argv[++i]);
+            sampleMax = atoi(argv[++i]);
         }
         else if (arg == "-t" || arg == "--time")
         {
@@ -1441,18 +1441,23 @@ int main( int argc, char** argv )
 
             if (use_time_limit)
             {
-                std::cout << "[info] sample: INF(" << sample << ")" << std::endl;
+                std::cout << "[info] sample: INF(" << sampleMax << ")" << std::endl;
             }
             else
             {
-                std::cout << "[info] sample: " << sample << std::endl;
+                std::cout << "[info] sample: " << sampleMax << std::endl;
             }
 
             double last_time = sutil::currentTime();
 
+            bool lastFrame = false;
+
             // NOTE: time_limit が指定されていたら、サンプル数は無制限にする
-            for (int i = 0; i < sample || use_time_limit; ++i)
+            for (int i = 0; i < sampleMax || use_time_limit; ++i)
             {
+                // TODO: 動作確認
+                lastFrame |= (i == sampleMax - 1);
+
                 double now = sutil::currentTime();
                 double used_time = now - launch_time;
                 double delta_time = now - last_time;
@@ -1473,7 +1478,7 @@ int main( int argc, char** argv )
                     if (sample_per_launch == 1)
                     {
                         std::cout << "[info] reached time limit! used_time: " << used_time << " sec. remain_time: " << remain_time << " sec." << std::endl;
-                        break;
+                        lastFrame = true;
                     }
                     else
                     {
@@ -1486,15 +1491,23 @@ int main( int argc, char** argv )
                 context["frame_number"]->setUint(frame_number);
                 context["total_sample"]->setUint(total_sample);
 
-                // FIXME
-                // commandListWithDenoiser->execute();
-                context->launch(0, width, height);
+                if (lastFrame)
+                {
+                    commandListWithDenoiser->execute();
+                    break;
+                }
+                else
+                {
+                    commandListWithoutDenoiser->execute();
+                }
 
                 frame_number++;
                 total_sample += sample_per_launch;
             }
 
-            sutil::displayBufferPNG(out_file.c_str(), getOutputBuffer(), true);
+            sutil::displayBufferPNG((out_file + "_original.png").c_str(), getOutputBuffer(), true);
+            sutil::displayBufferPNG(out_file.c_str(), denoisedBuffer, true);
+            
             destroyContext();
 
             double finish_time = sutil::currentTime();
