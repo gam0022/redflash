@@ -1450,13 +1450,13 @@ int main( int argc, char** argv )
 
             double last_time = sutil::currentTime();
 
-            bool lastFrame = false;
+            bool finalFrame = false;
 
             // NOTE: time_limit が指定されていたら、サンプル数は無制限にする
             for (int i = 0; i < sampleMax || use_time_limit; ++i)
             {
                 // TODO: 動作確認
-                lastFrame |= (i == sampleMax - 1);
+                finalFrame |= (i == sampleMax - 1);
 
                 double now = sutil::currentTime();
                 double used_time = now - launch_time;
@@ -1478,7 +1478,7 @@ int main( int argc, char** argv )
                     if (sample_per_launch == 1)
                     {
                         std::cout << "[info] reached time limit! used_time: " << used_time << " sec. remain_time: " << remain_time << " sec." << std::endl;
-                        lastFrame = true;
+                        finalFrame = true;
                     }
                     else
                     {
@@ -1491,7 +1491,7 @@ int main( int argc, char** argv )
                 context["frame_number"]->setUint(frame_number);
                 context["total_sample"]->setUint(total_sample);
 
-                if (lastFrame)
+                if (finalFrame)
                 {
                     commandListWithDenoiser->execute();
                     break;
