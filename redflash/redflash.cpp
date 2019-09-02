@@ -53,6 +53,7 @@ Context context = 0;
 int width  = 1920 / 4;
 int height = 1080 / 4;
 bool use_pbo = true;
+bool flag_debug = false;
 
 // sampling
 int max_depth = 10;
@@ -1409,6 +1410,10 @@ int main( int argc, char** argv )
             }
             training_file_2 = argv[++i];
         }
+        else if (arg == "--debug")
+        {
+            flag_debug = true;
+        }
         else
         {
             std::cerr << "Unknown option '" << arg << "'\n";
@@ -1524,8 +1529,14 @@ int main( int argc, char** argv )
                 total_sample += sample_per_launch;
             }
 
-            sutil::displayBufferPNG((out_file + "_original.png").c_str(), getOutputBuffer(), true);
             sutil::displayBufferPNG(out_file.c_str(), denoisedBuffer, true);
+
+            if (flag_debug)
+            {
+                sutil::displayBufferPNG((out_file + "_original.png").c_str(), getOutputBuffer(), true);
+                sutil::displayBufferPNG((out_file + "_albedo.png").c_str(), getAlbedoBuffer(), true);
+                sutil::displayBufferPNG((out_file + "_normal.png").c_str(), getNormalBuffer(), true);
+            }
             
             destroyContext();
 
