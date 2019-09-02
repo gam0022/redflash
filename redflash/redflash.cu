@@ -155,7 +155,8 @@ RT_PROGRAM void pathtrace_camera()
         liner_val = pixel_color;
     }
 
-    float3 output_val = linear_to_sRGB(tonemap_acesFilm(liner_val));
+    // float3 output_val = linear_to_sRGB(tonemap_acesFilm(liner_val));
+    float3 output_val = liner_val;
     liner_buffer[launch_index] = make_float4(liner_val, 1.0);
     output_buffer[launch_index] = make_float4(output_val, 1.0);
 }
