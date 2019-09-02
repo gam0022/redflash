@@ -64,14 +64,14 @@ Program pgram_bounding_box_raymarching = 0;
 Program pgram_intersection_sphere = 0;
 Program pgram_bounding_box_sphere = 0;
 
-// Hit Programs
+// Common Material
 Program common_closest_hit = 0;
 Program common_any_hit = 0;
-Program light_closest_hit = 0;
-Program light_any_hit = 0;
+Material common_material = 0;
 
-// Materials
-Material common_material;
+// Light Material
+Program light_closest_hit = 0;
+Material light_material = 0;
 
 // Camera state
 float3         camera_up;
@@ -253,13 +253,18 @@ void createContext()
     context[ "bad_color"        ]->setFloat( 1000000.0f, 0.0f, 1000000.0f ); // Super magenta to make sure it doesn't get averaged out in the progressive rendering.
 
     // Common Materials
+    common_material = context->createMaterial();
     common_closest_hit = context->createProgramFromPTXString(ptx, "closest_hit");
     common_any_hit = context->createProgramFromPTXString(ptx, "shadow");
-    common_material = context->createMaterial();
     common_material->setClosestHitProgram(0, common_closest_hit);
     common_material->setAnyHitProgram(1, common_any_hit);
 
-        // Raymarching programs
+    // Light Materials
+    light_material = context->createMaterial();
+    light_closest_hit = context->createProgramFromPTXString(ptx, "light_closest_hit");
+    light_material->setClosestHitProgram(0, light_closest_hit);
+
+    // Raymarching programs
     ptx = sutil::getPtxString(SAMPLE_NAME, "intersect_raymarching.cu");
     pgram_bounding_box_raymarching = context->createProgramFromPTXString(ptx, "bounds");
     pgram_intersection_raymarching = context->createProgramFromPTXString(ptx, "intersect");
@@ -349,12 +354,6 @@ void updateLightParameters(const std::vector<LightParameter> &lightParameters)
 
 GeometryGroup createGeometryLight()
 {
-    // Set up material
-    const char *ptx = sutil::getPtxString(SAMPLE_NAME, "redflash.cu");
-    Material diffuse_light = context->createMaterial();
-    Program diffuse_em = context->createProgramFromPTXString(ptx, "light_closest_hit");
-    diffuse_light->setClosestHitProgram(0, diffuse_em);
-
     // Light
     std::vector<LightParameter> lightParameters;
     std::vector<GeometryInstance> gis;
@@ -397,7 +396,7 @@ GeometryGroup createGeometryLight()
         light->normal = optix::normalize(light->normal);
 
         gis.push_back(createSphereObject(light->position, light->radius));
-        gis.back()->addMaterial(diffuse_light);
+        gis.back()->addMaterial(light_material);
         gis.back()["emission_color"]->setFloat(light->emission);
         gis.back()["lightMaterialId"]->setInt(index);
         ++index;
@@ -420,13 +419,10 @@ GeometryGroup createGeometryLight()
 
 void setupScene()
 {
-    // Create a GeometryGroup for the GeometryTriangles instances and a separate
-    // GeometryGroup for all other primitives.
     GeometryGroup tri_gg = createGeometryTriangles();
     GeometryGroup gg = createGeometry();
     GeometryGroup light_gg = createGeometryLight();
 
-    // Create a top-level Group to contain the two GeometryGroups.
     Group top_group = context->createGroup();
     top_group->setAcceleration(context->createAcceleration("Trbvh"));
     top_group->addChild(gg);
@@ -921,4 +917,3 @@ int main( int argc, char** argv )
     }
     SUTIL_CATCH( context->get() )
 }
-
