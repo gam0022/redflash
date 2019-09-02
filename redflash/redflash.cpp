@@ -1519,7 +1519,7 @@ int main(int argc, char** argv)
                 double remain_time = time_limit - used_time;
                 last_time = now;
 
-                std::cout << "loop:" << i << "sample_per_launch\t:" << sample_per_launch << "\tdelta_time:" << delta_time << "\tdelta_time_per_sample:" << delta_time / sample_per_launch << "\tused_time:" << used_time << "\tremain_time:" << remain_time << "\tsample:" << total_sample << "\tframe_number:" << frame_number << std::endl;
+                std::cout << "loop:" << i << "\tsample_per_launch\t:" << sample_per_launch << "\tdelta_time:" << delta_time << "\tdelta_time_per_sample:" << delta_time / sample_per_launch << "\tused_time:" << used_time << "\tremain_time:" << remain_time << "\tsample:" << total_sample << "\tframe_number:" << frame_number << std::endl;
 
                 if (auto_set_sample_per_launch && i == 1)
                 {
