@@ -38,9 +38,9 @@ struct PerRayData_pathtrace_shadow
 };
 
 // Scene wide variables
-rtDeclareVariable(float,         scene_epsilon, , );
-rtDeclareVariable(rtObject,      top_object, , );
-rtDeclareVariable(uint2,         launch_index, rtLaunchIndex, );
+rtDeclareVariable(float, scene_epsilon, , );
+rtDeclareVariable(rtObject, top_object, , );
+rtDeclareVariable(uint2, launch_index, rtLaunchIndex, );
 
 rtDeclareVariable(PerRayData_pathtrace, current_prd, rtPayload, );
 
@@ -52,16 +52,16 @@ rtDeclareVariable(PerRayData_pathtrace, current_prd, rtPayload, );
 //
 //-----------------------------------------------------------------------------
 
-rtDeclareVariable(float3,        eye, , );
-rtDeclareVariable(float3,        U, , );
-rtDeclareVariable(float3,        V, , );
-rtDeclareVariable(float3,        W, , );
+rtDeclareVariable(float3, eye, , );
+rtDeclareVariable(float3, U, , );
+rtDeclareVariable(float3, V, , );
+rtDeclareVariable(float3, W, , );
 rtDeclareVariable(Matrix3x3, normal_matrix, , );
-rtDeclareVariable(float3,        bad_color, , );
-rtDeclareVariable(unsigned int,  frame_number, , );
-rtDeclareVariable(unsigned int,  total_sample, , );
-rtDeclareVariable(unsigned int,  sample_per_launch, , );
-rtDeclareVariable(unsigned int,  rr_begin_depth, , );
+rtDeclareVariable(float3, bad_color, , );
+rtDeclareVariable(unsigned int, frame_number, , );
+rtDeclareVariable(unsigned int, total_sample, , );
+rtDeclareVariable(unsigned int, sample_per_launch, , );
+rtDeclareVariable(unsigned int, rr_begin_depth, , );
 rtDeclareVariable(unsigned int, max_depth, , );
 rtDeclareVariable(unsigned int, use_post_tonemap, , );
 
@@ -102,7 +102,7 @@ RT_PROGRAM void pathtrace_camera()
     float3 normal = make_float3(0.0f);
     unsigned int seed = tea<16>(screen.x * launch_index.y + launch_index.x, total_sample);
 
-    for(int i = 0; i < sample_per_launch; i++)
+    for (int i = 0; i < sample_per_launch; i++)
     {
         float2 subpixel_jitter = make_float2(rnd(seed) - 0.5f, rnd(seed) - 0.5f);
         float2 d = (make_float2(launch_index) + subpixel_jitter) / make_float2(screen) * 2.f - 1.f;
@@ -119,7 +119,7 @@ RT_PROGRAM void pathtrace_camera()
 
         // Each iteration is a segment of the ray path.  The closest hit will
         // return new segments to be traced here.
-        for(;;)
+        for (;;)
         {
             Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, scene_epsilon, RT_DEFAULT_MAX);
             prd.wo = -ray.direction;
@@ -531,9 +531,9 @@ RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
 
 RT_PROGRAM void closest_hit()
 {
-    float3 world_shading_normal   = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, shading_normal ) );
-    float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
-    float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
+    float3 world_shading_normal = normalize(rtTransformNormal(RT_OBJECT_TO_WORLD, shading_normal));
+    float3 world_geometric_normal = normalize(rtTransformNormal(RT_OBJECT_TO_WORLD, geometric_normal));
+    float3 ffnormal = faceforward(world_shading_normal, -ray.direction, world_geometric_normal);
 
     float3 hitpoint = ray.origin + t_hit * ray.direction + ffnormal * scene_epsilon * 10.0;
 
