@@ -176,19 +176,9 @@ rtBuffer<MaterialParameter> sysMaterialParameters;
 rtDeclareVariable(int, materialId, , );
 rtDeclareVariable(int, programId, , );// unused
 
-rtDeclareVariable(float3, emission_color, , );
-rtDeclareVariable(float3, albedo_color, , );
-rtDeclareVariable(float, metallic, , );
-
 rtDeclareVariable(int, sysNumberOfLights, , );
 rtBuffer<LightParameter> sysLightParameters;
 rtDeclareVariable(int, lightMaterialId, , );
-
-/*RT_PROGRAM void light_closest_hit()
-{
-    current_prd.radiance += emission_color * current_prd.attenuation;
-    current_prd.done = true;
-}*/
 
 RT_PROGRAM void light_closest_hit()
 {
@@ -523,14 +513,11 @@ RT_PROGRAM void closest_hit()
 
     // FIXME: Sampleにもっていく
     current_prd.origin = hitpoint;
-    
-    current_prd.radiance += emission_color * current_prd.attenuation;
 
-    // FIXME: materialCustomProgramId みたいな名前で関数ポインタを渡して、パラメータをプロシージャルセットしたい
+    // FIXME: materialCustomProgramId みたいな名前で関数ポインタを渡して、パラメータをプロシージャルにセットしたい
     MaterialParameter mat = sysMaterialParameters[materialId];
-    //mat.albedo = albedo_color;
-    //mat.metallic = metallic;
-    //mat.roughness = 0.05f;
+
+    current_prd.radiance += mat.emission * current_prd.attenuation;
 
     // FIXME: bsdfId から判定
     current_prd.specularBounce = false;

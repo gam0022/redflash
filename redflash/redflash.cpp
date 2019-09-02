@@ -337,8 +337,6 @@ GeometryGroup createGeometryTriangles()
     std::string mesh_file = resolveDataPath("cow.obj");
     gis.push_back(createMesh(mesh_file, make_float3(0.0f, 300.0f, 0.0f), make_float3(500.0f)));
 
-    //gis.back()["albedo_color"]->setFloat(color);
-    //gis.back()["metallic"]->setFloat(0.8);
     mat.albedo = make_float3(1.0f, 1.0f, 1.0f);
     mat.metallic = 0.8f;
     mat.roughness = 0.05f;
@@ -351,8 +349,6 @@ GeometryGroup createGeometryTriangles()
         make_float3(0.05f), 
         make_float3(0.0f, 1.0f, 0.0), M_PIf));
 
-    //gis.back()["albedo_color"]->setFloat(make_float3(1.0f, 1.0f, 1.0f));
-    //gis.back()["metallic"]->setFloat(0.0);
     mat.albedo = make_float3(1.0f, 1.0f, 1.0f);
     mat.metallic = 0.0f;
     mat.roughness = 0.05f;
@@ -370,30 +366,16 @@ GeometryGroup createGeometry()
     // create geometry instances
     std::vector<GeometryInstance> gis;
 
-    const float3 white = make_float3( 0.8f, 0.8f, 0.8f );
-    const float3 gray  = make_float3( 0.3f, 0.3f, 0.3f );
-    const float3 green = make_float3( 0.05f, 0.8f, 0.05f );
-    const float3 red   = make_float3( 0.8f, 0.05f, 0.05f );
-
     // Raymarcing
     gis.push_back(createRaymrachingObject(
         make_float3(0.0f),
         make_float3(300.0f),
         make_float3(4.3f)));
     gis.back()->addMaterial(common_material);
-    //gis.back()["albedo_color"]->setFloat(white);
-    //gis.back()["metallic"]->setFloat(0.8);
-    mat.albedo = white;
+    mat.albedo = make_float3(0.8f, 0.8f, 0.8f);
     mat.metallic = 0.8f;
     mat.roughness = 0.05f;
     registerMaterial(gis.back(), mat);
-
-    // Sphere
-    //gis.push_back(createSphereObject(
-    //    make_float3(0.0f, 310.0f, 50.0f), 10.0f));
-    //gis.back()->addMaterial(common_material);
-    //gis.back()["albedo_color"]->setFloat(green);
-    //gis.back()["emission_color"]->setFloat(make_float3(1.0));
 
     // Create shadow group (no light)
     GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
@@ -446,9 +428,8 @@ GeometryGroup createGeometryLight()
 
         gis.push_back(createSphereObject(light->position, light->radius));
         gis.back()->addMaterial(light_material);
+        gis.back()["lightMaterialId"]->setInt(index);
 
-        //gis.back()["emission_color"]->setFloat(light->emission);
-        //gis.back()["lightMaterialId"]->setInt(index);
         MaterialParameter mat;
         mat.emission = light->emission;
         registerMaterial(gis.back(), mat);
