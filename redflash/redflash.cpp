@@ -360,7 +360,7 @@ void createContext()
     context->setStackSize(1800);
     context->setMaxTraceDepth(2);
 
-    context["scene_epsilon"]->setFloat(0.001f);
+    context["scene_epsilon"]->setFloat(0.0005f);
     // context["rr_begin_depth"]->setUint( rr_begin_depth );
     context["max_depth"]->setUint(max_depth);
     context["sample_per_launch"]->setUint(sample_per_launch);
@@ -722,6 +722,10 @@ void setupCamera()
     // Lucyを中心にしたカット2
     camera_eye = make_float3(9.55f, 144.84f, 214.05f);
     camera_lookat = make_float3(1.60f, 149.38f, 200.70f);
+
+    // Lucyを中心にしたカット3
+    camera_eye = make_float3(9.08f, 150.98f, 210.78f);
+    camera_lookat = make_float3(1.41f, 150.12f, 200.42f);
 
     camera_rotate = Matrix4x4::identity();
 }
