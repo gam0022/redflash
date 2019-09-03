@@ -96,7 +96,7 @@ Buffer emptyBuffer;
 Buffer trainingDataBuffer;
 
 // Rendering
-float tonemap_exposure = 1.5f;
+float tonemap_exposure = 1.3f;
 
 // Postprocessing‚ÌTonemap‚ð—LŒø‚É‚·‚é‚©‚Ç‚¤‚©
 bool use_post_tonemap = false;
@@ -618,7 +618,7 @@ GeometryGroup createGeometryLight()
         light.lightType = SPHERE;
         light.position = make_float3(0.01f, 166.787f, 190.00f);
         light.radius = 2.0f;
-        light.emission = make_float3(30.0f, 2.00f, 2.00f);
+        light.emission = make_float3(20.0f, 10.00f, 5.00f);
         lightParameters.push_back(light);
     }
 
@@ -626,10 +626,9 @@ GeometryGroup createGeometryLight()
         LightParameter light;
         light.lightType = SPHERE;
 
-        float3 camera_eye = make_float3(0.73f, 160.33f, 220.03f);
-        //float3 camera_lookat = make_float3(10.37f, 149.31f, 201.70f);
+        float3 target = make_float3(0.0f, 144.5f, 198.0f);
 
-        light.position = camera_eye + make_float3(-3.0f, 2.0f, -1.0f);
+        light.position = target + make_float3(-120.0f, 338.0f, 53.0f) * 0.05;
         light.radius = 3.0f;
         light.emission = make_float3(10.0f, 10.00f, 10.00f);
         lightParameters.push_back(light);
