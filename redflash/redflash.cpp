@@ -558,7 +558,7 @@ GeometryGroup createGeometryTriangles()
     // Mesh Lucy100k
     mesh_file = resolveDataPath("metallic-lucy-statue-stanford-scan.obj");
     gis.push_back(createMesh(mesh_file,
-        make_float3(0.0f, 145.5f, 204.0f),
+        make_float3(0.0f, 144.5f, 198.0f),
         make_float3(0.05f),
         make_float3(0.0f, 1.0f, 0.0), M_PIf));
     mat.albedo = make_float3(1.0f, 1.0f, 1.0f);
@@ -622,18 +622,18 @@ GeometryGroup createGeometryLight()
         lightParameters.push_back(light);
     }
 
-    /*{
+    {
         LightParameter light;
         light.lightType = SPHERE;
 
-        float3 camera_eye = make_float3(1.65f, 176.01f, 287.97f);
-        float3 camera_lookat = make_float3(-7.06f, 76.34f, 26.96f);
+        float3 camera_eye = make_float3(0.73f, 160.33f, 220.03f);
+        //float3 camera_lookat = make_float3(10.37f, 149.31f, 201.70f);
 
-        light.position = camera_eye + 3.1 * normalize(camera_eye - camera_lookat);
+        light.position = camera_eye + make_float3(-3.0f, 2.0f, -1.0f);
         light.radius = 3.0f;
-        light.emission = make_float3(30.0f, 2.00f, 2.00f);
+        light.emission = make_float3(10.0f, 10.00f, 10.00f);
         lightParameters.push_back(light);
-    }*/
+    }
 
     int index = 0;
     for (auto light = lightParameters.begin(); light != lightParameters.end(); ++light)
@@ -715,6 +715,14 @@ void setupCamera()
     // 近づいたカット
     camera_eye = make_float3(1.65f, 196.01f, 287.97f);
     camera_lookat = make_float3(-7.06f, 76.34f, 26.96f);
+
+    // Lucyを中心にしたカット
+    camera_eye = make_float3(0.73f, 160.33f, 220.03f);
+    camera_lookat = make_float3(0.37f, 149.31f, 201.70f);
+
+    // Lucyを中心にしたカット2
+    camera_eye = make_float3(9.55f, 144.84f, 214.05f);
+    camera_lookat = make_float3(1.60f, 149.38f, 200.70f);
 
     camera_rotate = Matrix4x4::identity();
 }
