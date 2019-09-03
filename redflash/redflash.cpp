@@ -96,7 +96,7 @@ Buffer emptyBuffer;
 Buffer trainingDataBuffer;
 
 // Rendering
-float tonemap_exposure = 1.3f;
+float tonemap_exposure = 1.0f;
 
 // Postprocessing‚ÌTonemap‚ð—LŒø‚É‚·‚é‚©‚Ç‚¤‚©
 bool use_post_tonemap = false;
@@ -587,7 +587,7 @@ GeometryGroup createGeometry()
         make_float3(0.0f),
         make_float3(300.0f),
         make_float3(4.3f)));
-    mat.albedo = make_float3(0.8f, 0.8f, 0.8f);
+    mat.albedo = make_float3(0.6f);
     mat.metallic = 0.8f;
     mat.roughness = 0.05f;
     registerMaterial(gis.back(), mat);
@@ -618,7 +618,7 @@ GeometryGroup createGeometryLight()
         light.lightType = SPHERE;
         light.position = make_float3(0.01f, 166.787f, 190.00f);
         light.radius = 2.0f;
-        light.emission = make_float3(20.0f, 10.00f, 5.00f);
+        light.emission = make_float3(20.0f, 15.00f, 2.00f);
         lightParameters.push_back(light);
     }
 
@@ -630,7 +630,7 @@ GeometryGroup createGeometryLight()
 
         light.position = target + make_float3(-120.0f, 338.0f, 53.0f) * 0.05;
         light.radius = 3.0f;
-        light.emission = make_float3(10.0f, 10.00f, 10.00f);
+        light.emission = make_float3(50.0f, 50.00f, 50.00f);
         lightParameters.push_back(light);
     }
 
