@@ -1271,6 +1271,13 @@ void printUsageAndExit(const std::string& argv0)
     exit(1);
 }
 
+void displayBufferPNG(const char* filename, Buffer& buffer)
+{
+    double begin = sutil::currentTime();
+    sutil::displayBufferPNG(filename, buffer, true);
+    double end = sutil::currentTime();
+    std::cout << "[info] save_png: " << filename << "\t" << (end - begin) << " sec." << std::endl;
+}
 
 int main(int argc, char** argv)
 {
@@ -1581,14 +1588,20 @@ int main(int argc, char** argv)
                 total_sample += sample_per_launch;
             }
 
-            sutil::displayBufferPNG(out_file.c_str(), denoisedBuffer, true);
+            {
+                double now = sutil::currentTime();
+                std::cout << "[info] final_frame_rendering: " << (now - last_time) << " sec." << std::endl;
+            }
+
+
+            displayBufferPNG(out_file.c_str(), denoisedBuffer);
 
             if (flag_debug)
             {
-                sutil::displayBufferPNG((out_file + "_original.png").c_str(), getOutputBuffer(), true);
-                sutil::displayBufferPNG((out_file + "_albedo.png").c_str(), getAlbedoBuffer(), true);
-                sutil::displayBufferPNG((out_file + "_normal.png").c_str(), getNormalBuffer(), true);
-                sutil::displayBufferPNG((out_file + "_liner.png").c_str(), getLinerBuffer(), true);
+                displayBufferPNG((out_file + "_original.png").c_str(), getOutputBuffer());
+                displayBufferPNG((out_file + "_albedo.png").c_str(), getAlbedoBuffer());
+                displayBufferPNG((out_file + "_normal.png").c_str(), getNormalBuffer());
+                displayBufferPNG((out_file + "_liner.png").c_str(), getLinerBuffer());
             }
 
             destroyContext();
