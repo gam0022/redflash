@@ -618,7 +618,7 @@ GeometryGroup createGeometryLight()
         light.lightType = SPHERE;
         light.position = make_float3(0.01f, 166.787f, 190.00f);
         light.radius = 2.0f;
-        light.emission = make_float3(20.0f, 15.00f, 2.00f) * 0.8;
+        light.emission = make_float3(20.0f, 10.00f, 5.00f);
         lightParameters.push_back(light);
     }
 
@@ -630,7 +630,7 @@ GeometryGroup createGeometryLight()
 
         light.position = target + make_float3(-120.0f, 338.0f, 53.0f) * 0.05;
         light.radius = 3.0f;
-        light.emission = make_float3(50.0f, 50.00f, 50.00f) * 0.1;
+        light.emission = make_float3(10.0f, 10.00f, 10.00f);
         lightParameters.push_back(light);
     }
 
@@ -725,8 +725,8 @@ void setupCamera()
     camera_lookat = make_float3(1.60f, 149.38f, 200.70f);
 
     // Lucyを中心にしたカット3
-    camera_eye = make_float3(9.08f, 150.98f, 210.78f);
-    camera_lookat = make_float3(1.41f, 150.12f, 200.42f);
+    //camera_eye = make_float3(9.08f, 150.98f, 210.78f);
+    //camera_lookat = make_float3(1.41f, 150.12f, 200.42f);
 
     camera_rotate = Matrix4x4::identity();
 }
