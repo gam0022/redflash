@@ -360,7 +360,7 @@ void createContext()
     context->setStackSize(1800);
     context->setMaxTraceDepth(2);
 
-    context["scene_epsilon"]->setFloat(0.0005f);
+    context["scene_epsilon"]->setFloat(0.001f);
     // context["rr_begin_depth"]->setUint( rr_begin_depth );
     context["max_depth"]->setUint(max_depth);
     context["sample_per_launch"]->setUint(sample_per_launch);
@@ -686,8 +686,9 @@ void setupScene()
 
     // Envmap
     const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
-    //const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
-    const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Ref.hdr");
+    const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
+    //const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Ref.hdr");
+    //const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Env.hdr");
     // const std::string texpath = resolveDataPath("Desert_Highway/Road_to_MonumentValley_Env.hdr");
     context["envmap"]->setTextureSampler(sutil::loadTexture(context, texpath, default_color));
 
