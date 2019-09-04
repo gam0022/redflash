@@ -96,7 +96,7 @@ Buffer emptyBuffer;
 Buffer trainingDataBuffer;
 
 // Rendering
-float tonemap_exposure = 1.5f;
+float tonemap_exposure = 2.5f;
 
 // PostprocessingのTonemapを有効にするかどうか
 bool use_post_tonemap = false;
@@ -550,7 +550,6 @@ GeometryGroup createGeometryTriangles()
     // Mesh cow
     std::string mesh_file = resolveDataPath("cow.obj");
     gis.push_back(createMesh(mesh_file, make_float3(0.0f, 300.0f, 0.0f), make_float3(500.0f)));
-
     mat.albedo = make_float3(1.0f, 1.0f, 1.0f);
     mat.metallic = 0.8f;
     mat.roughness = 0.05f;
@@ -559,13 +558,16 @@ GeometryGroup createGeometryTriangles()
     // Mesh Lucy100k
     mesh_file = resolveDataPath("metallic-lucy-statue-stanford-scan.obj");
     gis.push_back(createMesh(mesh_file,
-        make_float3(0.0f, 145.5f, 204.0f),
+        make_float3(0.0f, 144.5f, 198.0f),
         make_float3(0.05f),
         make_float3(0.0f, 1.0f, 0.0), M_PIf));
-
     mat.albedo = make_float3(1.0f, 1.0f, 1.0f);
-    mat.metallic = 0.0f;
+    // mat.emission = make_float3(0.2f, 0.05f, 0.05f);
+    mat.metallic = 0.01f;
     mat.roughness = 0.05f;
+    //mat.clearcoat = 0.0f;
+    //mat.clearcoatGloss = 0.0f;
+    //mat.specularTint = 0.0;
     registerMaterial(gis.back(), mat);
 
     GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
@@ -585,7 +587,7 @@ GeometryGroup createGeometry()
         make_float3(0.0f),
         make_float3(300.0f),
         make_float3(4.3f)));
-    mat.albedo = make_float3(0.8f, 0.8f, 0.8f);
+    mat.albedo = make_float3(0.6f);
     mat.metallic = 0.8f;
     mat.roughness = 0.05f;
     registerMaterial(gis.back(), mat);
@@ -616,22 +618,21 @@ GeometryGroup createGeometryLight()
         light.lightType = SPHERE;
         light.position = make_float3(0.01f, 166.787f, 190.00f);
         light.radius = 2.0f;
-        light.emission = make_float3(20.0f, 2.00f, 2.00f);
+        light.emission = make_float3(20.0f, 10.00f, 5.00f);
         lightParameters.push_back(light);
     }
 
-    /*{
+    {
         LightParameter light;
         light.lightType = SPHERE;
 
-        float3 camera_eye = make_float3(13.91f, 166.787f, 413.00f);
-        float3 camera_lookat = make_float3(-6.59f, 169.94f, -9.11f);
+        float3 target = make_float3(0.0f, 144.5f, 198.0f);
 
-        light.position = camera_eye + 11.0 * normalize(camera_eye - camera_lookat);
-        light.radius = 5.0f;
-        light.emission = make_float3(20.0f, 20.0f, 30.0f);
+        light.position = target + make_float3(-120.0f, 338.0f, 53.0f) * 0.05;
+        light.radius = 3.0f;
+        light.emission = make_float3(10.0f, 10.00f, 10.00f);
         lightParameters.push_back(light);
-    }*/
+    }
 
     int index = 0;
     for (auto light = lightParameters.begin(); light != lightParameters.end(); ++light)
@@ -687,7 +688,8 @@ void setupScene()
     const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
     //const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
     const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Ref.hdr");
-    // const std::string texpath = resolveDataPath("Desert_Highway/Road_to_MonumentValley_Env.hdr");
+    //const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Env.hdr");
+    //const std::string texpath = resolveDataPath("Desert_Highway/Road_to_MonumentValley_Env.hdr");
     context["envmap"]->setTextureSampler(sutil::loadTexture(context, texpath, default_color));
 
     // Material Parameters
@@ -713,6 +715,18 @@ void setupCamera()
     // 近づいたカット
     camera_eye = make_float3(1.65f, 196.01f, 287.97f);
     camera_lookat = make_float3(-7.06f, 76.34f, 26.96f);
+
+    // Lucyを中心にしたカット
+    camera_eye = make_float3(0.73f, 160.33f, 220.03f);
+    camera_lookat = make_float3(0.37f, 149.31f, 201.70f);
+
+    // Lucyを中心にしたカット2
+    camera_eye = make_float3(9.55f, 144.84f, 214.05f);
+    camera_lookat = make_float3(1.60f, 149.38f, 200.70f);
+
+    // Lucyを中心にしたカット3
+    //camera_eye = make_float3(9.08f, 150.98f, 210.78f);
+    //camera_lookat = make_float3(1.41f, 150.12f, 200.42f);
 
     camera_rotate = Matrix4x4::identity();
 }
@@ -1506,10 +1520,10 @@ int main(int argc, char** argv)
             bool finalFrame = false;
 
             // NOTE: time_limit が指定されていたら、サンプル数は無制限にする
-            for (int i = 0; total_sample < sampleMax || use_time_limit; ++i)
+            for (int i = 0; !finalFrame && (total_sample < sampleMax || use_time_limit); ++i)
             {
                 // TODO: 動作確認
-                finalFrame |= (!use_time_limit && i == sampleMax - 1);
+                finalFrame |= (!use_time_limit && total_sample == sampleMax - 1);
 
                 double now = sutil::currentTime();
                 double used_time = now - launch_time;
@@ -1517,7 +1531,7 @@ int main(int argc, char** argv)
                 double remain_time = time_limit - used_time;
                 last_time = now;
 
-                std::cout << "loop:" << i << "sample_per_launch\t:" << sample_per_launch << "\tdelta_time:" << delta_time << "\tdelta_time_per_sample:" << delta_time / sample_per_launch << "\tused_time:" << used_time << "\tremain_time:" << remain_time << "\tsample:" << total_sample << "\tframe_number:" << frame_number << std::endl;
+                std::cout << "loop:" << i << "\tsample_per_launch\t:" << sample_per_launch << "\tdelta_time:" << delta_time << "\tdelta_time_per_sample:" << delta_time / sample_per_launch << "\tused_time:" << used_time << "\tremain_time:" << remain_time << "\tsample:" << total_sample << "\tframe_number:" << frame_number << std::endl;
 
                 if (auto_set_sample_per_launch && i == 1)
                 {
@@ -1557,7 +1571,6 @@ int main(int argc, char** argv)
                     {
                         commandListWithDenoiser->execute();
                     }
-                    break;
                 }
                 else
                 {
@@ -1575,6 +1588,7 @@ int main(int argc, char** argv)
                 sutil::displayBufferPNG((out_file + "_original.png").c_str(), getOutputBuffer(), true);
                 sutil::displayBufferPNG((out_file + "_albedo.png").c_str(), getAlbedoBuffer(), true);
                 sutil::displayBufferPNG((out_file + "_normal.png").c_str(), getNormalBuffer(), true);
+                sutil::displayBufferPNG((out_file + "_liner.png").c_str(), getLinerBuffer(), true);
             }
 
             destroyContext();
