@@ -96,7 +96,7 @@ Buffer emptyBuffer;
 Buffer trainingDataBuffer;
 
 // Rendering
-float tonemap_exposure = 1.0f;
+float tonemap_exposure = 2.5f;
 
 // Postprocessing‚ÌTonemap‚ð—LŒø‚É‚·‚é‚©‚Ç‚¤‚©
 bool use_post_tonemap = false;
@@ -618,7 +618,7 @@ GeometryGroup createGeometryLight()
         light.lightType = SPHERE;
         light.position = make_float3(0.01f, 166.787f, 190.00f);
         light.radius = 2.0f;
-        light.emission = make_float3(20.0f, 15.00f, 2.00f);
+        light.emission = make_float3(20.0f, 15.00f, 2.00f) * 0.8;
         lightParameters.push_back(light);
     }
 
@@ -630,7 +630,7 @@ GeometryGroup createGeometryLight()
 
         light.position = target + make_float3(-120.0f, 338.0f, 53.0f) * 0.05;
         light.radius = 3.0f;
-        light.emission = make_float3(50.0f, 50.00f, 50.00f);
+        light.emission = make_float3(50.0f, 50.00f, 50.00f) * 0.1;
         lightParameters.push_back(light);
     }
 
@@ -686,10 +686,10 @@ void setupScene()
 
     // Envmap
     const float3 default_color = make_float3(1.0f, 1.0f, 1.0f);
-    const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
-    //const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Ref.hdr");
+    //const std::string texpath = resolveDataPath("GrandCanyon_C_YumaPoint/GCanyon_C_YumaPoint_3k.hdr");
+    const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Ref.hdr");
     //const std::string texpath = resolveDataPath("Ice_Lake/Ice_Lake_Env.hdr");
-    // const std::string texpath = resolveDataPath("Desert_Highway/Road_to_MonumentValley_Env.hdr");
+    //const std::string texpath = resolveDataPath("Desert_Highway/Road_to_MonumentValley_Env.hdr");
     context["envmap"]->setTextureSampler(sutil::loadTexture(context, texpath, default_color));
 
     // Material Parameters
