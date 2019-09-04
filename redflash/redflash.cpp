@@ -1520,10 +1520,10 @@ int main(int argc, char** argv)
             bool finalFrame = false;
 
             // NOTE: time_limit が指定されていたら、サンプル数は無制限にする
-            for (int i = 0; total_sample < sampleMax || use_time_limit; ++i)
+            for (int i = 0; !finalFrame && (total_sample < sampleMax || use_time_limit); ++i)
             {
                 // TODO: 動作確認
-                finalFrame |= (!use_time_limit && i == sampleMax - 1);
+                finalFrame |= (!use_time_limit && total_sample == sampleMax - 1);
 
                 double now = sutil::currentTime();
                 double used_time = now - launch_time;
@@ -1571,7 +1571,6 @@ int main(int argc, char** argv)
                     {
                         commandListWithDenoiser->execute();
                     }
-                    break;
                 }
                 else
                 {
@@ -1589,6 +1588,7 @@ int main(int argc, char** argv)
                 sutil::displayBufferPNG((out_file + "_original.png").c_str(), getOutputBuffer(), true);
                 sutil::displayBufferPNG((out_file + "_albedo.png").c_str(), getAlbedoBuffer(), true);
                 sutil::displayBufferPNG((out_file + "_normal.png").c_str(), getNormalBuffer(), true);
+                sutil::displayBufferPNG((out_file + "_liner.png").c_str(), getLinerBuffer(), true);
             }
 
             destroyContext();
