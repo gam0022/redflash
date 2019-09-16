@@ -63,6 +63,7 @@ int frame_number = 1;
 int total_sample = 0;
 bool auto_set_sample_per_launch = false;
 double auto_set_sample_per_launch_scale = 0.95;
+double last_frame_scale = 1.7;
 
 // Intersect Programs
 Program pgram_intersection = 0;
@@ -1271,6 +1272,13 @@ void printUsageAndExit(const std::string& argv0)
     exit(1);
 }
 
+void displayBufferPNG(const char* filename, Buffer& buffer)
+{
+    double begin = sutil::currentTime();
+    sutil::displayBufferPNG(filename, buffer, true);
+    double end = sutil::currentTime();
+    std::cout << "[info] save_png: " << filename << "\t" << (end - begin) << " sec." << std::endl;
+}
 
 int main(int argc, char** argv)
 {
@@ -1358,6 +1366,15 @@ int main(int argc, char** argv)
             }
             auto_set_sample_per_launch = true;
             auto_set_sample_per_launch_scale = atof(argv[++i]);
+        }
+        else if (arg == "--last_frame_scale")
+        {
+            if (i == argc - 1)
+            {
+                std::cerr << "Option '" << arg << "' requires additional argument.\n";
+                printUsageAndExit(argv[0]);
+            }
+            last_frame_scale = atof(argv[++i]);
         }
         else if (arg == "--tonemap_exposure")
         {
@@ -1505,6 +1522,9 @@ int main(int argc, char** argv)
             std::cout << "[info] sample_per_launch: " << sample_per_launch << std::endl;
             std::cout << "[info] auto_set_sample_per_launch: " << auto_set_sample_per_launch << std::endl;
             std::cout << "[info] auto_set_sample_per_launch_scale: " << auto_set_sample_per_launch_scale << std::endl;
+            std::cout << "[info] last_frame_scale: " << last_frame_scale << std::endl;
+            std::cout << "[info] tonemap_exposure: " << tonemap_exposure << std::endl;
+
 
             if (use_time_limit)
             {
@@ -1539,8 +1559,8 @@ int main(int argc, char** argv)
                     std::cout << "[info] chnage sample_per_launch: " << sample_per_launch << " to " << sample_per_launch << std::endl;
                 }
 
-                // NOTE: 前フレームの所要時間から次のフレームが制限時間内に終るかを予測する。時間超過を防ぐために1.1倍に見積もる
-                if (used_time + delta_time * 1.1 > time_limit)
+                // NOTE: 前フレームの所要時間から次のフレームが制限時間内に終るかを予測する。デノイズを考慮して last_frame_scale 倍に見積もる
+                if (used_time + delta_time * last_frame_scale > time_limit)
                 {
                     if (sample_per_launch == 1)
                     {
@@ -1581,14 +1601,20 @@ int main(int argc, char** argv)
                 total_sample += sample_per_launch;
             }
 
-            sutil::displayBufferPNG(out_file.c_str(), denoisedBuffer, true);
+            {
+                double now = sutil::currentTime();
+                std::cout << "[info] final_frame_rendering: " << (now - last_time) << " sec." << std::endl;
+            }
+
+
+            displayBufferPNG(out_file.c_str(), denoisedBuffer);
 
             if (flag_debug)
             {
-                sutil::displayBufferPNG((out_file + "_original.png").c_str(), getOutputBuffer(), true);
-                sutil::displayBufferPNG((out_file + "_albedo.png").c_str(), getAlbedoBuffer(), true);
-                sutil::displayBufferPNG((out_file + "_normal.png").c_str(), getNormalBuffer(), true);
-                sutil::displayBufferPNG((out_file + "_liner.png").c_str(), getLinerBuffer(), true);
+                displayBufferPNG((out_file + "_original.png").c_str(), getOutputBuffer());
+                displayBufferPNG((out_file + "_albedo.png").c_str(), getAlbedoBuffer());
+                displayBufferPNG((out_file + "_normal.png").c_str(), getNormalBuffer());
+                displayBufferPNG((out_file + "_liner.png").c_str(), getLinerBuffer());
             }
 
             destroyContext();
