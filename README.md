@@ -1,5 +1,7 @@
 # Redflash Renderer
 
+![pr33_v6_t3000_s1030_1920x1080](https://user-images.githubusercontent.com/759115/64941257-1549c080-d8a1-11e9-9cc6-a145bdaed7d8.png)
+
 Redflash is a physics-based renderer based on path tracing implemented on NVIDIA® OptiX 6.0, which can consistently draw scenes with mixed polygons and raymarching.
 
 Redflash は NVIDIA® OptiX 6.0 上で実装したパストレーシングによる物理ベースレンダラーで、ポリゴンとレイマーチングが混在したシーンを一貫して描画できます。
