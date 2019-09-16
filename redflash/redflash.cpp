@@ -718,20 +718,20 @@ void setupCamera()
     camera_lookat = make_float3(-7.06f, 76.34f, 26.96f);
 
     // Lucyを中心にしたカット
-    //camera_eye = make_float3(0.73f, 160.33f, 220.03f);
-    //camera_lookat = make_float3(0.37f, 149.31f, 201.70f);
+    camera_eye = make_float3(0.73f, 160.33f, 220.03f);
+    camera_lookat = make_float3(0.37f, 149.31f, 201.70f);
 
-    // Lucyを中心にしたカット2
-    //camera_eye = make_float3(9.55f, 144.84f, 214.05f);
-    //camera_lookat = make_float3(1.60f, 149.38f, 200.70f);
+    // Lucyを中心にしたカット2（レイトレ合宿7提出版）
+    camera_eye = make_float3(9.55f, 144.84f, 214.05f);
+    camera_lookat = make_float3(1.60f, 149.38f, 200.70f);
 
     // Lucyを中心にしたカット3
     //camera_eye = make_float3(9.08f, 150.98f, 210.78f);
     //camera_lookat = make_float3(1.41f, 150.12f, 200.42f);
 
     // Mandelbox全体
-    camera_eye = make_float3(-815.63f, -527.19f, -674.00f);
-    camera_lookat = make_float3(-7.06f, 76.34f, 26.96f);
+    //camera_eye = make_float3(-815.63f, -527.19f, -674.00f);
+    //camera_lookat = make_float3(-7.06f, 76.34f, 26.96f);
 
     camera_rotate = Matrix4x4::identity();
 }
