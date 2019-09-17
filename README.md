@@ -61,5 +61,5 @@ Won 4th prize at [レイトレ合宿7](https://sites.google.com/site/raytracingc
 
 ## Links
 
-- [](https://gam0022.net/blog/2019/09/18/rtcamp7/)
+- [レイトレ合宿7 参加報告 | gam0022.net](https://gam0022.net/blog/2019/09/18/rtcamp7/)
 - [redflash renderer / Raytracing Camp 7 - Speaker Deck](https://speakerdeck.com/gam0022/raytracing-camp-7)
