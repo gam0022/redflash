@@ -372,7 +372,7 @@ void createContext()
     Buffer output_buffer = sutil::createOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
     context["output_buffer"]->set(output_buffer);
 
-    if (use_pbo)
+    if (use_pbo || true)
     {
         Buffer liner_buffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
         context["liner_buffer"]->set(liner_buffer);
