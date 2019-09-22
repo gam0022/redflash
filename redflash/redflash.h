@@ -2,6 +2,12 @@
 
 #include <optixu/optixu_math_namespace.h>
 
+using namespace optix;
+
+#ifndef RT_FUNCTION
+#define RT_FUNCTION __forceinline__ __device__
+#endif
+
 struct State
 {
     optix::float3 hitpoint;
@@ -11,12 +17,9 @@ struct State
 
 enum BrdfType
 {
-    DISNEY, GLASS
+    DIFFUSE,
+    DISNEY
 };
-
-#ifndef RT_FUNCTION
-#define RT_FUNCTION __forceinline__ __device__
-#endif
 
 struct MaterialParameter
 {
@@ -77,4 +80,29 @@ struct LightSample
     optix::float3 normal;
     optix::float3 emission;
     float pdf;
+};
+
+struct PerRayData_pathtrace
+{
+    float3 radiance;
+    float3 attenuation;
+
+    float3 albedo;
+    float3 normal;
+
+    float3 origin;
+    float3 direction;
+
+    float pdf;
+    float3 wo;
+
+    unsigned int seed;
+    int depth;
+    bool done;
+    bool specularBounce;
+};
+
+struct PerRayData_pathtrace_shadow
+{
+    bool inShadow;
 };

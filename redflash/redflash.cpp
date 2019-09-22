@@ -417,6 +417,40 @@ void createContext()
     ptx = sutil::getPtxString(SAMPLE_NAME, "intersect_sphere.cu");
     pgram_bounding_box_sphere = context->createProgramFromPTXString(ptx, "bounds");
     pgram_intersection_sphere = context->createProgramFromPTXString(ptx, "sphere_intersect");
+
+    // BSDF
+    const char *ptx_diffuse = sutil::getPtxString(SAMPLE_NAME, "bsdf_diffuse.cu");
+    const char *ptx_disney = sutil::getPtxString(SAMPLE_NAME, "bsdf_disney.cu");
+
+    Program prg;
+    const int BSDF_TYPE_COUNT = 2;
+
+    optix::Buffer buffer_BRDF_sample = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_PROGRAM_ID, BSDF_TYPE_COUNT);
+    int* brdfSample = (int*)buffer_BRDF_sample->map(0, RT_BUFFER_MAP_WRITE_DISCARD);
+    prg = context->createProgramFromPTXString(ptx_diffuse, "Sample");
+    brdfSample[0] = prg->getId();
+    prg = context->createProgramFromPTXString(ptx_disney, "Sample");
+    brdfSample[1] = prg->getId();
+    buffer_BRDF_sample->unmap();
+    context["sysBRDFSample"]->setBuffer(buffer_BRDF_sample);
+
+    optix::Buffer buffer_BRDF_eval = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_PROGRAM_ID, BSDF_TYPE_COUNT);
+    int* BRDF_eval = (int*)buffer_BRDF_eval->map(0, RT_BUFFER_MAP_WRITE_DISCARD);
+    prg = context->createProgramFromPTXString(ptx_diffuse, "Eval");
+    BRDF_eval[0] = prg->getId();
+    prg = context->createProgramFromPTXString(ptx_disney, "Eval");
+    BRDF_eval[1] = prg->getId();
+    buffer_BRDF_eval->unmap();
+    context["sysBRDFEval"]->setBuffer(buffer_BRDF_eval);
+
+    optix::Buffer buffer_BRDF_pdf = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_PROGRAM_ID, BSDF_TYPE_COUNT);
+    int* BRDF_pdf = (int*)buffer_BRDF_pdf->map(0, RT_BUFFER_MAP_WRITE_DISCARD);
+    prg = context->createProgramFromPTXString(ptx_diffuse, "Pdf");
+    BRDF_pdf[0] = prg->getId();
+    prg = context->createProgramFromPTXString(ptx_disney, "Pdf");
+    BRDF_pdf[1] = prg->getId();
+    buffer_BRDF_pdf->unmap();
+    context["sysBRDFPdf"]->setBuffer(buffer_BRDF_pdf);
 }
 
 void setupPostprocessing()
@@ -479,6 +513,7 @@ void registerMaterial(GeometryInstance& gi, MaterialParameter& mat, bool isLight
     materialParameters.push_back(mat);
     gi->setMaterialCount(1);
     gi->setMaterial(0, isLight ? light_material : common_material);
+    gi["programId"]->setInt(mat.brdf);// FIXME
     gi["materialId"]->setInt(materialCount++);
 }
 
