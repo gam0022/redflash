@@ -176,7 +176,7 @@ rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
 rtDeclareVariable(float, t_hit, rtIntersectionDistance, );
 
 rtBuffer<MaterialParameter> sysMaterialParameters;
-rtDeclareVariable(int, materialId, , );
+rtDeclareVariable(int, material_id, , );
 rtDeclareVariable(int, bsdf_id, , );
 
 rtDeclareVariable(int, sysNumberOfLights, , );
@@ -299,7 +299,7 @@ RT_PROGRAM void closest_hit()
     state.ffnormal = ffnormal;
 
     // FIXME: materialCustomProgramId みたいな名前で関数ポインタを渡して、パラメータをプロシージャルにセットしたい
-    MaterialParameter mat = sysMaterialParameters[materialId];
+    MaterialParameter mat = sysMaterialParameters[material_id];
 
     current_prd.radiance += mat.emission * current_prd.attenuation;
     current_prd.wo = -ray.direction;

@@ -514,7 +514,7 @@ void registerMaterial(GeometryInstance& gi, MaterialParameter& mat, bool isLight
     gi->setMaterialCount(1);
     gi->setMaterial(0, isLight ? light_material : common_material);
     gi["bsdf_id"]->setInt(mat.bsdf);
-    gi["materialId"]->setInt(materialCount++);
+    gi["material_id"]->setInt(materialCount++);
 }
 
 void updateMaterialParameters()
