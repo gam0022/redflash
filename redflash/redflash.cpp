@@ -372,37 +372,18 @@ void createContext()
     Buffer output_buffer = sutil::createOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
     context["output_buffer"]->set(output_buffer);
 
-    if (use_pbo)
-    {
-        Buffer liner_buffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
-        context["liner_buffer"]->set(liner_buffer);
+    Buffer liner_buffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
+    context["liner_buffer"]->set(liner_buffer);
 
-        Buffer tonemappedBuffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
-        context["tonemapped_buffer"]->set(tonemappedBuffer);
+    Buffer tonemappedBuffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
+    context["tonemapped_buffer"]->set(tonemappedBuffer);
 
-        Buffer albedoBuffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
-        context["input_albedo_buffer"]->set(albedoBuffer);
+    Buffer albedoBuffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
+    context["input_albedo_buffer"]->set(albedoBuffer);
 
-        // The normal buffer use float4 for performance reasons, the fourth channel will be ignored.
-        Buffer normalBuffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
-        context["input_normal_buffer"]->set(normalBuffer);
-    }
-    else
-    {
-        // NOTE: RT_BUFFER_GPU_LOCALの方ががパフォーマンスが向上するので、ウィンドウ出さないならこっちを使う
-        Buffer liner_buffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT4, width, height);
-        context["liner_buffer"]->set(liner_buffer);
-
-        Buffer tonemappedBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT4, width, height);
-        context["tonemapped_buffer"]->set(tonemappedBuffer);
-
-        Buffer albedoBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT4, width, height);
-        context["input_albedo_buffer"]->set(albedoBuffer);
-
-        // The normal buffer use float4 for performance reasons, the fourth channel will be ignored.
-        Buffer normalBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT4, width, height);
-        context["input_normal_buffer"]->set(normalBuffer);
-    }
+    // The normal buffer use float4 for performance reasons, the fourth channel will be ignored.
+    Buffer normalBuffer = sutil::createInputOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
+    context["input_normal_buffer"]->set(normalBuffer);
 
     denoisedBuffer = sutil::createOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
     emptyBuffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, 0, 0);
