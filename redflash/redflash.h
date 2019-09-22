@@ -15,7 +15,7 @@ struct State
     optix::float3 ffnormal;
 };
 
-enum BrdfType
+enum BSDFType
 {
     DIFFUSE,
     DISNEY
@@ -37,7 +37,7 @@ struct MaterialParameter
         sheenTint = 0.5f;
         clearcoat = 0.0f;
         clearcoatGloss = 1.0f;
-        brdf = DISNEY;
+        bsdf = DISNEY;
         albedoID = RT_TEXTURE_ID_NULL;
     }
 
@@ -54,7 +54,7 @@ struct MaterialParameter
     float sheenTint;
     float clearcoat;
     float clearcoatGloss;
-    BrdfType brdf;
+    BSDFType bsdf;
 };
 
 enum LightType

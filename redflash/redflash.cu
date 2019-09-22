@@ -177,7 +177,7 @@ rtDeclareVariable(float, t_hit, rtIntersectionDistance, );
 
 rtBuffer<MaterialParameter> sysMaterialParameters;
 rtDeclareVariable(int, materialId, , );
-rtDeclareVariable(int, programId, , );
+rtDeclareVariable(int, bsdf_id, , );
 
 rtDeclareVariable(int, sysNumberOfLights, , );
 rtBuffer<LightParameter> sysLightParameters;
@@ -270,8 +270,8 @@ RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
 
     current_prd.direction = lightDir;
 
-    sysBRDFPdf[programId](mat, state, current_prd);
-    float3 f = sysBRDFEval[programId](mat, state, current_prd);
+    sysBRDFPdf[bsdf_id](mat, state, current_prd);
+    float3 f = sysBRDFEval[bsdf_id](mat, state, current_prd);
     float3 result = powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
 
     // FIXME: ª–{‚ÌŒ´ˆö‚ð‰ð–¾‚µ‚½‚¢
@@ -319,9 +319,9 @@ RT_PROGRAM void closest_hit()
     }
 
     // BRDF Sampling
-    sysBRDFSample[programId](mat, state, current_prd);
-    sysBRDFPdf[programId](mat, state, current_prd);
-    float3 f = sysBRDFEval[programId](mat, state, current_prd);
+    sysBRDFSample[bsdf_id](mat, state, current_prd);
+    sysBRDFPdf[bsdf_id](mat, state, current_prd);
+    float3 f = sysBRDFEval[bsdf_id](mat, state, current_prd);
 
     if (current_prd.pdf > 0.0f)
     {

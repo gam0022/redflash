@@ -513,7 +513,7 @@ void registerMaterial(GeometryInstance& gi, MaterialParameter& mat, bool isLight
     materialParameters.push_back(mat);
     gi->setMaterialCount(1);
     gi->setMaterial(0, isLight ? light_material : common_material);
-    gi["programId"]->setInt(mat.brdf);// FIXME
+    gi["bsdf_id"]->setInt(mat.bsdf);
     gi["materialId"]->setInt(materialCount++);
 }
 
@@ -535,7 +535,7 @@ void updateMaterialParameters()
         dst->sheenTint = mat.sheenTint;
         dst->clearcoat = mat.clearcoat;
         dst->clearcoatGloss = mat.clearcoatGloss;
-        dst->brdf = mat.brdf;
+        dst->bsdf = mat.bsdf;
         dst->albedoID = mat.albedoID;
     }
     m_bufferMaterialParameters->unmap();
