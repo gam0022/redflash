@@ -271,9 +271,7 @@ RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
     current_prd.direction = lightDir;
 
     sysBRDFPdf[programId](mat, state, current_prd);
-    // Pdf(mat, state, current_prd);
     float3 f = sysBRDFEval[programId](mat, state, current_prd);
-    // float3 f = Eval(mat, state, current_prd);
     float3 result = powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
 
     // FIXME: ª–{‚ÌŒ´ˆö‚ğ‰ğ–¾‚µ‚½‚¢
