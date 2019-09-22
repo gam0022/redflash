@@ -10,9 +10,9 @@ using namespace optix;
 
 struct State
 {
-    optix::float3 hitpoint;
-    optix::float3 normal;
-    optix::float3 ffnormal;
+    float3 hitpoint;
+    float3 normal;
+    float3 ffnormal;
 };
 
 enum BSDFType
@@ -42,8 +42,8 @@ struct MaterialParameter
     }
 
     int albedoID;
-    optix::float3 albedo;
-    optix::float3 emission;
+    float3 albedo;
+    float3 emission;
     float metallic;
     float subsurface;
     float specular;
@@ -64,11 +64,11 @@ enum LightType
 
 struct LightParameter
 {
-    optix::float3 position;
-    optix::float3 normal;
-    optix::float3 emission;
-    optix::float3 u;
-    optix::float3 v;
+    float3 position;
+    float3 normal;
+    float3 emission;
+    float3 u;
+    float3 v;
     float area;
     float radius;
     LightType lightType;
@@ -76,9 +76,9 @@ struct LightParameter
 
 struct LightSample
 {
-    optix::float3 surfacePos;
-    optix::float3 normal;
-    optix::float3 emission;
+    float3 surfacePos;
+    float3 normal;
+    float3 emission;
     float pdf;
 };
 
