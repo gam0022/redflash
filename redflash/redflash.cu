@@ -183,9 +183,9 @@ rtDeclareVariable(int, sysNumberOfLights, , );
 rtBuffer<LightParameter> sysLightParameters;
 rtDeclareVariable(int, lightMaterialId, , );
 
-rtBuffer< rtCallableProgramId<void(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)> > sysBRDFPdf;
-rtBuffer< rtCallableProgramId<void(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)> > sysBRDFSample;
-rtBuffer< rtCallableProgramId<float3(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)> > sysBRDFEval;
+rtBuffer< rtCallableProgramId<void(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)> > prgs_BSDF_Pdf;
+rtBuffer< rtCallableProgramId<void(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)> > prgs_BSDF_Sample;
+rtBuffer< rtCallableProgramId<float3(MaterialParameter &mat, State &state, PerRayData_pathtrace &prd)> > prgs_BSDF_Eval;
 
 RT_PROGRAM void light_closest_hit()
 {
@@ -270,8 +270,8 @@ RT_FUNCTION float3 DirectLight(MaterialParameter &mat, State &state)
 
     current_prd.direction = lightDir;
 
-    sysBRDFPdf[bsdf_id](mat, state, current_prd);
-    float3 f = sysBRDFEval[bsdf_id](mat, state, current_prd);
+    prgs_BSDF_Pdf[bsdf_id](mat, state, current_prd);
+    float3 f = prgs_BSDF_Eval[bsdf_id](mat, state, current_prd);
     float3 result = powerHeuristic(lightPdf, current_prd.pdf) * current_prd.attenuation * f * lightSample.emission / max(0.001f, lightPdf);
 
     // FIXME: ª–{‚ÌŒ´ˆö‚ð‰ð–¾‚µ‚½‚¢
@@ -319,9 +319,9 @@ RT_PROGRAM void closest_hit()
     }
 
     // BRDF Sampling
-    sysBRDFSample[bsdf_id](mat, state, current_prd);
-    sysBRDFPdf[bsdf_id](mat, state, current_prd);
-    float3 f = sysBRDFEval[bsdf_id](mat, state, current_prd);
+    prgs_BSDF_Sample[bsdf_id](mat, state, current_prd);
+    prgs_BSDF_Pdf[bsdf_id](mat, state, current_prd);
+    float3 f = prgs_BSDF_Eval[bsdf_id](mat, state, current_prd);
 
     if (current_prd.pdf > 0.0f)
     {
