@@ -364,16 +364,18 @@ void setupBSDF(std::vector<std::string> &bsdf_paths)
     }
 
     std::string var_prefix = "prgs_BSDF_";
-    std::vector<std::string> bsdf_prg_names = {"Sample", "Eval", "Pdf"};
+    std::vector<std::string> bsdf_prg_names = { "Sample", "Eval", "Pdf" };
 
     for (auto it = bsdf_prg_names.begin(); it != bsdf_prg_names.end(); ++it) {
         optix::Buffer buffer_BSDF_prgs = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_PROGRAM_ID, bsdf_type_count);
         int* BSDF_prgs = (int*)buffer_BSDF_prgs->map(0, RT_BUFFER_MAP_WRITE_DISCARD);
+
         for (int i = 0; i < bsdf_type_count; ++i)
         {
             Program prg = context->createProgramFromPTXString(ptxs[i], *it);
             BSDF_prgs[i] = prg->getId();
         }
+
         buffer_BSDF_prgs->unmap();
         context[var_prefix + *it]->setBuffer(buffer_BSDF_prgs);
     }
@@ -445,7 +447,7 @@ void createContext()
     pgram_intersection_sphere = context->createProgramFromPTXString(ptx, "sphere_intersect");
 
     // BSDF
-    std::vector<std::string> bsdf_paths {"bsdf_diffuse.cu", "bsdf_disney.cu"};
+    std::vector<std::string> bsdf_paths{ "bsdf_diffuse.cu", "bsdf_disney.cu" };
     setupBSDF(bsdf_paths);
 }
 
