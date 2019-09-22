@@ -193,7 +193,7 @@ std::string resolveDataPath(const char* filename)
     source_locations.push_back(fs::current_path().string() + "/data/" + filename);
     source_locations.push_back(base_dir + "/data/" + filename);
 
-    for (std::vector<std::string>::const_iterator it = source_locations.begin(); it != source_locations.end(); ++it) {
+    for (auto it = source_locations.cbegin(); it != source_locations.end(); ++it) {
         std::cout << "[info] resolvePath source_location: " + *it << std::endl;
 
         // Try to get source code from file
@@ -366,7 +366,7 @@ void setupBSDF(std::vector<std::string> &bsdf_paths)
     std::string var_prefix = "prgs_BSDF_";
     std::vector<std::string> bsdf_prg_names = { "Sample", "Eval", "Pdf" };
 
-    for (auto it = bsdf_prg_names.begin(); it != bsdf_prg_names.end(); ++it) {
+    for (auto it = bsdf_prg_names.cbegin(); it != bsdf_prg_names.end(); ++it) {
         optix::Buffer buffer_BSDF_prgs = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_PROGRAM_ID, bsdf_type_count);
         int* BSDF_prgs = (int*)buffer_BSDF_prgs->map(0, RT_BUFFER_MAP_WRITE_DISCARD);
 
