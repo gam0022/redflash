@@ -16,7 +16,7 @@ rtDeclareVariable(float3, aabb_min, , );
 rtDeclareVariable(float3, aabb_max, , );
 rtDeclareVariable(float3, texcoord, attribute texcoord, );
 
-float dMenger(float3 z0, float3 offset, float scale) {
+RT_FUNCTION float dMenger(float3 z0, float3 offset, float scale) {
     float4 z = make_float4(z0, 1.0);
     for (int n = 0; n < 4; n++) {
         // z = abs(z);
@@ -62,19 +62,19 @@ float dMenger(float3 z0, float3 offset, float scale) {
     return (length(make_float3(max(abs(z.x) - 1.0, 0.0), max(abs(z.y) - 1.0, 0.0), max(abs(z.z) - 1.0, 0.0))) - 0.05) / z.w;
 }
 
-float3 get_xyz(float4 a)
+RT_FUNCTION float3 get_xyz(float4 a)
 {
     return make_float3(a.x, a.y, a.z);
 }
 
-void set_xyz(float4 &a, float3 b)
+RT_FUNCTION void set_xyz(float4 &a, float3 b)
 {
     a.x = b.x;
     a.y = b.y;
     a.z = b.z;
 }
 
-float dMandelFast(float3 p, float scale, int n) {
+RT_FUNCTION float dMandelFast(float3 p, float scale, int n) {
     float4 q0 = make_float4(p, 1.);
     float4 q = q0;
 
