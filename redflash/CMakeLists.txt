@@ -45,6 +45,8 @@ if(GLUT_FOUND AND OPENGL_FOUND)
 
         # These files are common among multiple samples
         random.h
+        
+        glm/
         )
 else()
     # GLUT or OpenGL not found

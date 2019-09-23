@@ -3,7 +3,15 @@
 #include "random.h"
 #include <optix_world.h>
 
+#define GLM_FORCE_CUDA
+#define CUDA_VERSION 10000
+#define GLM_SWIZZLE GLM_SWIZZLE_FULL
+// #include <glm/glm.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+
 using namespace optix;
+using namespace glm;
 
 rtDeclareVariable(float, scene_epsilon, , );
 rtDeclareVariable(float3, geometric_normal, attribute geometric_normal, );
@@ -94,6 +102,27 @@ float dMandelFast(float3 p, float scale, int n) {
 
     // return length( q.xyz ) / abs( q.w );
     return length(get_xyz(q)) / abs(q.w);
+}
+
+float dMandelFastGLM(vec3 p, float scale, int n) {
+    vec4 q0 = vec4(p, 1.);
+    vec4 q = q0;
+
+    for (int i = 0; i < n; i++) {
+        // q.xyz = clamp(q.xyz, -1.0, 1.0) * 2.0 - q.xyz;
+        // set_xyz(q, clamp(get_xyz(q), -1.0, 1.0) * 2.0 - get_xyz(q));
+        vec4 tmp = clamp(q, -1.0, 1.0) * 2.0 - q;
+        q.x = tmp.x;
+        q.y = tmp.y;
+        q.z = tmp.z;
+
+        // q = q * scale / clamp( dot( q.xyz, q.xyz ), 0.3, 1.0 ) + q0;
+        vec3 q_xyz = q.xyz;
+        q = q * scale / clamp(dot(q_xyz, q_xyz), 0.3, 1.0) + q0;
+    }
+
+    // return length( q.xyz ) / abs( q.w );
+    return length(q.xyz) / abs(q.w);
 }
 
 float map(float3 p)

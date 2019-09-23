@@ -342,6 +342,9 @@ OptiX_INCLUDE:PATH=C:/ProgramData/NVIDIA Corporation/OptiX SDK 6.0.0/include
 //Path to OptiX installed location.
 OptiX_INSTALL_DIR:PATH=C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0
 
+//Dependencies for target
+glm_shared_LIB_DEPENDS:STATIC=
+
 //Path to a file.
 mdl_wrapper_INCLUDE_DIR:PATH=C:/Users/gam0022/Dropbox/redflash/support/mdl_wrapper/include
 

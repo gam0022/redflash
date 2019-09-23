@@ -32,6 +32,7 @@
     <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\bsdf_disney.cu">
       <Filter>CUDA Files</Filter>
     </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\redflash" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
