@@ -62,12 +62,12 @@ RT_FUNCTION float dMenger(float3 z0, float3 offset, float scale) {
     return (length(make_float3(max(abs(z.x) - 1.0, 0.0), max(abs(z.y) - 1.0, 0.0), max(abs(z.z) - 1.0, 0.0))) - 0.05) / z.w;
 }
 
-RT_FUNCTION float3 get_xyz(float4 a)
+RT_FUNCTION float3 get_xyz(const float4 &a)
 {
     return make_float3(a.x, a.y, a.z);
 }
 
-RT_FUNCTION void set_xyz(float4 &a, float3 b)
+RT_FUNCTION void set_xyz(float4 &a, const float3 &b)
 {
     a.x = b.x;
     a.y = b.y;
