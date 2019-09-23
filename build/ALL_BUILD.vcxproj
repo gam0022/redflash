@@ -67,7 +67,7 @@
     </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -77,7 +77,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -87,7 +87,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -97,7 +97,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <Midl>
-      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -167,6 +167,14 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\ZERO_CHECK.vcxproj">
       <Project>{55DE6A30-0C48-30F8-BF3E-8219D2DACB86}</Project>
       <Name>ZERO_CHECK</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src\glfw.vcxproj">
+      <Project>{78B6DC90-473B-397C-9BCF-D8939FC90A5F}</Project>
+      <Name>glfw</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\support\imgui\imgui.vcxproj">
+      <Project>{EF43906E-CF5E-3638-8BAC-7E7029690A16}</Project>
+      <Name>imgui</Name>
     </ProjectReference>
     <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\optixBuffersOfBuffers\optixBuffersOfBuffers.vcxproj">
       <Project>{B7FAB9E6-846A-387B-98B6-B43E2546D98B}</Project>

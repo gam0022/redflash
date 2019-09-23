@@ -84,7 +84,7 @@ set(CUDA_NVCC_FLAGS_RELEASE  ; )
 set(CUDA_NVCC_FLAGS_MINSIZEREL  ; )
 set(CUDA_NVCC_FLAGS_RELWITHDEBINFO  ; )
 set(nvcc_flags -m64;-D_USE_MATH_DEFINES;-DNOMINMAX) # list
-set(CUDA_NVCC_INCLUDE_ARGS "-IC:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.1/include;-IC:/ProgramData/NVIDIA Corporation/OptiX SDK 6.0.0/include;-IC:/Users/gam0022/Dropbox/redflash/sutil;-IC:/Users/gam0022/Dropbox/redflash;-IC:/ProgramData/NVIDIA Corporation/OptiX SDK 6.0.0/include/optixu;-IC:/Users/gam0022/Dropbox/redflash/support/mdl-sdk/include;-IC:/Users/gam0022/Dropbox/redflash/build;-IC:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.1/include;-IC:/Users/gam0022/Dropbox/redflash/primeSimplePP/../primeSimple") # list (needs to be in quotes to handle spaces properly).
+set(CUDA_NVCC_INCLUDE_ARGS "-IC:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.1/include;-IC:/ProgramData/NVIDIA Corporation/OptiX SDK 6.0.0/include;-IC:/Users/gam0022/Dropbox/redflash/sutil;-IC:/Users/gam0022/Dropbox/redflash;-IC:/ProgramData/NVIDIA Corporation/OptiX SDK 6.0.0/include/optixu;-IC:/Users/gam0022/Dropbox/redflash/support/mdl-sdk/include;-IC:/Users/gam0022/Dropbox/redflash/build;-IC:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.1/include;-IC:/Users/gam0022/Dropbox/redflash/support;-IC:/Users/gam0022/Dropbox/redflash/primeSimplePP/../primeSimple") # list (needs to be in quotes to handle spaces properly).
 set(format_flag "-c") # string
 set(cuda_language_flag ) # list
 

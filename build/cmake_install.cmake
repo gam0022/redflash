@@ -29,6 +29,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
+  include("C:/Users/gam0022/Dropbox/redflash/build/support/imgui/cmake_install.cmake")
+  include("C:/Users/gam0022/Dropbox/redflash/build/support/glfw/cmake_install.cmake")
   include("C:/Users/gam0022/Dropbox/redflash/build/optixBuffersOfBuffers/cmake_install.cmake")
   include("C:/Users/gam0022/Dropbox/redflash/build/optixCallablePrograms/cmake_install.cmake")
   include("C:/Users/gam0022/Dropbox/redflash/build/optixCompressedTexture/cmake_install.cmake")
