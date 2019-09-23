@@ -331,6 +331,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\redflash.cu" />
     <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\intersect_raymarching.cu" />
     <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\intersect_sphere.cu" />
+    <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\bsdf_diffuse.cu" />
+    <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\bsdf_disney.cu" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\ZERO_CHECK.vcxproj">

@@ -2,21 +2,24 @@
 
 #include <optixu/optixu_math_namespace.h>
 
-struct State
-{
-    optix::float3 hitpoint;
-    optix::float3 normal;
-    optix::float3 ffnormal;
-};
-
-enum BrdfType
-{
-    DISNEY, GLASS
-};
+using namespace optix;
 
 #ifndef RT_FUNCTION
 #define RT_FUNCTION __forceinline__ __device__
 #endif
+
+struct State
+{
+    float3 hitpoint;
+    float3 normal;
+    float3 ffnormal;
+};
+
+enum BSDFType
+{
+    DIFFUSE,
+    DISNEY
+};
 
 struct MaterialParameter
 {
@@ -34,13 +37,13 @@ struct MaterialParameter
         sheenTint = 0.5f;
         clearcoat = 0.0f;
         clearcoatGloss = 1.0f;
-        brdf = DISNEY;
+        bsdf = DISNEY;
         albedoID = RT_TEXTURE_ID_NULL;
     }
 
     int albedoID;
-    optix::float3 albedo;
-    optix::float3 emission;
+    float3 albedo;
+    float3 emission;
     float metallic;
     float subsurface;
     float specular;
@@ -51,7 +54,7 @@ struct MaterialParameter
     float sheenTint;
     float clearcoat;
     float clearcoatGloss;
-    BrdfType brdf;
+    BSDFType bsdf;
 };
 
 enum LightType
@@ -61,11 +64,11 @@ enum LightType
 
 struct LightParameter
 {
-    optix::float3 position;
-    optix::float3 normal;
-    optix::float3 emission;
-    optix::float3 u;
-    optix::float3 v;
+    float3 position;
+    float3 normal;
+    float3 emission;
+    float3 u;
+    float3 v;
     float area;
     float radius;
     LightType lightType;
@@ -73,8 +76,33 @@ struct LightParameter
 
 struct LightSample
 {
-    optix::float3 surfacePos;
-    optix::float3 normal;
-    optix::float3 emission;
+    float3 surfacePos;
+    float3 normal;
+    float3 emission;
     float pdf;
+};
+
+struct PerRayData_pathtrace
+{
+    float3 radiance;
+    float3 attenuation;
+
+    float3 albedo;
+    float3 normal;
+
+    float3 origin;
+    float3 direction;
+
+    float pdf;
+    float3 wo;
+
+    unsigned int seed;
+    int depth;
+    bool done;
+    bool specularBounce;
+};
+
+struct PerRayData_pathtrace_shadow
+{
+    bool inShadow;
 };

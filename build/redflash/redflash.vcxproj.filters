@@ -26,6 +26,12 @@
     <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\intersect_sphere.cu">
       <Filter>CUDA Files</Filter>
     </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\bsdf_diffuse.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
+    <None Include="C:\Users\gam0022\Dropbox\redflash\redflash\bsdf_disney.cu">
+      <Filter>CUDA Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

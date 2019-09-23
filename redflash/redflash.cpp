@@ -193,7 +193,7 @@ std::string resolveDataPath(const char* filename)
     source_locations.push_back(fs::current_path().string() + "/data/" + filename);
     source_locations.push_back(base_dir + "/data/" + filename);
 
-    for (std::vector<std::string>::const_iterator it = source_locations.begin(); it != source_locations.end(); ++it) {
+    for (auto it = source_locations.cbegin(); it != source_locations.end(); ++it) {
         std::cout << "[info] resolvePath source_location: " + *it << std::endl;
 
         // Try to get source code from file
@@ -353,6 +353,34 @@ GeometryInstance createMesh(
     return mesh.geom_instance;
 }
 
+void setupBSDF(std::vector<std::string> &bsdf_paths)
+{
+    const int bsdf_type_count = bsdf_paths.size();
+
+    std::vector<std::string> ptxs;
+    for (int i = 0; i < bsdf_type_count; ++i)
+    {
+        ptxs.push_back(sutil::getPtxString(SAMPLE_NAME, bsdf_paths[i].c_str()));
+    }
+
+    std::string var_prefix = "prgs_BSDF_";
+    std::vector<std::string> bsdf_prg_names = { "Sample", "Eval", "Pdf" };
+
+    for (auto it = bsdf_prg_names.cbegin(); it != bsdf_prg_names.end(); ++it) {
+        optix::Buffer buffer_BSDF_prgs = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_PROGRAM_ID, bsdf_type_count);
+        int* BSDF_prgs = (int*)buffer_BSDF_prgs->map(0, RT_BUFFER_MAP_WRITE_DISCARD);
+
+        for (int i = 0; i < bsdf_type_count; ++i)
+        {
+            Program prg = context->createProgramFromPTXString(ptxs[i], *it);
+            BSDF_prgs[i] = prg->getId();
+        }
+
+        buffer_BSDF_prgs->unmap();
+        context[var_prefix + *it]->setBuffer(buffer_BSDF_prgs);
+    }
+}
+
 void createContext()
 {
     context = Context::create();
@@ -417,6 +445,10 @@ void createContext()
     ptx = sutil::getPtxString(SAMPLE_NAME, "intersect_sphere.cu");
     pgram_bounding_box_sphere = context->createProgramFromPTXString(ptx, "bounds");
     pgram_intersection_sphere = context->createProgramFromPTXString(ptx, "sphere_intersect");
+
+    // BSDF
+    std::vector<std::string> bsdf_paths{ "bsdf_diffuse.cu", "bsdf_disney.cu" };
+    setupBSDF(bsdf_paths);
 }
 
 void setupPostprocessing()
@@ -479,7 +511,8 @@ void registerMaterial(GeometryInstance& gi, MaterialParameter& mat, bool isLight
     materialParameters.push_back(mat);
     gi->setMaterialCount(1);
     gi->setMaterial(0, isLight ? light_material : common_material);
-    gi["materialId"]->setInt(materialCount++);
+    gi["bsdf_id"]->setInt(mat.bsdf);
+    gi["material_id"]->setInt(materialCount++);
 }
 
 void updateMaterialParameters()
@@ -500,7 +533,7 @@ void updateMaterialParameters()
         dst->sheenTint = mat.sheenTint;
         dst->clearcoat = mat.clearcoat;
         dst->clearcoatGloss = mat.clearcoatGloss;
-        dst->brdf = mat.brdf;
+        dst->bsdf = mat.bsdf;
         dst->albedoID = mat.albedoID;
     }
     m_bufferMaterialParameters->unmap();
