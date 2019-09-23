@@ -16,7 +16,7 @@ rtDeclareVariable(float3, aabb_min, , );
 rtDeclareVariable(float3, aabb_max, , );
 rtDeclareVariable(float3, texcoord, attribute texcoord, );
 
-float dMenger(float3 z0, float3 offset, float scale) {
+RT_FUNCTION float dMenger(float3 z0, float3 offset, float scale) {
     float4 z = make_float4(z0, 1.0);
     for (int n = 0; n < 4; n++) {
         // z = abs(z);
@@ -62,33 +62,29 @@ float dMenger(float3 z0, float3 offset, float scale) {
     return (length(make_float3(max(abs(z.x) - 1.0, 0.0), max(abs(z.y) - 1.0, 0.0), max(abs(z.z) - 1.0, 0.0))) - 0.05) / z.w;
 }
 
-float3 get_xyz(float4 p)
+RT_FUNCTION float3 get_xyz(const float4 &a)
 {
-    return make_float3(p.x, p.y, p.z);
+    return make_float3(a.x, a.y, a.z);
 }
 
-// not work...
-void set_xyz(float4 &a, float3 b)
+RT_FUNCTION void set_xyz(float4 &a, const float3 &b)
 {
     a.x = b.x;
     a.y = b.y;
-    a.x = b.z;
+    a.z = b.z;
 }
 
-float dMandelFast(float3 p, float scale, int n) {
+RT_FUNCTION float dMandelFast(float3 p, float scale, int n) {
     float4 q0 = make_float4(p, 1.);
     float4 q = q0;
 
     for (int i = 0; i < n; i++) {
         // q.xyz = clamp(q.xyz, -1.0, 1.0) * 2.0 - q.xyz;
-        // set_xyz(q, clamp(get_xyz(q), -1.0, 1.0) * 2.0 - get_xyz(q));
-        float4 tmp = clamp(q, -1.0, 1.0) * 2.0 - q;
-        q.x = tmp.x;
-        q.y = tmp.y;
-        q.z = tmp.z;
+        float3 q_xyz = get_xyz(q);
+        set_xyz(q, clamp(q_xyz, -1.0, 1.0) * 2.0 - q_xyz);
 
         // q = q * scale / clamp( dot( q.xyz, q.xyz ), 0.3, 1.0 ) + q0;
-        float3 q_xyz = get_xyz(q);
+        q_xyz = get_xyz(q);
         q = q * scale / clamp(dot(q_xyz, q_xyz), 0.3, 1.0) + q0;
     }
 
