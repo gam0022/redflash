@@ -62,17 +62,16 @@ float dMenger(float3 z0, float3 offset, float scale) {
     return (length(make_float3(max(abs(z.x) - 1.0, 0.0), max(abs(z.y) - 1.0, 0.0), max(abs(z.z) - 1.0, 0.0))) - 0.05) / z.w;
 }
 
-float3 get_xyz(float4 p)
+float3 get_xyz(float4 a)
 {
-    return make_float3(p.x, p.y, p.z);
+    return make_float3(a.x, a.y, a.z);
 }
 
-// not work...
 void set_xyz(float4 &a, float3 b)
 {
     a.x = b.x;
     a.y = b.y;
-    a.x = b.z;
+    a.z = b.z;
 }
 
 float dMandelFast(float3 p, float scale, int n) {
@@ -81,14 +80,11 @@ float dMandelFast(float3 p, float scale, int n) {
 
     for (int i = 0; i < n; i++) {
         // q.xyz = clamp(q.xyz, -1.0, 1.0) * 2.0 - q.xyz;
-        // set_xyz(q, clamp(get_xyz(q), -1.0, 1.0) * 2.0 - get_xyz(q));
-        float4 tmp = clamp(q, -1.0, 1.0) * 2.0 - q;
-        q.x = tmp.x;
-        q.y = tmp.y;
-        q.z = tmp.z;
+        float3 q_xyz = get_xyz(q);
+        set_xyz(q, clamp(q_xyz, -1.0, 1.0) * 2.0 - q_xyz);
 
         // q = q * scale / clamp( dot( q.xyz, q.xyz ), 0.3, 1.0 ) + q0;
-        float3 q_xyz = get_xyz(q);
+        q_xyz = get_xyz(q);
         q = q * scale / clamp(dot(q_xyz, q_xyz), 0.3, 1.0) + q0;
     }
 
