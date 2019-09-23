@@ -326,6 +326,9 @@ function(OPTIX_add_sample_executable target_name)
   target_link_libraries( ${target_name}
     sutil_sdk
     optix
+    glfw
+    imgui
+    ${OPENGL_gl_LIBRARY}
     ${optix_rpath}
     )
 
@@ -338,6 +341,18 @@ function(OPTIX_add_sample_executable target_name)
     target_link_libraries( ${target_name} m ) # Explicitly link against math library (C samples don't do that by default)
   endif()
 endfunction()
+
+##################################################################
+# IMGUI compilation
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/support )
+add_subdirectory( support/imgui )
+
+##################################################################
+# GLFW compilation
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory( support/glfw )
 
 #########################################################
 #  List of samples found in subdirectories.
