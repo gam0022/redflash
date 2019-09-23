@@ -1,0 +1,360 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{78B6DC90-473B-397C-9BCF-D8939FC90A5F}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>glfw</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\gam0022\Dropbox\redflash\build\bin\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">glfw.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">glfw3</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\gam0022\Dropbox\redflash\build\bin\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">glfw.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">glfw3</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\gam0022\Dropbox\redflash\build\bin\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">glfw.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">glfw3</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\gam0022\Dropbox\redflash\build\bin\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">glfw.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">glfw3</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.dll</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;C:\Users\gam0022\Dropbox\redflash\support\glfw\include;C:\Users\gam0022\Dropbox\redflash\support\glfw\src;C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4355;4996</DisableSpecificWarnings>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_GLFW_USE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;NOMINMAX;CMAKE_INTDIR="Debug";glfw_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_GLFW_USE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;NOMINMAX;CMAKE_INTDIR=\"Debug\";glfw_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;C:\Users\gam0022\Dropbox\redflash\support\glfw\include;C:\Users\gam0022\Dropbox\redflash\support\glfw\src;C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;C:\Users\gam0022\Dropbox\redflash\support\glfw\include;C:\Users\gam0022\Dropbox\redflash\support\glfw\src;C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions>%(AdditionalOptions)  /machine:x64</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/gam0022/Dropbox/redflash/build/lib/Debug/glfw3dll.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/gam0022/Dropbox/redflash/build/bin/Debug/glfw3.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;C:\Users\gam0022\Dropbox\redflash\support\glfw\include;C:\Users\gam0022\Dropbox\redflash\support\glfw\src;C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4355;4996</DisableSpecificWarnings>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Full</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_GLFW_USE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;NOMINMAX;CMAKE_INTDIR="Release";glfw_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_GLFW_USE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;NOMINMAX;CMAKE_INTDIR=\"Release\";glfw_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;C:\Users\gam0022\Dropbox\redflash\support\glfw\include;C:\Users\gam0022\Dropbox\redflash\support\glfw\src;C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;C:\Users\gam0022\Dropbox\redflash\support\glfw\include;C:\Users\gam0022\Dropbox\redflash\support\glfw\src;C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions>%(AdditionalOptions)  /machine:x64</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/gam0022/Dropbox/redflash/build/lib/Release/glfw3dll.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/gam0022/Dropbox/redflash/build/bin/Release/glfw3.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;C:\Users\gam0022\Dropbox\redflash\support\glfw\include;C:\Users\gam0022\Dropbox\redflash\support\glfw\src;C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4355;4996</DisableSpecificWarnings>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_GLFW_USE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;NOMINMAX;CMAKE_INTDIR="MinSizeRel";glfw_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_GLFW_USE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;NOMINMAX;CMAKE_INTDIR=\"MinSizeRel\";glfw_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;C:\Users\gam0022\Dropbox\redflash\support\glfw\include;C:\Users\gam0022\Dropbox\redflash\support\glfw\src;C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;C:\Users\gam0022\Dropbox\redflash\support\glfw\include;C:\Users\gam0022\Dropbox\redflash\support\glfw\src;C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions>%(AdditionalOptions)  /machine:x64</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/gam0022/Dropbox/redflash/build/lib/MinSizeRel/glfw3dll.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/gam0022/Dropbox/redflash/build/bin/MinSizeRel/glfw3.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;C:\Users\gam0022\Dropbox\redflash\support\glfw\include;C:\Users\gam0022\Dropbox\redflash\support\glfw\src;C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4355;4996</DisableSpecificWarnings>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_GLFW_USE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;NOMINMAX;CMAKE_INTDIR="RelWithDebInfo";glfw_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_GLFW_USE_CONFIG_H;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;NOMINMAX;CMAKE_INTDIR=\"RelWithDebInfo\";glfw_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;C:\Users\gam0022\Dropbox\redflash\support\glfw\include;C:\Users\gam0022\Dropbox\redflash\support\glfw\src;C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include;C:\Users\gam0022\Dropbox\redflash\sutil;C:\Users\gam0022\Dropbox\redflash;C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0\include\optixu;C:\Users\gam0022\Dropbox\redflash\support\mdl-sdk\include;C:\Users\gam0022\Dropbox\redflash\build;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Users\gam0022\Dropbox\redflash\support;C:\Users\gam0022\Dropbox\redflash\support\glfw\include;C:\Users\gam0022\Dropbox\redflash\support\glfw\src;C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions>%(AdditionalOptions)  /machine:x64</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/gam0022/Dropbox/redflash/build/lib/RelWithDebInfo/glfw3dll.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/gam0022/Dropbox/redflash/build/bin/RelWithDebInfo/glfw3.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/gam0022/Dropbox/redflash/support/glfw/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/gam0022/Dropbox/redflash -BC:/Users/gam0022/Dropbox/redflash/build --check-stamp-file C:/Users/gam0022/Dropbox/redflash/build/support/glfw/src/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/gam0022/Dropbox/redflash/support/glfw/src/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\support\glfw\src\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\support\glfw\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/gam0022/Dropbox/redflash/support/glfw/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/gam0022/Dropbox/redflash -BC:/Users/gam0022/Dropbox/redflash/build --check-stamp-file C:/Users/gam0022/Dropbox/redflash/build/support/glfw/src/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/gam0022/Dropbox/redflash/support/glfw/src/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\support\glfw\src\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\support\glfw\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/gam0022/Dropbox/redflash/support/glfw/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/gam0022/Dropbox/redflash -BC:/Users/gam0022/Dropbox/redflash/build --check-stamp-file C:/Users/gam0022/Dropbox/redflash/build/support/glfw/src/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/gam0022/Dropbox/redflash/support/glfw/src/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\support\glfw\src\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\support\glfw\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/gam0022/Dropbox/redflash/support/glfw/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/gam0022/Dropbox/redflash -BC:/Users/gam0022/Dropbox/redflash/build --check-stamp-file C:/Users/gam0022/Dropbox/redflash/build/support/glfw/src/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/gam0022/Dropbox/redflash/support/glfw/src/CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\support\glfw\src\CMakeLists.txt;C:\Users\gam0022\Dropbox\redflash\support\glfw\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\internal.h" />
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\build\support\glfw\src\glfw_config.h" />
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\include\GLFW\glfw3.h" />
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\include\GLFW\glfw3native.h" />
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\win32_platform.h" />
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\win32_joystick.h" />
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\wgl_context.h" />
+    <ClInclude Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\egl_context.h" />
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\context.c"  />
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\init.c"  />
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\input.c"  />
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\monitor.c"  />
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\vulkan.c"  />
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\window.c"  />
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\win32_init.c"  />
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\win32_joystick.c"  />
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\win32_monitor.c"  />
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\win32_time.c"  />
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\win32_tls.c"  />
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\win32_window.c"  />
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\wgl_context.c"  />
+    <ClCompile Include="C:\Users\gam0022\Dropbox\redflash\support\glfw\src\egl_context.c"  />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\gam0022\Dropbox\redflash\build\ZERO_CHECK.vcxproj">
+      <Project>{55DE6A30-0C48-30F8-BF3E-8219D2DACB86}</Project>
+      <Name>ZERO_CHECK</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

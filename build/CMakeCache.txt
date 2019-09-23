@@ -315,6 +315,33 @@ CUDA_nvcuvid_LIBRARY:FILEPATH=CUDA_nvcuvid_LIBRARY-NOTFOUND
 //"nvrtc" library
 CUDA_nvrtc_LIBRARY:FILEPATH=C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.1/lib/x64/nvrtc.lib
 
+//Value Computed by CMake
+GLFW_BINARY_DIR:STATIC=C:/Users/gam0022/Dropbox/redflash/build/support/glfw
+
+//Build the GLFW documentation
+GLFW_BUILD_DOCS:BOOL=OFF
+
+//Build the GLFW example programs
+GLFW_BUILD_EXAMPLES:BOOL=OFF
+
+//Build the GLFW test programs
+GLFW_BUILD_TESTS:BOOL=OFF
+
+//Include internals in documentation
+GLFW_DOCUMENT_INTERNALS:BOOL=OFF
+
+//Generate installation target
+GLFW_INSTALL:BOOL=ON
+
+//Value Computed by CMake
+GLFW_SOURCE_DIR:STATIC=C:/Users/gam0022/Dropbox/redflash/support/glfw
+
+//Force use of high-performance GPU on hybrid systems
+GLFW_USE_HYBRID_HPG:BOOL=OFF
+
+//Use the Vulkan loader statically linked into application
+GLFW_VULKAN_STATIC:BOOL=OFF
+
 //Path to a file.
 GLUT_INCLUDE_DIR:PATH=C:/Users/gam0022/Dropbox/redflash/support/freeglut/include
 
@@ -341,6 +368,21 @@ OptiX_INCLUDE:PATH=C:/ProgramData/NVIDIA Corporation/OptiX SDK 6.0.0/include
 
 //Path to OptiX installed location.
 OptiX_INSTALL_DIR:PATH=C:\ProgramData\NVIDIA Corporation\OptiX SDK 6.0.0
+
+//Path to a file.
+VULKAN_INCLUDE_DIR:PATH=VULKAN_INCLUDE_DIR-NOTFOUND
+
+//Path to a library.
+VULKAN_LIBRARY:FILEPATH=VULKAN_LIBRARY-NOTFOUND
+
+//Path to a library.
+VULKAN_STATIC_LIBRARY:FILEPATH=VULKAN_STATIC_LIBRARY-NOTFOUND
+
+//Dependencies for target
+glfw_LIB_DEPENDS:STATIC=
+
+//Dependencies for the target
+imgui_LIB_DEPENDS:STATIC=general;glfw;general;opengl32;
 
 //Path to a file.
 mdl_wrapper_INCLUDE_DIR:PATH=C:/Users/gam0022/Dropbox/redflash/support/mdl_wrapper/include
@@ -432,6 +474,8 @@ CMAKE_GENERATOR:INTERNAL=Visual Studio 15 2017 Win64
 CMAKE_GENERATOR_PLATFORM:INTERNAL=
 //Name of generator toolset.
 CMAKE_GENERATOR_TOOLSET:INTERNAL=
+//Have include pthread.h
+CMAKE_HAVE_PTHREAD_H:INTERNAL=
 //Source directory with the top level CMakeLists.txt file for this
 // project
 CMAKE_HOME_DIRECTORY:INTERNAL=C:/Users/gam0022/Dropbox/redflash
@@ -448,7 +492,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=35
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=38
 //Platform information initialized
 CMAKE_PLATFORM_INFO_INITIALIZED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_RC_COMPILER
@@ -592,6 +636,8 @@ CUDA_run_nvcc:INTERNAL=C:/Users/gam0022/Dropbox/redflash/CMake/FindCUDA/run_nvcc
 FIND_PACKAGE_MESSAGE_DETAILS_CUDA:INTERNAL=[C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.1][C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.1/bin/nvcc.exe][C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.1/include][C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.1/lib/x64/cudart_static.lib][v10.1(5.0)]
 //Details about finding OpenGL
 FIND_PACKAGE_MESSAGE_DETAILS_OpenGL:INTERNAL=[opengl32][v()]
+//Details about finding Threads
+FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //ADVANCED property for variable: GLUT_INCLUDE_DIR
 GLUT_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: GLUT_glut_DLL
@@ -604,6 +650,12 @@ OPENGL_gl_LIBRARY-ADVANCED:INTERNAL=1
 OPENGL_glu_LIBRARY-ADVANCED:INTERNAL=1
 //Already Configured once?
 PASSED_FIRST_CONFIGURE:INTERNAL=ON
+//ADVANCED property for variable: VULKAN_INCLUDE_DIR
+VULKAN_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: VULKAN_LIBRARY
+VULKAN_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: VULKAN_STATIC_LIBRARY
+VULKAN_STATIC_LIBRARY-ADVANCED:INTERNAL=1
 //Path to internal bin2cpp.cmake
 bin2cpp_cmake:INTERNAL=bin2cpp_cmake-NOTFOUND
 

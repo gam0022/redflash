@@ -1,0 +1,18 @@
+# CMake generation dependency list for this directory.
+C:/Users/gam0022/Dropbox/redflash/support/glfw/CMakeLists.txt
+C:/Program Files/CMake/share/cmake-3.8/Modules/FindThreads.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/CheckLibraryExists.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/CheckSymbolExists.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/CheckIncludeFile.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/FindPackageMessage.cmake
+C:/Users/gam0022/Dropbox/redflash/support/glfw/CMake/modules/FindVulkan.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/FindPackageMessage.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/CMakePackageConfigHelpers.cmake
+C:/Program Files/CMake/share/cmake-3.8/Modules/WriteBasicConfigVersionFile.cmake
+C:/Users/gam0022/Dropbox/redflash/support/glfw/src/glfw3Config.cmake.in
+C:/Program Files/CMake/share/cmake-3.8/Modules/BasicConfigVersion-SameMajorVersion.cmake.in
+C:/Users/gam0022/Dropbox/redflash/support/glfw/src/glfw_config.h.in
+C:/Users/gam0022/Dropbox/redflash/support/glfw/src/glfw3.pc.in
+C:/Users/gam0022/Dropbox/redflash/support/glfw/cmake_uninstall.cmake.in
